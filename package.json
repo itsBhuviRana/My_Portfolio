@@ -1,0 +1,37 @@
+{
+  "name": "assembly",
+  "private": true,
+  "description": "ASSEMBLY: personal developer portfolio monorepo",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.26.0",
+      "onFail": "error"
+    }
+  },
+  "scripts": {
+    "dev": "pnpm --filter @assembly/web dev",
+    "build": "pnpm --filter @assembly/web build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "pnpm -r --if-present run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:export": "node scripts/check-export.mjs",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:boundaries"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.3.5",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.8",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^4.1.11"
+  }
+}

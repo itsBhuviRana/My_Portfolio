@@ -1,0 +1,6 @@
+pnpm-lock.yaml
+.next
+out
+coverage
+next-env.d.ts
+*.tsbuildinfo

@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# environment (only .env.example is committed)
+.env
+.env.*
+!.env.example
+
+# secrets / keys
+*.pem
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+.idea/

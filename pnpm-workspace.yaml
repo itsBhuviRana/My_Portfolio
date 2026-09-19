@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Dependency build scripts are denied by default (pnpm 11). Approve a package only
+# when the install reports it AND something breaks without it. Record why here.
+allowBuilds:
+  # Native import resolver pulled in by eslint-config-next. Prebuilt binaries arrive
+  # as optional dependencies, so its postinstall (a fallback downloader) is not needed.
+  unrs-resolver: false
