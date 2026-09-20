@@ -20,9 +20,11 @@
     "test": "pnpm -r --if-present run test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "check:export": "node scripts/check-export.mjs",
-    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:boundaries"
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:boundaries && pnpm run check:generated"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

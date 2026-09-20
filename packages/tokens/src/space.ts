@@ -1,5 +1,5 @@
 /**
- * Spacing scale in unitless px (4 px base). Every step is a multiple of 4, so the
+ * Spacing scale in unitless px. Every step is a multiple of 4 (the layout grid base is 8), so the
  * scale is a subset of Tailwind's default spacing and needs no override on web.
  * Native platforms use the same numbers directly.
  */

@@ -141,10 +141,10 @@ Y is the owner or their chosen route, B is both. Character art follows D4 Option
 | BR-04     | Favicon and app-icon set                      | Art   | C     | P1                   | Phase 8                       | Phase 8   | planned  |
 | BR-05     | OG / social default image                     | Art   | B     | P1                   | Phase 8                       | Phase 8   | planned  |
 | BR-06     | Résumé PDF                                    | Input | Y     | P1                   | Owner                         | Phase 4   | planned  |
-| **TK-01** | Final palette tokens plus contrast tests      | Code  | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| TK-02     | Type tokens and font loading                  | Code  | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| TK-03     | Shape and elevation tokens                    | Code  | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| TK-04     | Layer palette and hatch mapping               | Code  | C     | P0                   | Phase 3                       | Phase 4   | planned  |
+| **TK-01** | Final palette tokens plus contrast tests      | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
+| TK-02     | Type tokens and font loading                  | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
+| TK-03     | Shape and elevation tokens                    | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
+| TK-04     | Layer palette and hatch mapping               | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
 | **CH-01** | Character bible                               | Doc   | B     | P0                   | Phase 2                       | Phase 2   | drafted  |
 | CH-02     | Manifest schema (specification, in the bible) | Doc   | C     | P0                   | Phase 2                       | Phase 4   | drafted  |
 | CH-03     | Pose `stack-stand`                            | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned  |
@@ -198,6 +198,11 @@ Revision 2.
 direction. Production artwork was generated on 2026-09-20 and **approved by the owner under AG-9 on
 2026-09-20, exactly in its drafted form**. Both rows are `approved`, not `wired`: no site UI uses them yet.
 W-B, M-A and M-C are not being produced.
+
+**Phase 3 (2026-09-20):** TK-01 to TK-04 are `drafted`: they exist in `packages/tokens/src` and are
+generated into the web app, and they await the owner's review. They are not `approved` or `wired`.
+IL-05 (isometric grid) and IL-06 (phone frame) stay `planned`: the CSS grid and device-frame primitives are
+foundations, not those SVG assets.
 
 ## 13. Section dependency map
 
@@ -401,12 +406,12 @@ checklist A. It is not repeated here.
 
 ### J. Phase gates
 
-| #   | Gate                                                                                                                                                   | Pass |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- |
-| J1  | **Phase 3 entry:** D3 and D5 to D10 are recorded, the brand guide is approved by the owner, this register exists                                       | ☐    |
-| J2  | **Phase 3 start:** AG-3, AG-4 and AG-5 are asked and answered before the work they cover                                                               | ☐    |
-| J3  | **Phase 4 entry:** every P0 row in section 12 is `approved`, including the character art (CH-03 to CH-06) and the wordmark and monogram (BR-02, BR-03) | ☐    |
-| J4  | **Phase 4 entry:** the "before Phase 4" items in the content checklist are supplied, and AG-1 is addressed                                             | ☐    |
+| #   | Gate                                                                                                                                                                                                                       | Pass |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| J1  | **Phase 3 entry:** D3 and D5 to D10 are recorded, the brand guide is approved by the owner, this register exists                                                                                                           | ☐    |
+| J2  | **Phase 3 start:** AG-3, AG-4 and AG-5 are asked and answered before the work they cover. AG-5 was exercised by the owner's Phase 3 instruction (2026-09-20). AG-3 and AG-4 are open and undefined, so this stays unticked | ☐    |
+| J3  | **Phase 4 entry:** every P0 row in section 12 is `approved`, including the character art (CH-03 to CH-06) and the wordmark and monogram (BR-02, BR-03)                                                                     | ☐    |
+| J4  | **Phase 4 entry:** the "before Phase 4" items in the content checklist are supplied, and AG-1 is addressed                                                                                                                 | ☐    |
 
 ## 16. Recording results (PROPOSED)
 
@@ -434,3 +439,5 @@ that is **NOT DECIDED**.
 | 2026-09-20 | BR-02 and BR-03 set to `drafted` (files held outside the repo). Sections 14, 14.1 and 14.2 added: file rows, Archivo provenance and licence, self-check results. Nothing approved, AG-9 pending                                                                                                                            |
 | 2026-09-20 | Owner decisions recorded: F4 revised (monogram minimum 32 px, wordmark minimum 192 px) and now passes against them, 16 px variant deferred, B7 and clear space unchanged, `br-<nn>` naming approved. Nothing approved, AG-9 pending                                                                                        |
 | 2026-09-20 | AG-9 approved by the owner. BR-02 and BR-03 set to `approved` (not `wired`). The four SVGs were copied unchanged into `docs/brand/source/`. Paths, acceptance and checksums recorded (sections 14, 14.2, 14.3). B7 stays NOT DECIDED / flagged, clear space stays PROPOSED, the 16 px variant stays DEFERRED / NOT DECIDED |
+| 2026-09-20 | TK-01 to TK-04 set to `drafted` (Phase 3 foundation, awaiting review). No asset was approved or wired                                                                                                                                                                                                                      |
+| 2026-09-20 | Gate J2 annotated: AG-5 exercised by the owner's Phase 3 instruction, AG-3 and AG-4 open and undefined. Checkbox left unticked                                                                                                                                                                                             |

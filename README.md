@@ -8,10 +8,12 @@ product views, precise callouts, and a cartoon character as a recurring narrator
 
 ## Status
 
-**Phase 1: Foundation.** This repository currently contains the monorepo foundation only: tooling,
-typed content, design tokens, a minimal static page, boundary enforcement and the deployment pipeline.
-The visual portfolio, brand assets and avatar come in later phases. The text on the page today is
-temporary foundation content.
+**Phase 3: Design System + Visual Language (foundation).** Phase 1 (monorepo, tooling, typed content,
+boundary enforcement, deployment) and Phase 2 (brand and assets, see `docs/brand/`) are complete. This
+repository now also has the approved Vellum & Layers tokens, a small typography scale (Archivo and
+JetBrains Mono), and a handful of CSS primitives (technical labels, rules, grids, layer surfaces, device
+and title-block styling). The visual portfolio itself (Hero and the main sections) is Phase 4. The text on
+the page today is temporary foundation content.
 
 ## Repository structure
 
@@ -24,8 +26,12 @@ assembly/
 │  └─ tokens/            @assembly/tokens:  design tokens as data. Pure TypeScript.
 ├─ scripts/
 │  ├─ check-boundaries.mjs   Architecture boundary checks (with self-test and lint canaries).
-│  └─ check-export.mjs       Static export sanity checks (GitHub Pages readiness).
-├─ docs/adr/             Architecture decision records.
+│  ├─ check-export.mjs       Static export sanity checks (GitHub Pages readiness).
+│  └─ generate.mjs           Writes apps/web/src/generated/ from the tokens and the approved brand SVGs.
+├─ docs/
+│  ├─ adr/               Architecture decision records.
+│  ├─ brand/             Brand guide, character bible, asset register, approved brand SVGs (source/).
+│  └─ content/           Content checklist and project intake.
 └─ .github/              CI/CD workflow and Dependabot config.
 ```
 
@@ -52,19 +58,21 @@ pnpm dev           # http://localhost:3000
 
 Run everything from the repository root.
 
-| Command                 | What it does                                                               |
-| ----------------------- | -------------------------------------------------------------------------- |
-| `pnpm install`          | Install all workspace dependencies.                                        |
-| `pnpm dev`              | Start the web app in development (Turbopack).                              |
-| `pnpm build`            | Static production build. Output: `apps/web/out/`.                          |
-| `pnpm lint`             | ESLint for the whole repo (includes the boundary rules).                   |
-| `pnpm typecheck`        | `tsc --noEmit` in every project.                                           |
-| `pnpm test`             | Vitest in every package that has tests.                                    |
-| `pnpm format`           | Format everything with Prettier.                                           |
-| `pnpm format:check`     | Check formatting without writing.                                          |
-| `pnpm check:boundaries` | Verify the architecture boundaries, and that the guards themselves work.   |
-| `pnpm check:export`     | Validate `apps/web/out/` after a build (run it with the same `BASE_PATH`). |
-| `pnpm check`            | `format:check`, `lint`, `typecheck`, `test`, `check:boundaries`.           |
+| Command                 | What it does                                                                        |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| `pnpm install`          | Install all workspace dependencies.                                                 |
+| `pnpm dev`              | Start the web app in development (Turbopack).                                       |
+| `pnpm build`            | Static production build. Output: `apps/web/out/`.                                   |
+| `pnpm lint`             | ESLint for the whole repo (includes the boundary rules).                            |
+| `pnpm typecheck`        | `tsc --noEmit` in every project.                                                    |
+| `pnpm test`             | Vitest in every package that has tests.                                             |
+| `pnpm format`           | Format everything with Prettier.                                                    |
+| `pnpm format:check`     | Check formatting without writing.                                                   |
+| `pnpm generate`         | Regenerate `apps/web/src/generated/` (theme CSS and brand SVG components).          |
+| `pnpm check:generated`  | Fail if the generated files are out of date.                                        |
+| `pnpm check:boundaries` | Verify the architecture boundaries, and that the guards themselves work.            |
+| `pnpm check:export`     | Validate `apps/web/out/` after a build (run it with the same `BASE_PATH`).          |
+| `pnpm check`            | `format:check`, `lint`, `typecheck`, `test`, `check:boundaries`, `check:generated`. |
 
 Package-specific examples: `pnpm --filter @assembly/web dev`, `pnpm --filter @assembly/content test`.
 
@@ -101,6 +109,30 @@ These are enforced, not just documented:
 
 Adding a package, an app, or a dependency edge means updating the allowlists in
 `scripts/check-boundaries.mjs` **and** recording an ADR.
+
+## Design foundations
+
+Tokens are the single source of truth: `packages/tokens/src/*.ts` (colour, layers, radius, spacing, shape,
+typography, motion). `pnpm generate` turns them into `apps/web/src/generated/tokens.css`, which
+`apps/web/src/app/globals.css` imports into Tailwind v4. Nothing is written by hand twice.
+
+- **Palette, radii, shadows, easings** become Tailwind theme values (`bg-vellum`, `text-ink`,
+  `rounded-md`, `shadow-cut-md`). The default Tailwind palette and radii are removed, so only approved
+  values exist.
+- **Type scale** becomes `type-display-1`, `type-display-2`, `type-h1` to `type-h3`, `type-body-lg`,
+  `type-body`, `type-small` and `type-label`. Fonts are loaded in `layout.tsx` with `next/font/google`
+  (self-hosted at build time, Latin subset, only Archivo preloaded).
+- **Layers** become `layer-<id>` (fill, its one readable text colour, ink outline) and `hatch-<id>` (a
+  hatch strip). Layer identity is never colour alone: number, text label and hatch go with it. Put hatch on
+  a strip, never behind text.
+- **Primitives** (`apps/web/src/app/foundations.css`): `tech-label`, `rule-decor`, `rule-info`, `rule-ink`,
+  `grid-8`, `grid-iso`, `surface`, `device-frame`, `device-screen`, `title-block`, plus a two-tone focus
+  ring and a reduced-motion base rule.
+- **Brand marks**: the approved SVGs in `docs/brand/source/` are turned into server components
+  (`Wordmark`, `WordmarkReversed`, `Monogram`, `MonogramReversed`) in
+  `apps/web/src/generated/brand-marks.tsx`. Minimum sizes: wordmark 192 px wide, monogram 32 px.
+
+Do not edit anything in `apps/web/src/generated/`. Change the source and run `pnpm generate`.
 
 ## Adding content
 

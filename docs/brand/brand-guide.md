@@ -15,7 +15,7 @@
 
 1. Phase 1: Foundation (complete)
 2. Phase 2: Brand & Assets (complete)
-3. Phase 3: Design System + Visual Language
+3. Phase 3: Design System + Visual Language (in progress)
 4. Phase 4: Hero + Main Portfolio
 5. Phase 5: Interactions & Animation
 6. Phase 6: Case Studies
@@ -184,12 +184,14 @@ The owner approved **BR-02 (W-A wordmark) and BR-03 (M-B monogram) exactly in th
 
 ## 6. Approval gates
 
-| Gate         | Status                                                                                                                              |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| AG-1         | Decided: option (b), at the start of Phase 4, only when justified by the implementation need                                        |
-| AG-2         | Decided: manual checklist, no script                                                                                                |
-| AG-3 to AG-8 | Not yet asked. Each is asked when its phase arrives                                                                                 |
-| AG-9         | **Approved (2026-09-20).** The owner approved the production artwork (BR-02 and BR-03) exactly in its drafted form. See section 5.8 |
+| Gate         | Status                                                                                                                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AG-1         | Decided: option (b), at the start of Phase 4, only when justified by the implementation need                                                                                                            |
+| AG-2         | Decided: manual checklist, no script                                                                                                                                                                    |
+| AG-3, AG-4   | **Open.** Named in this guide but not defined anywhere. No definition has been invented, and they are not recorded as answered                                                                          |
+| AG-5         | **Exercised (2026-09-20).** The owner's Phase 3 instruction asked for the token update (palette, radii, spacing, typography, shape), which is the token-value change this gate covers. See section 17.5 |
+| AG-6 to AG-8 | Not yet asked. Each is asked when its phase arrives                                                                                                                                                     |
+| AG-9         | **Approved (2026-09-20).** The owner approved the production artwork (BR-02 and BR-03) exactly in its drafted form. See section 5.8                                                                     |
 
 ## 7. What these decisions do not authorise
 
@@ -455,7 +457,8 @@ The full specification is in [character-bible.md](character-bible.md). It is not
 - D3 and D5 to D10 are answered and recorded in section 2.
 - The owner approves this brand guide.
 - The asset register exists ([asset-register.md](asset-register.md)).
-- The approvals asked at the start of Phase 3: AG-3, AG-4 and AG-5.
+- The approvals asked at the start of Phase 3: AG-3, AG-4 and AG-5. AG-5 was exercised by the owner's Phase 3
+  instruction (2026-09-20). AG-3 and AG-4 remain open.
 - **No personal or project content is needed before Phase 3.**
 
 ### 17.2 Phase 4 entry list (Hero + Main Portfolio)
@@ -493,13 +496,39 @@ The full specification is in [character-bible.md](character-bible.md). It is not
 | 9   | Phase 1 intact                                             | Checked with `pnpm check` in this pass                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 10  | Scope respected                                            | Only `docs/` files changed since the Phase 1 commit                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 11  | Repo hygiene                                               | No raw originals (the font is not in the repository), secrets, third-party logos or media. The only non-Markdown files are the four approved SVGs in `docs/brand/source/`                                                                                                                                                                                                                                                                                                                              |
-| 12  | Approval log                                               | AG-1 and AG-2 decided. AG-3 to AG-8 are not yet asked. **AG-9 approved** (2026-09-20). The D11 direction was selected (section 6)                                                                                                                                                                                                                                                                                                                                                                      |
+| 12  | Approval log                                               | AG-1 and AG-2 decided. **AG-5 exercised** by the owner's Phase 3 instruction (2026-09-20). AG-3 and AG-4 are **open** and undefined. AG-6 to AG-8 are not yet asked. **AG-9 approved** (2026-09-20). The D11 direction was selected (section 6)                                                                                                                                                                                                                                                        |
 | 13  | Hand-off documented                                        | **Done.** Sections 17.1 and 17.2                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 **Overall: Phase 2 is complete.** The specification set is reviewed, D11 is approved, and the production
 wordmark and monogram (BR-02, BR-03) are approved under AG-9 (2026-09-20). Character artwork is deferred to
 the Phase 4 entry gate by decision D4, so it is not outstanding Phase 2 work. Approved artwork is not
 implementation: no Hero, UI, token, dependency or CI change has been made, and Phase 3 has not started.
+
+### 17.5 Phase 3 foundation (started 2026-09-20)
+
+Implemented as a lean foundation, with no new package. **Not** Hero, avatar, icons or animation.
+
+- **Tokens updated** in `@assembly/tokens`: the Vellum & Layers palette (13 colours, lowercase hex), the
+  layer mapping (number, fill, the one readable text colour, hatch), radii 4 / 8 / 16 / pill, shape
+  (1.5 px stroke, cut-paper shadow offsets, 8 px grid and 64 unit isometric tile, focus ring, phone frame)
+  and typography. Contrast rules are enforced by tests. AG-5 (the token-value change) was exercised by
+  the owner's Phase 3 instruction on 2026-09-20, which asked for exactly this update.
+- **Typography:** the PROPOSED scale in section 10 is now the working scale in code (nine steps, sizes
+  exactly as listed there). Two choices are mine and remain reviewable: heading leading is 1.15 / 1.2 / 1.25
+  (the guide only fixes display and body leading), and the fluid range for display sizes is 375 to 1440 px.
+- **Generator (D5) and SVG pipeline (D8):** `scripts/generate.mjs` writes committed files into
+  `apps/web/src/generated/` and `pnpm check` fails if they are stale. The four approved marks become
+  server components. In them `id` becomes `data-part` (an inlined mark can appear twice on a page and IDs
+  must stay unique), and the hex fallback is dropped because the `p-*` palette classes supply the fill.
+- **Fonts:** loaded with `next/font/google` (self-hosted at build time). The two Latin files measure about
+  128 KB of WOFF2, within the 160 KB budget. Only Archivo is preloaded. No font file is committed.
+- **Primitives:** CSS only, in `apps/web/src/app/foundations.css`. The isometric grid and phone frame are
+  CSS foundations, not the SVG assets IL-05 and IL-06, which stay planned.
+- **Deferred, unchanged:** icons, callout kit, commit-spine and other illustration primitives, device
+  frames as art, the 16 px monogram variant, all animation (Phase 5), Hero and sections (Phase 4).
+- **Unresolved:** AG-3 and AG-4 are named in this guide but never defined, so they are not recorded as
+  answered. For the fonts served in the static export, whether the OFL notice needs to be published with
+  them is to be confirmed in Phase 8.
 
 ## 18. Open items
 
@@ -552,7 +581,8 @@ implementation: no Hero, UI, token, dependency or CI change has been made, and P
 - The open items in the Character Bible ([character-bible.md](character-bible.md), section 16).
 
 **Decisions required before Phase 3 (per Revision 2):** D3 and D5 to D10 are now answered. The approvals
-asked at the start of Phase 3 remain: AG-3, AG-4 and AG-5.
+asked at the start of Phase 3, AG-5 was exercised by the owner's Phase 3 instruction (2026-09-20). AG-3 and
+AG-4 remain open.
 
 ## 19. Change log
 
@@ -566,3 +596,5 @@ asked at the start of Phase 3 remain: AG-3, AG-4 and AG-5.
 | 2026-09-20 | Draft BR-02 and BR-03 artwork generated (outside the repo, not approved). OFL outline terms confirmed and provenance recorded. AG-9 still pending. F4 finding recorded                                                                                     |
 | 2026-09-20 | Owner decisions recorded (section 5.7): monogram minimum 32 px, wordmark minimum 192 px, 16 px variant deferred, B7 and clear space unchanged, `br-<nn>` naming approved. F4 resolved. AG-9 still pending, nothing approved                                |
 | 2026-09-20 | AG-9 approved. BR-02 and BR-03 approved exactly in their drafted form and delivered to `docs/brand/source/`. Phase 2 Definition of Done item 4 complete, Phase 2 complete. No runtime UI implemented. 16 px variant deferred, B7 and clear space unchanged |
+| 2026-09-20 | Phase 3 foundation started (section 17.5): tokens updated to the approved direction, generator and SVG components added, fonts loaded, CSS primitives added. Roadmap shows Phase 3 in progress. No new package                                             |
+| 2026-09-20 | Gate records made consistent with section 17.5: AG-5 recorded as exercised by the owner's Phase 3 instruction, AG-3 and AG-4 recorded as open and undefined (no definition invented), AG-6 to AG-8 unchanged                                               |

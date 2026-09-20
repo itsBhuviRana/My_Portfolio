@@ -1,0 +1,169 @@
+/*
+ * Visual foundations for the portfolio: base styles and a small set of primitives, all built on the
+ * generated tokens (../generated/tokens.css). Nothing here is a component. Section layouts come later.
+ *
+ * Accessibility rules baked in:
+ *   - Text on vellum or paper is ink (or inkSoft for secondary text). Text on layer fills uses the
+ *     `layer-*` utilities, which pair each fill with its one readable text colour.
+ *   - Focus is a two-tone ring (paper inside, ink outside) that survives forced-colours mode.
+ *   - The grids are decoration: 10% opacity at most, and never animated.
+ */
+
+@layer base {
+  html {
+    background-color: var(--color-vellum);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply type-body;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * Two-tone focus ring. The paper ring sits against the element and the ink outline 2px further
+ * out, so one of them contrasts with any background. The outline (not the shadow) is what
+ * forced-colours mode keeps.
+ *
+ * Deliberately outside `@layer base`: unlayered rules beat every layered rule, so components and
+ * utilities that set their own box-shadow (`surface`, `device-frame`, `shadow-*`) cannot remove the
+ * inner ring. While focused, the ring replaces the element's shadow.
+ */
+:focus-visible {
+  outline: var(--shape-focus-outer) solid var(--color-ink);
+  outline-offset: var(--shape-focus-inner);
+  box-shadow: 0 0 0 var(--shape-focus-inner) var(--color-paper);
+}
+
+/* Technical label: specs, numerals, callouts. Secondary text, so vellum or paper only. */
+@utility tech-label {
+  @apply type-label;
+  color: var(--color-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Rules and dividers (horizontal). `rule-decor` is decoration and never carries information.
+ * `rule-info` may carry information (3:1 or better). `rule-ink` is the outline weight.
+ */
+@utility rule-decor {
+  border-top: var(--shape-hairline) solid var(--color-rule);
+}
+
+@utility rule-info {
+  border-top: var(--shape-hairline) solid var(--color-line);
+}
+
+@utility rule-ink {
+  border-top: var(--shape-stroke) solid var(--color-ink);
+}
+
+/* 8 px layout grid, as a background. Decoration only. */
+@utility grid-8 {
+  --grid-line: color-mix(
+    in srgb,
+    var(--color-ink) calc(var(--shape-grid-opacity) * 100%),
+    transparent
+  );
+  background-image:
+    linear-gradient(
+      to right,
+      var(--grid-line) var(--shape-hairline),
+      transparent var(--shape-hairline)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--grid-line) var(--shape-hairline),
+      transparent var(--shape-hairline)
+    );
+  background-size: var(--shape-grid-base) var(--shape-grid-base);
+}
+
+/*
+ * Isometric grid (30 degree lines, 64 unit tile) for illustration backdrops. Decoration only.
+ * Lines run along the two isometric axes; the pitch between parallel lines is the tile edge
+ * times sin 60 degrees.
+ */
+@utility grid-iso {
+  --grid-line: color-mix(
+    in srgb,
+    var(--color-ink) calc(var(--shape-grid-opacity) * 100%),
+    transparent
+  );
+  --grid-pitch: calc(var(--shape-grid-iso) * 0.866);
+  background-image:
+    repeating-linear-gradient(
+      150deg,
+      var(--grid-line) 0 var(--shape-hairline),
+      transparent var(--shape-hairline) var(--grid-pitch)
+    ),
+    repeating-linear-gradient(
+      30deg,
+      var(--grid-line) 0 var(--shape-hairline),
+      transparent var(--shape-hairline) var(--grid-pitch)
+    );
+}
+
+/* A paper surface: ink outline, small radius, cut-paper shadow (solid, no blur). */
+@utility surface {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  border: var(--shape-stroke) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-cut-md);
+}
+
+/*
+ * Generic phone frame (no manufacturer likeness). The outer corner is `lg` (16) and the bezel is
+ * 12, so the screen corner is `sm` (4). Put media inside `device-screen`.
+ */
+@utility device-frame {
+  background-color: var(--color-ink);
+  padding: var(--shape-bezel);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-cut-lg);
+}
+
+@utility device-screen {
+  aspect-ratio: var(--shape-screen-ratio);
+  background-color: var(--color-paper);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/*
+ * Engineering title block: a strip of cells (for example SHEET, SECTION, REV, SCALE) with ink
+ * rules between them. Cell text is HTML and normally uses `tech-label`.
+ */
+@utility title-block {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border: var(--shape-stroke) solid var(--color-ink);
+  background-color: var(--color-paper);
+
+  & > * {
+    padding: 0.5rem 0.75rem;
+  }
+
+  & > * + * {
+    border-left: var(--shape-stroke) solid var(--color-ink);
+  }
+}

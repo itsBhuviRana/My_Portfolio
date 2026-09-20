@@ -1,8 +1,26 @@
 import type { Metadata, Viewport } from "next";
+import { Archivo, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { site } from "@assembly/content";
 import { color } from "@assembly/tokens";
 import "./globals.css";
+
+// Two families, Latin subset, self-hosted at build time (D9). The `variable` names are what the
+// generated theme (--font-sans, --font-mono) refers to: keep them in step with scripts/generate.mjs.
+// Archivo needs its width axis requested (the expanded look is width 125). Only Archivo is preloaded.
+const archivo = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  display: "swap",
+  variable: "--font-archivo",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+  variable: "--font-jetbrains-mono",
+});
 
 export const metadata: Metadata = {
   title: site.name,
@@ -17,7 +35,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable}`}>
       <body>{children}</body>
     </html>
   );
