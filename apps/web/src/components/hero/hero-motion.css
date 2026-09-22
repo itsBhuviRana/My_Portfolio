@@ -1,0 +1,182 @@
+/*
+ * Hero assembly: the layer-by-layer entrance for the exploded phone illustration and the Hero's own
+ * text/CTA.
+ *
+ * Pure CSS `animation`, not `transition` + JS state: the resting styles an element has *without* any
+ * animation applied ARE the final Hero design (identical to the pre-5E, pre-5F static Hero). The
+ * animation classes below only ever add motion on top of that resting state — they never remove content
+ * or gate its visibility. That is the fix for the Phase 5E regression: because visibility never depended
+ * on a client script running, hydrating in time, or hydrating at all, the Hero cannot render blank again,
+ * on mobile or anywhere else. `animation-fill-mode: both` plus `animation-iteration-count: 1` (the
+ * default) means each element plays its entrance exactly once, on paint, and then simply stops holding
+ * the 100% keyframe — which is written to match the resting CSS exactly, so there is no visible seam
+ * between "animation finished" and "animation never ran".
+ *
+ * Every element that participates sets one or two custom properties inline (its delay, and where it
+ * starts from) and picks up one of the handful of keyframes below via a plain selector on its existing
+ * `data-layer`/`data-callout` attribute or a small `.hero-*` class — nothing here is a generic animation
+ * engine, just a few reusable, parameterised entrance primitives scoped to this one section of the page.
+ *
+ * Reduced motion needs no rule here: the site-wide `@media (prefers-reduced-motion: reduce)` block in
+ * foundations.css already forces `animation-duration`/`animation-delay` to ~0 for every element, which
+ * collapses all of this to the final state on the same paint.
+ */
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
+ * The main slab/leadership entrance: exploded start -> fast move -> a 1-3px overshoot past the resting
+ * position -> settle. `--hero-from-x`/`--hero-from-y` (a plain length each, default 0) set where a given
+ * layer starts; the overshoot at 78% is derived from that same offset (roughly -15% of it) rather than a
+ * second hand-picked value, so it always continues a little past rest in the same direction of travel,
+ * never in a new one. The drop-shadow starts stronger (more "separated") and fades to none by the time
+ * the layer is seated, echoing the site's cut-paper shadow language without adding a permanent one.
+ */
+@keyframes hero-settle {
+  0% {
+    opacity: 0;
+    translate: var(--hero-from-x, 0px) var(--hero-from-y, 0px);
+    filter: drop-shadow(3px 3px 0 color-mix(in srgb, var(--color-ink) 18%, transparent));
+  }
+  55% {
+    opacity: 1;
+  }
+  78% {
+    translate: calc(var(--hero-from-x, 0px) * -0.15) calc(var(--hero-from-y, 0px) * -0.15);
+    filter: drop-shadow(1px 1px 0 color-mix(in srgb, var(--color-ink) 8%, transparent));
+  }
+  100% {
+    translate: 0 0;
+    filter: none;
+  }
+}
+
+/*
+ * A line "growing" into place: collapsed along its own axis at the origin end, then extending to full
+ * length. `--hero-scale-from` is a `scale` value pair ("1 0" for a line that runs vertically, "0 1" for
+ * one that runs horizontally); `transform-origin` is set inline per line to its own start point, in the
+ * same SVG user-coordinate system already used to draw it.
+ */
+@keyframes hero-grow {
+  from {
+    opacity: 0;
+    scale: var(--hero-scale-from, 1 1);
+  }
+  to {
+    opacity: 1;
+    scale: 1 1;
+  }
+}
+
+/* A marker switching on: a small overshoot in scale, once, never repeated. */
+@keyframes hero-pop {
+  0% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  65% {
+    opacity: 1;
+    scale: 1.2;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* A label sliding the last few pixels in from where its leader line points. */
+@keyframes hero-label-in {
+  from {
+    opacity: 0;
+    translate: var(--hero-label-from, 6px 0);
+  }
+}
+
+/* The Hero's own text/CTA groups: a small rise, restrained on purpose (see hero.tsx). */
+@keyframes hero-text-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Illustration                                                                                      */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hero-illustration [data-layer] {
+  animation: hero-settle 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.hero-illustration [data-connector] {
+  animation: hero-grow 260ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.hero-illustration [data-callout] line {
+  animation: hero-grow 220ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.hero-illustration [data-callout] circle {
+  animation: hero-pop 260ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hero-illustration .hero-label {
+  animation: hero-label-in 260ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.hero-illustration .hero-pin {
+  animation: hero-pop 260ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hero-illustration .hero-caption {
+  animation: hero-fade 260ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.hero-illustration.hero-frame {
+  animation: hero-fade 200ms ease-out both;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Layer key                                                                                         */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hero-key-item {
+  animation: hero-pop 300ms ease-out both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Hero text/chrome                                                                                  */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hero-text-group {
+  animation: hero-text-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.hero-chrome {
+  animation: hero-fade 200ms ease-out both;
+}
+
+/* Mobile: the same relationships, smaller spatial separation (the illustration's own SVG-space offsets
+   already scale down with it; only the plain-pixel HTML offsets below need a explicit smaller value). */
+@media (max-width: 480px) {
+  .hero-illustration .hero-label {
+    --hero-label-from: 3px 0;
+  }
+}

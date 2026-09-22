@@ -1,3 +1,4 @@
 @import "tailwindcss";
 @import "../generated/tokens.css";
 @import "./foundations.css";
+@import "../components/hero/hero-motion.css";
