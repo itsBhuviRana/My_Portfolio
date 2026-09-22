@@ -133,62 +133,62 @@ No file exists for any row unless the Status column says otherwise. **Owner:** C
 Y is the owner or their chosen route, B is both. Character art follows D4 Option C, so its "produced in" is
 **external, by the Phase 4 entry gate**.
 
-| ID        | Asset                                         | Kind  | Owner | Pri                  | Produced in                   | Needed by | Status   |
-| --------- | --------------------------------------------- | ----- | ----- | -------------------- | ----------------------------- | --------- | -------- |
-| **BR-01** | Brand guide                                   | Doc   | C     | P0                   | Phase 2                       | Phase 3   | drafted  |
-| BR-02     | Wordmark master (after review, AG-9)          | Art   | B     | P0                   | Phase 2                       | Phase 4   | approved |
-| BR-03     | Monogram mark (after review, AG-9)            | Art   | B     | P0                   | Phase 2                       | Phase 4   | approved |
-| BR-04     | Favicon and app-icon set                      | Art   | C     | P1                   | Phase 8                       | Phase 8   | planned  |
-| BR-05     | OG / social default image                     | Art   | B     | P1                   | Phase 8                       | Phase 8   | planned  |
-| BR-06     | Résumé PDF                                    | Input | Y     | P1                   | Owner                         | Phase 4   | planned  |
-| **TK-01** | Final palette tokens plus contrast tests      | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
-| TK-02     | Type tokens and font loading                  | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
-| TK-03     | Shape and elevation tokens                    | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
-| TK-04     | Layer palette and hatch mapping               | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted  |
-| **CH-01** | Character bible                               | Doc   | B     | P0                   | Phase 2                       | Phase 2   | drafted  |
-| CH-02     | Manifest schema (specification, in the bible) | Doc   | C     | P0                   | Phase 2                       | Phase 4   | drafted  |
-| CH-03     | Pose `stack-stand`                            | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned  |
-| CH-04     | Pose `phone-show`                             | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned  |
-| CH-05     | Pose `peek`                                   | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned  |
-| CH-06     | Expressions: neutral, curious, pleased        | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned  |
-| CH-07     | Pose `point-callout`                          | Art   | Y     | P1                   | External                      | Phase 4   | planned  |
-| CH-08     | Pose `pull-layer`                             | Art   | Y     | P1                   | External                      | Phase 5   | planned  |
-| CH-09     | Pose `hand-off`                               | Art   | Y     | P1                   | External                      | Phase 4   | planned  |
-| CH-10     | Teammate silhouette                           | Art   | Y     | P1                   | External                      | Phase 4   | planned  |
-| CH-11     | Pose `off-duty`                               | Art   | Y     | P1                   | External                      | Phase 4   | planned  |
-| CH-12     | Pose `wave-phone`                             | Art   | Y     | P1                   | External                      | Phase 4   | planned  |
-| CH-13     | Expressions: focused, puzzled, surprised      | Art   | Y     | P1                   | External                      | Phase 5   | planned  |
-| CH-14     | Raster exports (hero, peek)                   | Art   | C     | P1                   | Phase 8                       | Phase 8   | planned  |
-| CH-15     | Sticker, README and email-signature avatars   | Art   | Y     | P2                   | Later                         | Later     | planned  |
-| **IL-01** | Exploded stack master (5 planes)              | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IL-02     | Module blocks (3 variants)                    | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IL-03     | Callout kit                                   | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IL-04     | Title-block frame                             | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IL-05     | Isometric grid pattern                        | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IL-06     | Phone frame (generic)                         | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IL-07     | Six layer hatch patterns                      | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IL-08     | Commit-spine primitives                       | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IL-09     | Version-tag and release badges                | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IL-10     | Component specimen frames                     | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IL-11     | X-Ray overlay primitives                      | Art   | C     | P1                   | Phase 5                       | Phase 5   | planned  |
-| IL-12     | Browser frame                                 | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IL-13     | Speech-chip style (3 variants)                | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IL-14     | Tablet frame                                  | Art   | C     | P2                   | Later                         | Later     | planned  |
-| IL-15     | Decorative brick modules and dividers         | Art   | C     | P2                   | Later                         | Later     | planned  |
-| IL-16     | Paper-grain texture                           | Art   | C     | P2                   | Later                         | Later     | planned  |
-| **IC-01** | Core UI icons (8)                             | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned  |
-| IC-02     | Extended UI icons                             | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IC-03     | Social and contact glyphs                     | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| IC-04     | Indicators                                    | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned  |
-| **PR-01** | Project intake template plus NDA checklist    | Doc   | C     | P0                   | Phase 2                       | Phase 2   | drafted  |
-| PR-02     | Screenshots (3 or more per project)           | Input | Y     | P1                   | Owner                         | Phase 4   | planned  |
-| PR-03     | Recording (1 for the flagship)                | Input | Y     | P1                   | Owner                         | Phase 5   | planned  |
-| PR-04     | Architecture diagram(s)                       | Art   | B     | P1                   | Phase 6                       | Phase 6   | planned  |
-| PR-05     | X-Ray annotation data                         | Input | Y     | P1                   | Owner                         | Phase 5   | planned  |
-| PR-06     | Before / after                                | Input | Y     | P2                   | Owner                         | Phase 6   | planned  |
-| PR-07     | Case-study imagery                            | Art   | B     | P1 flagship, P2 rest | Phase 6                       | Phase 6   | planned  |
-| PR-08     | Per-project OG images                         | Art   | C     | P2                   | Phase 8                       | Phase 8   | planned  |
-| **AR-01** | Asset register (this document)                | Doc   | C     | P0                   | Phase 2                       | Phase 2   | drafted  |
+| ID        | Asset                                         | Kind  | Owner | Pri                  | Produced in                   | Needed by | Status  |
+| --------- | --------------------------------------------- | ----- | ----- | -------------------- | ----------------------------- | --------- | ------- |
+| **BR-01** | Brand guide                                   | Doc   | C     | P0                   | Phase 2                       | Phase 3   | drafted |
+| BR-02     | Wordmark master (after review, AG-9)          | Art   | B     | P0                   | Phase 2                       | Phase 4   | wired   |
+| BR-03     | Monogram mark (after review, AG-9)            | Art   | B     | P0                   | Phase 2                       | Phase 4   | wired   |
+| BR-04     | Favicon and app-icon set                      | Art   | C     | P1                   | Phase 8                       | Phase 8   | planned |
+| BR-05     | OG / social default image                     | Art   | B     | P1                   | Phase 8                       | Phase 8   | planned |
+| BR-06     | Résumé PDF                                    | Input | Y     | P1                   | Owner                         | Phase 4   | planned |
+| **TK-01** | Final palette tokens plus contrast tests      | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted |
+| TK-02     | Type tokens and font loading                  | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted |
+| TK-03     | Shape and elevation tokens                    | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted |
+| TK-04     | Layer palette and hatch mapping               | Code  | C     | P0                   | Phase 3                       | Phase 4   | drafted |
+| **CH-01** | Character bible                               | Doc   | B     | P0                   | Phase 2                       | Phase 2   | drafted |
+| CH-02     | Manifest schema (specification, in the bible) | Doc   | C     | P0                   | Phase 2                       | Phase 4   | drafted |
+| CH-03     | Pose `stack-stand`                            | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned |
+| CH-04     | Pose `phone-show`                             | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned |
+| CH-05     | Pose `peek`                                   | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned |
+| CH-06     | Expressions: neutral, curious, pleased        | Art   | Y     | P0                   | External, by the Phase 4 gate | Phase 4   | planned |
+| CH-07     | Pose `point-callout`                          | Art   | Y     | P1                   | External                      | Phase 4   | planned |
+| CH-08     | Pose `pull-layer`                             | Art   | Y     | P1                   | External                      | Phase 5   | planned |
+| CH-09     | Pose `hand-off`                               | Art   | Y     | P1                   | External                      | Phase 4   | planned |
+| CH-10     | Teammate silhouette                           | Art   | Y     | P1                   | External                      | Phase 4   | planned |
+| CH-11     | Pose `off-duty`                               | Art   | Y     | P1                   | External                      | Phase 4   | planned |
+| CH-12     | Pose `wave-phone`                             | Art   | Y     | P1                   | External                      | Phase 4   | planned |
+| CH-13     | Expressions: focused, puzzled, surprised      | Art   | Y     | P1                   | External                      | Phase 5   | planned |
+| CH-14     | Raster exports (hero, peek)                   | Art   | C     | P1                   | Phase 8                       | Phase 8   | planned |
+| CH-15     | Sticker, README and email-signature avatars   | Art   | Y     | P2                   | Later                         | Later     | planned |
+| **IL-01** | Exploded stack master (5 planes)              | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IL-02     | Module blocks (3 variants)                    | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IL-03     | Callout kit                                   | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IL-04     | Title-block frame                             | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IL-05     | Isometric grid pattern                        | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IL-06     | Phone frame (generic)                         | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IL-07     | Six layer hatch patterns                      | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IL-08     | Commit-spine primitives                       | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IL-09     | Version-tag and release badges                | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IL-10     | Component specimen frames                     | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IL-11     | X-Ray overlay primitives                      | Art   | C     | P1                   | Phase 5                       | Phase 5   | planned |
+| IL-12     | Browser frame                                 | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IL-13     | Speech-chip style (3 variants)                | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IL-14     | Tablet frame                                  | Art   | C     | P2                   | Later                         | Later     | planned |
+| IL-15     | Decorative brick modules and dividers         | Art   | C     | P2                   | Later                         | Later     | planned |
+| IL-16     | Paper-grain texture                           | Art   | C     | P2                   | Later                         | Later     | planned |
+| **IC-01** | Core UI icons (8)                             | Art   | C     | P0                   | Phase 3                       | Phase 4   | planned |
+| IC-02     | Extended UI icons                             | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IC-03     | Social and contact glyphs                     | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| IC-04     | Indicators                                    | Art   | C     | P1                   | Phase 3                       | Phase 4   | planned |
+| **PR-01** | Project intake template plus NDA checklist    | Doc   | C     | P0                   | Phase 2                       | Phase 2   | drafted |
+| PR-02     | Screenshots (3 or more per project)           | Input | Y     | P1                   | Owner                         | Phase 4   | planned |
+| PR-03     | Recording (1 for the flagship)                | Input | Y     | P1                   | Owner                         | Phase 5   | planned |
+| PR-04     | Architecture diagram(s)                       | Art   | B     | P1                   | Phase 6                       | Phase 6   | planned |
+| PR-05     | X-Ray annotation data                         | Input | Y     | P1                   | Owner                         | Phase 5   | planned |
+| PR-06     | Before / after                                | Input | Y     | P2                   | Owner                         | Phase 6   | planned |
+| PR-07     | Case-study imagery                            | Art   | B     | P1 flagship, P2 rest | Phase 6                       | Phase 6   | planned |
+| PR-08     | Per-project OG images                         | Art   | C     | P2                   | Phase 8                       | Phase 8   | planned |
+| **AR-01** | Asset register (this document)                | Doc   | C     | P0                   | Phase 2                       | Phase 2   | drafted |
 
 Changes from the Revision 2 register: a Status column was added, and the "Produced in" wording for CH-03 to
 CH-13 now reflects the D4 timing (art is delivered by the Phase 4 entry gate). Everything else is as in
@@ -203,6 +203,10 @@ W-B, M-A and M-C are not being produced.
 generated into the web app, and they await the owner's review. They are not `approved` or `wired`.
 IL-05 (isometric grid) and IL-06 (phone frame) stay `planned`: the CSS grid and device-frame primitives are
 foundations, not those SVG assets.
+
+**Phase 4A (2026-09-20):** the primary BR-02 wordmark (header) and BR-03 monogram (footer) are used by the
+site through generated components, so those rows are `wired`. The reversed files stay `approved` until a
+cobalt surface uses them.
 
 ## 13. Section dependency map
 
@@ -232,9 +236,9 @@ owner commits them. Nothing has been wired into the site.
 
 | id    | path                                                | kind | priority | producedIn | neededBy | sections    | status   | decorative | alt / longDescription           | source                                                     | licence                                     | owner                             | budgetKB                                         | acceptance                                                                                                                    |
 | ----- | --------------------------------------------------- | ---- | -------- | ---------- | -------- | ----------- | -------- | ---------- | ------------------------------- | ---------------------------------------------------------- | ------------------------------------------- | --------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| BR-02 | `docs/brand/source/br-02-wordmark-w-a.svg`          | Art  | P0       | Phase 2    | Phase 4  | Shell / nav | approved | `false`    | "Bhuvneshwar Rana"              | Script from Archivo, W-A parameters. See 14.1              | OFL 1.1 font. Artwork is the owner's (14.1) | Owner (approval), Claude (script) | Not defined (**NOT DECIDED**). 5.1 KB, 2.3 KB gz | 2026-09-20, Claude self-check, then owner approval (AG-9, 2026-09-20), A+B+F, with B7 flagged and clear space PROPOSED (14.2) |
+| BR-02 | `docs/brand/source/br-02-wordmark-w-a.svg`          | Art  | P0       | Phase 2    | Phase 4  | Shell / nav | wired    | `false`    | "Bhuvneshwar Rana"              | Script from Archivo, W-A parameters. See 14.1              | OFL 1.1 font. Artwork is the owner's (14.1) | Owner (approval), Claude (script) | Not defined (**NOT DECIDED**). 5.1 KB, 2.3 KB gz | 2026-09-20, Claude self-check, then owner approval (AG-9, 2026-09-20), A+B+F, with B7 flagged and clear space PROPOSED (14.2) |
 | BR-02 | `docs/brand/source/br-02-wordmark-w-a-reversed.svg` | Art  | P0       | Phase 2    | Phase 4  | Shell / nav | approved | `false`    | "Bhuvneshwar Rana"              | As above. One-colour paper version for cobalt              | As above                                    | As above                          | As above. 5.1 KB, 2.3 KB gz                      | As above                                                                                                                      |
-| BR-03 | `docs/brand/source/br-03-monogram-m-b.svg`          | Art  | P0       | Phase 2    | Phase 4  | Footer      | approved | `false`    | "Bhuvneshwar Rana monogram, BR" | Script from Archivo on the approved M-B geometry. See 14.1 | OFL 1.1 font. Artwork is the owner's (14.1) | Owner (approval), Claude (script) | Not defined (**NOT DECIDED**). 1.6 KB, 0.8 KB gz | 2026-09-20, Claude self-check, then owner approval (AG-9, 2026-09-20), A+B+F, with B7 flagged and clear space PROPOSED (14.2) |
+| BR-03 | `docs/brand/source/br-03-monogram-m-b.svg`          | Art  | P0       | Phase 2    | Phase 4  | Footer      | wired    | `false`    | "Bhuvneshwar Rana monogram, BR" | Script from Archivo on the approved M-B geometry. See 14.1 | OFL 1.1 font. Artwork is the owner's (14.1) | Owner (approval), Claude (script) | Not defined (**NOT DECIDED**). 1.6 KB, 0.8 KB gz | 2026-09-20, Claude self-check, then owner approval (AG-9, 2026-09-20), A+B+F, with B7 flagged and clear space PROPOSED (14.2) |
 | BR-03 | `docs/brand/source/br-03-monogram-m-b-reversed.svg` | Art  | P0       | Phase 2    | Phase 4  | Footer      | approved | `false`    | "Bhuvneshwar Rana monogram, BR" | As above. One-colour paper version for cobalt              | As above                                    | As above                          | As above. 1.4 KB, 0.7 KB gz                      | As above                                                                                                                      |
 
 File naming: `br-<nn>-<description>.svg` uses the catalogue ID as the `<kind>-<nn>` part of the section 6
@@ -441,3 +445,4 @@ that is **NOT DECIDED**.
 | 2026-09-20 | AG-9 approved by the owner. BR-02 and BR-03 set to `approved` (not `wired`). The four SVGs were copied unchanged into `docs/brand/source/`. Paths, acceptance and checksums recorded (sections 14, 14.2, 14.3). B7 stays NOT DECIDED / flagged, clear space stays PROPOSED, the 16 px variant stays DEFERRED / NOT DECIDED |
 | 2026-09-20 | TK-01 to TK-04 set to `drafted` (Phase 3 foundation, awaiting review). No asset was approved or wired                                                                                                                                                                                                                      |
 | 2026-09-20 | Gate J2 annotated: AG-5 exercised by the owner's Phase 3 instruction, AG-3 and AG-4 open and undefined. Checkbox left unticked                                                                                                                                                                                             |
+| 2026-09-20 | BR-02 and BR-03 (primary files) set to `wired`: used by the Phase 4A header and footer. Reversed files unchanged                                                                                                                                                                                                           |

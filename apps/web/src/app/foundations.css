@@ -30,8 +30,10 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
       scroll-behavior: auto !important;
     }
   }
@@ -166,4 +168,33 @@
   & > * + * {
     border-left: var(--shape-stroke) solid var(--color-ink);
   }
+}
+
+/* Page container: the responsive gutter and maximum width shared by the header, sections and footer. */
+@utility page-shell {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @media (min-width: 48rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/*
+ * SVG strokes for illustration: the 1.5 px ink outline, kept at 1.5 px at any scale (the brand rule),
+ * and a 1 px hairline for connectors and leaders.
+ */
+@utility stroke-outline {
+  stroke: var(--color-ink);
+  stroke-width: var(--shape-stroke);
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+@utility stroke-hairline {
+  stroke: var(--color-ink);
+  stroke-width: var(--shape-hairline);
+  vector-effect: non-scaling-stroke;
 }

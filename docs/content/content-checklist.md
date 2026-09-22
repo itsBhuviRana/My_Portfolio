@@ -73,16 +73,16 @@ The current `Site` type has no field for them, and adding one needs its own appr
 
 ### 3.3 Contact
 
-| Item                   | Content field                  | Status                                                                                                             | Needed by |
-| ---------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------ | --------- |
-| Email to publish       | `socials` (`email`, `mailto:`) | **INPUT REQUIRED**                                                                                                 | Phase 4   |
-| GitHub                 | `socials` (`github`)           | Your GitHub username is **CONFIRMED** as `itsBhuviRana`. Whether this profile URL is published: **INPUT REQUIRED** | Phase 4   |
-| LinkedIn               | `socials` (`linkedin`)         | **INPUT REQUIRED**                                                                                                 | Phase 4   |
-| Résumé PDF             | Asset BR-06                    | **INPUT REQUIRED.** Your current file, with personal metadata stripped                                             | Phase 4   |
-| Other socials, website | `socials`                      | **OPTIONAL**                                                                                                       | Optional  |
-| Calendar link          | Not in the content model       | **OPTIONAL**                                                                                                       | Optional  |
-| Location and timezone  | `Site.location`                | **OPTIONAL**                                                                                                       | Optional  |
-| Availability           | `Site.availability`            | **OPTIONAL**                                                                                                       | Optional  |
+| Item                   | Content field                  | Status                                                                                          | Needed by |
+| ---------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------- | --------- |
+| Email to publish       | `socials` (`email`, `mailto:`) | **CONFIRMED (2026-09-20):** ranabhuvi98@gmail.com, supplied for publication                     | Provided  |
+| GitHub                 | `socials` (`github`)           | **CONFIRMED (2026-09-20):** https://github.com/itsBhuviRana, supplied for publication           | Provided  |
+| LinkedIn               | `socials` (`linkedin`)         | **CONFIRMED (2026-09-20):** https://www.linkedin.com/in/itsbhuvirana/, supplied for publication | Provided  |
+| Résumé PDF             | Asset BR-06                    | **INPUT REQUIRED.** Your current file, with personal metadata stripped                          | Phase 4   |
+| Other socials, website | `socials`                      | **OPTIONAL**                                                                                    | Optional  |
+| Calendar link          | Not in the content model       | **OPTIONAL**                                                                                    | Optional  |
+| Location and timezone  | `Site.location`                | **OPTIONAL**                                                                                    | Optional  |
+| Availability           | `Site.availability`            | **OPTIONAL**                                                                                    | Optional  |
 
 Links must be `https:` (or `mailto:` for email). No email or profile URL is invented.
 
@@ -90,21 +90,35 @@ Links must be `https:` (or `mailto:` for email). No email or profile URL is inve
 
 Repeat for each role you want shown.
 
-| Item                                               | Content field                   | Status                                                            | Needed by |
-| -------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------- | --------- |
-| Current role title                                 | `Experience.role`               | **CONFIRMED:** Application Module Development Lead                | Provided  |
-| Company                                            | `Experience.company`            | **INPUT REQUIRED.** Only an employer you are cleared to name      | Phase 4   |
-| Dates                                              | `Experience.period`             | **INPUT REQUIRED** (`YYYY-MM`)                                    | Phase 4   |
-| Summary                                            | `Experience.summary`            | **INPUT REQUIRED**                                                | Phase 4   |
-| Impact, with sources                               | `Experience.impact`             | **INPUT REQUIRED.** Only true statements you can source           | Phase 4   |
-| Leadership scope (team size, ownership, mentoring) | `Experience.leadership`         | **INPUT REQUIRED**                                                | Phase 4   |
-| Technologies used                                  | `Experience.stack`              | **INPUT REQUIRED.** Only what you actually used in that role      | Phase 4   |
-| Other roles to include                             | `experience`                    | **INPUT REQUIRED.** Which roles, if any                           | Phase 4   |
-| Employer clearance                                 | Recorded in the intake or notes | **INPUT REQUIRED.** Which employers and work you may name or show | Phase 4   |
+| Item                                               | Content field                            | Status                                                                                                                                                | Needed by |
+| -------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Current role title                                 | `Experience.role`                        | **CONFIRMED:** Application Module Development Lead                                                                                                    | Provided  |
+| Company                                            | `Experience.company`                     | **CONFIRMED (2026-09-20):** Telus Digital, supplied by the owner. Employer clearance is still the owner's to confirm                                  | Provided  |
+| Dates                                              | `Experience.period`                      | **CONFIRMED (2026-09-20):** started 24 November 2025 (stored as `2025-11`) and ongoing                                                                | Provided  |
+| Summary                                            | `Experience.summary`                     | **CONFIRMED (2026-09-20):** written only from the supplied Discastra facts. Wording to be approved by the owner                                       | Provided  |
+| Impact, with sources                               | `Experience.impact`                      | **INPUT REQUIRED.** No metric, outcome or impact was supplied, so the page shows "Project details coming soon."                                       | Phase 4   |
+| Leadership scope (team size, ownership, mentoring) | `Experience.leadership`                  | **INPUT REQUIRED.** Not supplied, so nothing is claimed about team size or ownership                                                                  |
+| Responsibilities                                   | `Experience.responsibilities`            | **CONFIRMED (2026-09-20):** six responsibilities, worded from what was supplied and no stronger                                                       | Provided  |
+| Technologies used                                  | `Experience.stack`, `Experience.project` | **CONFIRMED (2026-09-20):** the Discastra technologies, grouped by layer. They are technologies used in the project, not claims of personal ownership | Provided  |
+| Other roles to include                             | `experience`                             | **INPUT REQUIRED.** Which roles, if any                                                                                                               | Phase 4   |
+| Employer clearance                                 | Recorded in the intake or notes          | **INPUT REQUIRED.** Which employers and work you may name or show                                                                                     | Phase 4   |
 
 ### 3.5 Projects
 
-Use [project-intake.md](project-intake.md). Up to 5 projects, and fewer is fine. Nothing is supplied yet.
+Full case studies use [project-intake.md](project-intake.md). Up to 5 projects, and fewer is fine. None is
+supplied yet.
+
+**Project atlas (supplied 2026-09-21).** The owner supplied a career list of 28 projects, with company and
+platform for all of them, approximate years and confirmed facts for seven, and a separate list of
+cross-project capabilities. They live in `packages/content/src/data/atlas.ts` and `capabilities.ts` and are
+shown as a project atlas. Only supplied facts are recorded. Every project also has a one-to-two sentence summary (2026-09-22). Where product details are unknown it is a
+general engineering description from the confirmed work patterns, not a product description, and a domain that
+only the project name indicates is marked "from name". Still **INPUT REQUIRED** where the page is silent:
+product details for every project that has only a general summary, the BT-Ohana / HRMS product (the supplied
+description contradicted the name, so "Internal HRMS / business application" is only a cautious context), periods
+for the projects without years, and the full stack of every project except Discastra. Curetus App and Dr LaBike
+are left without a domain because their names do not clearly support one. "Candour Software" is the normalised
+name for Candoure, to be confirmed by the owner.
 
 ## 4. Optional or deferrable
 

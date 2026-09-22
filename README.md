@@ -8,12 +8,14 @@ product views, precise callouts, and a cartoon character as a recurring narrator
 
 ## Status
 
-**Phase 3: Design System + Visual Language (foundation).** Phase 1 (monorepo, tooling, typed content,
+**Phase 4A: Global Shell + Hero.** Phase 1 (monorepo, tooling, typed content,
 boundary enforcement, deployment) and Phase 2 (brand and assets, see `docs/brand/`) are complete. This
 repository now also has the approved Vellum & Layers tokens, a small typography scale (Archivo and
 JetBrains Mono), and a handful of CSS primitives (technical labels, rules, grids, layer surfaces, device
-and title-block styling). The visual portfolio itself (Hero and the main sections) is Phase 4. The text on
-the page today is temporary foundation content.
+and title-block styling). The site now has a real global shell (header, footer) and the first Hero, an
+exploded-view phone. The main sections (Layers, Work, Release notes, Engineering thinking, About, Contact),
+the character and all animation are still to come. The Work section shows the current role and the Discastra
+product profile, and the contact links are live.
 
 ## Repository structure
 
@@ -21,6 +23,7 @@ the page today is temporary foundation content.
 assembly/
 ├─ apps/
 │  └─ web/               Next.js (App Router), static export, Tailwind CSS v4. The website.
+│                        src/components/ (site shell, hero) and src/lib/nav.ts (navigation data).
 ├─ packages/
 │  ├─ content/           @assembly/content: typed portfolio data. Pure TypeScript.
 │  └─ tokens/            @assembly/tokens:  design tokens as data. Pure TypeScript.
@@ -147,6 +150,30 @@ All portfolio content lives in `packages/content/src/data/`. Components never ha
 5. Consume content through the selectors (`getPublishedProjects()`, `getProjectBySlug()`), never the raw
    `projects` array, so drafts cannot reach production.
 6. Run `pnpm check`.
+
+The current role is an `Experience` entry with no `period.end`. It can carry the product it is spent on
+(`project`: facts, architecture, sync flow, technologies grouped by layer) and the person's
+`responsibilities`, kept separate on purpose. Read them with `getCurrentExperience()` and
+`getPublishedExperience()`. Leave out anything that was not supplied: the tests reject invented dates,
+digits in the product facts, and claim words such as "led", "owned" or "architected".
+
+The Work section also shows a career atlas: `atlasProjects` (each has a tier of `featured`, `index` or
+`register`, a one-to-two sentence `summary`, an optional cautious `domain`, and otherwise only the fields that
+were confirmed) and `capabilityGroups` (cross-project capabilities, never attached to a project).
+`getAtlasSummary()` derives every count on the page. To add a project, add it to
+`packages/content/src/data/atlas.ts` with only what you know, and update the counts in the tests.
+
+The Featured Projects grid is a small interactive field: one project (whichever `Experience.project` links
+to, today Discastra) renders as a full-width anchor band, the rest as a quad beneath it. `<details name="...">`
+gives native, scriptless exclusive selection (opening one closes any other), `:has()` dims the rest of the
+field while one is open, and `AtlasField` (`components/work/atlas-field.tsx`) is the one small client
+component in the section: it uses `IntersectionObserver` to settle the field into place once scrolled into
+view, defaulting to fully visible so nothing breaks with JavaScript off.
+
+On the page, featured and non-featured entries open on demand with a native `<details>` disclosure: the
+closed state is the compact signal (name, context, domain, platform, primary technology for featured cards;
+name, years, domain, platform for register rows), and every confirmed fact still appears once opened. This
+needs no script and no dependency, and it is fully keyboard- and screen-reader-operable.
 
 Media is referenced by logical `id` and resolved to real files per platform later. No real assets exist
 in Phase 1.

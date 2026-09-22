@@ -1,11 +1,11 @@
-import { site } from "@assembly/content";
+import { Hero } from "../components/hero/hero";
+import { WorkSection } from "../components/work/work-section";
 
 export default function Page() {
   return (
-    <main className="p-6">
-      <h1>{site.name}</h1>
-      <p>{site.headline}</p>
-      <p>Foundation build. The portfolio is under construction.</p>
+    <main id="main">
+      <Hero />
+      <WorkSection />
     </main>
   );
 }

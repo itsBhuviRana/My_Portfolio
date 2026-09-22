@@ -6,8 +6,14 @@ describe("@assembly/content public API", () => {
     // Types are erased, so this lists values only. Adding an export here is a
     // deliberate API change: update this list in the same change.
     expect(Object.keys(api).sort()).toEqual([
+      "atlasProjects",
+      "capabilityGroups",
+      "careerRange",
       "experience",
+      "getAtlasSummary",
+      "getCurrentExperience",
       "getProjectBySlug",
+      "getPublishedExperience",
       "getPublishedProjects",
       "projects",
       "site",
