@@ -4,7 +4,9 @@ import type { ReactNode } from "react";
 import { site } from "@assembly/content";
 import { color } from "@assembly/tokens";
 import { LoadingIntro } from "../components/site/loading-intro";
+import { SectionStage } from "../components/site/section-stage";
 import { SiteFooter } from "../components/site/site-footer";
+import { SmoothScroll } from "../components/site/smooth-scroll";
 import "./globals.css";
 
 // Two families, Latin subset, self-hosted at build time (D9). The `variable` names are what the
@@ -39,6 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        <SmoothScroll />
         <LoadingIntro />
         <a
           href="#main"
@@ -47,7 +50,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <div className="flex-1">{children}</div>
-        <SiteFooter />
+        <SectionStage isLast tint="rose" number={7}>
+          <SiteFooter />
+        </SectionStage>
       </body>
     </html>
   );

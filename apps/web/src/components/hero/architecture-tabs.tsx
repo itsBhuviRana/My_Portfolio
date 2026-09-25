@@ -65,19 +65,29 @@ export function ArchitectureTabs() {
         })}
       </div>
 
-      {variant === "web" ? (
-        <div
-          aria-hidden="true"
-          className="flex items-center gap-2 border-x-[1.5px] border-t-[1.5px] border-ink bg-paper px-3 py-2"
-        >
-          <span className="size-2 shrink-0 rounded-full bg-accent" />
-          <span className="size-2 shrink-0 rounded-full bg-butter" />
-          <span className="size-2 shrink-0 rounded-full bg-mint" />
-          <span className="tech-label ml-2 truncate">assembly.dev/architecture</span>
-        </div>
-      ) : null}
+      {/*
+       * The illustration now spans the full width the Hero gives it (matching the tab bar above), but
+       * its height stays fixed at what it rendered at before this was fluid — otherwise the near-square
+       * illustration would simply grow taller along with the width, right back to spending far too much
+       * of the Hero on it. `aspectRatio: "auto"` overrides `ExplodedPhone`'s own default ratio-driven
+       * sizing so an explicit height can win instead; the SVG's own `preserveAspectRatio` (untouched)
+       * still draws the complete artwork centred within that wider, shorter box.
+       */}
+      <div className="h-[234px] w-full sm:h-[293px] lg:h-[381px]">
+        {variant === "web" ? (
+          <div
+            aria-hidden="true"
+            className="flex items-center gap-2 border-x-[1.5px] border-t-[1.5px] border-ink bg-paper px-3 py-2"
+          >
+            <span className="size-2 shrink-0 rounded-full bg-accent" />
+            <span className="size-2 shrink-0 rounded-full bg-butter" />
+            <span className="size-2 shrink-0 rounded-full bg-mint" />
+            <span className="tech-label ml-2 truncate">assembly.dev/architecture</span>
+          </div>
+        ) : null}
 
-      <ExplodedPhone />
+        <ExplodedPhone style={{ aspectRatio: "auto", height: "100%" }} />
+      </div>
     </div>
   );
 }

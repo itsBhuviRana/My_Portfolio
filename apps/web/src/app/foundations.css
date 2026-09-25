@@ -14,6 +14,18 @@
     background-color: var(--color-vellum);
     color: var(--color-ink);
     -webkit-text-size-adjust: 100%;
+    /*
+     * The scrollbar affordance is hidden everywhere; the scroll itself is untouched by this rule —
+     * wheel, touch, keyboard, and `#anchor` navigation all still move the real page exactly as
+     * before. Paired with `SmoothScroll` (smooth-scroll.tsx), which eases that same real scroll
+     * position rather than a virtual one, so the page reads as content gliding rather than stepping.
+     */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
   }
 
   body {

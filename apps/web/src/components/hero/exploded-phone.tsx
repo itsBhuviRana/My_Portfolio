@@ -367,7 +367,7 @@ const LABEL_EXTRA = CALLOUT_EXTRA + 40;
 /** A CSS custom property in an inline `style` object — React's own type just doesn't spell this out. */
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
-export function ExplodedPhone() {
+export function ExplodedPhone({ style }: { style?: CSSProperties } = {}) {
   const description =
     "Exploded view of a generic phone, taken apart into six layers from top to bottom: " +
     layerIds.join(", ") +
@@ -378,7 +378,7 @@ export function ExplodedPhone() {
       role="img"
       aria-label={description}
       className="hero-illustration hero-frame grid-iso relative w-full border border-rule bg-vellum"
-      style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}` }}
+      style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}`, ...style }}
     >
       <svg
         viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
