@@ -2,3 +2,4 @@
 @import "../generated/tokens.css";
 @import "./foundations.css";
 @import "../components/hero/hero-motion.css";
+@import "../components/site/loading-intro.css";

@@ -1,5 +1,5 @@
 import type { ComponentType, CSSProperties } from "react";
-import { layer, layerIds, shape } from "@assembly/tokens";
+import { layer, layerIds } from "@assembly/tokens";
 import type { LayerId } from "@assembly/tokens";
 
 /**
@@ -81,18 +81,60 @@ function Box({
   );
 }
 
-function Patch({ rect, z, className }: { rect: Rect; z: number; className: string }) {
-  return <polygon points={flat(rect, z)} className={className} />;
+function Patch({
+  rect,
+  z,
+  className,
+  style,
+}: {
+  rect: Rect;
+  z: number;
+  className: string;
+  style?: CSSProperties;
+}) {
+  return <polygon points={flat(rect, z)} className={className} style={style} />;
 }
 
-function Wire({ from, to, z }: { from: Point; to: Point; z: number }) {
+/** `flowDelay`, when set, marks this wire as carrying "live" signal (see `.hero-flow-line`). */
+function Wire({
+  from,
+  to,
+  z,
+  flowDelay,
+}: {
+  from: Point;
+  to: Point;
+  z: number;
+  flowDelay?: number;
+}) {
   const [x1, y1] = xy(from[0], from[1], z);
   const [x2, y2] = xy(to[0], to[1], z);
-  return <line x1={x1} y1={y1} x2={x2} y2={y2} className="stroke-outline" />;
+  return (
+    <line
+      x1={x1}
+      y1={y1}
+      x2={x2}
+      y2={y2}
+      className={flowDelay === undefined ? "stroke-outline" : "stroke-outline hero-flow-line"}
+      style={
+        flowDelay === undefined ? undefined : ({ "--hero-flow-delay": `${flowDelay}ms` } as Vars)
+      }
+    />
+  );
 }
 
 /** A wire with an open arrowhead at its end, drawn on the surface of a layer. */
-function Arrow({ from, to, z }: { from: Point; to: Point; z: number }) {
+function Arrow({
+  from,
+  to,
+  z,
+  flowDelay,
+}: {
+  from: Point;
+  to: Point;
+  z: number;
+  flowDelay?: number;
+}) {
   const [du, dv] = [to[0] - from[0], to[1] - from[1]];
   const length = Math.hypot(du, dv);
   const [ux, uy] = [du / length, dv / length];
@@ -104,7 +146,7 @@ function Arrow({ from, to, z }: { from: Point; to: Point; z: number }) {
   );
   return (
     <>
-      <Wire from={from} to={to} z={z} />
+      <Wire from={from} to={to} z={z} flowDelay={flowDelay} />
       <polygon points={head} className="fill-ink" />
     </>
   );
@@ -129,8 +171,14 @@ function InterfaceArt({ z }: { z: number }) {
       {blocks.map((rect, i) => (
         <Patch key={i} rect={rect} z={z} className={paper} />
       ))}
-      {[24, 60, 96].map((u) => (
-        <Patch key={u} rect={[u - 3, 234, u + 3, 240]} z={z} className="fill-ink" />
+      {[24, 60, 96].map((u, i) => (
+        <Patch
+          key={u}
+          rect={[u - 3, 234, u + 3, 240]}
+          z={z}
+          className="fill-ink hero-blink"
+          style={{ "--hero-blink-delay": `${i * 300}ms` } as Vars}
+        />
       ))}
     </>
   );
@@ -161,7 +209,12 @@ function ComponentsArt({ z }: { z: number }) {
           <g key={i}>
             <Patch rect={[56, v0, 112, v0 + 36]} z={z} className="fill-paper stroke-outline" />
             {tile.map(([u0, a, u1, b], j) => (
-              <Patch key={j} rect={[u0, v0 + a, u1, v0 + b]} z={z} className="fill-ink" />
+              <Patch
+                key={j}
+                rect={[u0, v0 + a, u1, v0 + b]}
+                z={z}
+                className={i === 5 ? "fill-ink hero-toggle" : "fill-ink"}
+              />
             ))}
           </g>
         );
@@ -191,7 +244,7 @@ function StateArt({ z }: { z: number }) {
         ];
         const start = inset(11);
         const end = inset(length - 11);
-        return <Arrow key={i} from={start} to={end} z={z} />;
+        return <Arrow key={i} from={start} to={end} z={z} flowDelay={i * 220} />;
       })}
       {nodes.map(([u, v]) => (
         <Patch
@@ -215,9 +268,9 @@ function NativeArt({ z }: { z: number }) {
   ];
   return (
     <>
-      <Wire from={[71, 32]} to={[102, 29]} z={z} />
-      <Wire from={[71, 32]} to={[79, 115]} z={z} />
-      <Wire from={[79, 115]} to={[91, 208]} z={z} />
+      <Wire from={[71, 32]} to={[102, 29]} z={z} flowDelay={0} />
+      <Wire from={[71, 32]} to={[79, 115]} z={z} flowDelay={260} />
+      <Wire from={[79, 115]} to={[91, 208]} z={z} flowDelay={520} />
       {modules.map(({ rect, h }) => (
         <Box key={rect.join()} rect={rect} z={z} h={h} top="fill-paper" side="fill-vellum" />
       ))}
@@ -234,8 +287,14 @@ function DeliveryArt({ z }: { z: number }) {
   return (
     <>
       <Patch rect={[60, 12, 108, 236]} z={z} className="fill-none stroke-hairline" />
-      {ports.map((rect) => (
-        <Patch key={rect.join()} rect={rect} z={z} className="fill-paper stroke-outline" />
+      {ports.map((rect, i) => (
+        <Patch
+          key={rect.join()}
+          rect={rect}
+          z={z}
+          className="fill-paper stroke-outline hero-port-blink"
+          style={{ "--hero-port-delay": `${i * 400}ms` } as Vars}
+        />
       ))}
     </>
   );
@@ -304,8 +363,6 @@ const CONNECTOR_EXTRA = 300;
 const CALLOUT_EXTRA = 420;
 const PIN_EXTRA = CALLOUT_EXTRA + 20;
 const LABEL_EXTRA = CALLOUT_EXTRA + 40;
-/** The bottom-left caption is the last thing in the illustration to resolve, once every callout has. */
-const CAPTION_DELAY = ENTRY.leadership.delayMs + CALLOUT_EXTRA + 120;
 
 /** A CSS custom property in an inline `style` object — React's own type just doesn't spell this out. */
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -465,14 +522,6 @@ export function ExplodedPhone() {
           );
         })}
       </ul>
-
-      <p
-        style={{ "--hero-delay": `${CAPTION_DELAY}ms` } as Vars}
-        className="hero-caption tech-label absolute bottom-2 left-3 hidden sm:block"
-        aria-hidden="true"
-      >
-        Generic screen · {shape.device.screen.width} × {shape.device.screen.height}
-      </p>
     </div>
   );
 }

@@ -45,6 +45,72 @@ export function TechChips({ items }: { items: readonly string[] }) {
 }
 
 /**
+ * Short monograms for the fast-scan tech/company badges below. Curated by hand for legibility (an
+ * auto-derived initialism reads worse for "React Native CLI" than a chosen "CLI" does) with a safe
+ * fallback so an unlisted name still renders something reasonable instead of breaking.
+ */
+const MONOGRAMS: Record<string, string> = {
+  "React Native": "RN",
+  "React Native CLI": "CLI",
+  Expo: "EX",
+  "React.js": "R",
+  "Next.js": "N",
+  "Vue.js": "V",
+  "Node.js": "JS",
+  "Telus Digital": "TD",
+  PwC: "PwC",
+  BugendaiTech: "BT",
+  "Candour Software": "CS",
+  Sisgain: "SG",
+};
+
+function monogramFor(name: string): string {
+  return (
+    MONOGRAMS[name] ??
+    name
+      .replace(/[^A-Za-z0-9]/g, "")
+      .slice(0, 2)
+      .toUpperCase()
+  );
+}
+
+/**
+ * The same six layer fills used for the Hero/Atlas colour system, cycled by position — not because these
+ * items *are* layers, just reusing the one palette the site already has rather than inventing a second.
+ * The text colour pairs with each fill exactly as the Hero's own `layer` tokens do (`cobalt` is the one
+ * fill that needs paper text; the rest read on ink).
+ */
+const BADGE_FILL = [
+  { bg: "bg-cobalt", text: "text-paper" },
+  { bg: "bg-mint", text: "text-ink" },
+  { bg: "bg-butter", text: "text-ink" },
+  { bg: "bg-signal", text: "text-ink" },
+  { bg: "bg-lilac", text: "text-ink" },
+  { bg: "bg-rose", text: "text-ink" },
+] as const;
+
+/**
+ * A fast-scan credibility badge: a filled monogram square (colour cycling through the site's existing
+ * palette, so a row of these reads at a glance the way the Hero's numbered layers do) plus the full name,
+ * never colour alone. Used for the career stack and the companies worked with — real, confirmed names
+ * only, never invented ones.
+ */
+export function StackBadge({ name, index }: { name: string; index: number }) {
+  const fill = BADGE_FILL[index % BADGE_FILL.length]!;
+  return (
+    <span className="inline-flex items-center gap-2 border-[1.5px] border-ink bg-paper py-1 pr-3 pl-1">
+      <span
+        aria-hidden="true"
+        className={`type-label flex h-6 min-w-6 shrink-0 items-center justify-center rounded-sm px-1 ${fill.bg} ${fill.text}`}
+      >
+        {monogramFor(name)}
+      </span>
+      <span className="type-label [overflow-wrap:anywhere]">{name}</span>
+    </span>
+  );
+}
+
+/**
  * A project's domain, as a small chip. Solid ink border when the domain is confirmed by the product
  * itself; dashed when it is indicated only by the project name (never a stated fact).
  */

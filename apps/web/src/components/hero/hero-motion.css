@@ -104,13 +104,133 @@
   }
 }
 
+/*
+ * A single printed character: a small stamp-in (settles from a touch below, slightly squashed), not a
+ * fade — this is what reads as "printing" rather than "appearing" once a whole word's letters play in
+ * sequence via each span's own `--hero-delay` (see `PrintChars` in hero.tsx). Fast per letter (160ms) so
+ * a whole word still resolves quickly, but each letter's own arrival stays visible.
+ */
+@keyframes hero-print {
+  0% {
+    opacity: 0;
+    translate: 0 2px;
+    scale: 1 0.85;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1 1;
+  }
+}
+
+.hero-print-char {
+  display: inline-block;
+  animation: hero-print 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/*
+ * A continuous float once a layer has settled — the illustration's resting "alive" state rather than a
+ * one-shot entrance, and now the illustration's primary sign of life (the Hero no longer pins the
+ * layers apart on scroll, so nothing else is fighting this for the `translate` property). 6px and slow
+ * (3.2s) so it still reads as the object quietly holding in space, not bouncing. Every layer uses the
+ * same keyframes, but each starts its own cycle at a different moment (`animation-delay` below), because
+ * the entrance already staggers `--hero-delay` per layer — reusing that stagger means the layers drift
+ * very slightly out of phase with each other without any extra per-layer tuning, which reads as six
+ * independent objects rather than one block moving in lockstep.
+ */
+@keyframes hero-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+/*
+ * Internal artwork movement — small, layer-specific "the software is alive" details, distinct from the
+ * whole-layer `hero-bob` above: data flows along the state graph's edges, a native wire carries signal,
+ * a component's toggle flips, a delivery port blinks like it's receiving. These only ever touch
+ * `opacity`/`stroke-dashoffset`, never `translate`/`scale`/`filter`, so they never fight `hero-bob` —
+ * they keep running on every breakpoint and JS state.
+ */
+@keyframes hero-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.hero-flow-line {
+  stroke-dasharray: 5 5;
+  animation: hero-flow 1.6s linear infinite;
+  animation-delay: var(--hero-flow-delay, 0ms);
+}
+
+@keyframes hero-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.hero-blink {
+  animation: hero-blink 1.8s ease-in-out infinite;
+  animation-delay: var(--hero-blink-delay, 0ms);
+}
+
+/* A toggle flipping: mostly on, a brief dip, back on — never a smooth fade, so it reads as a switch. */
+@keyframes hero-toggle {
+  0%,
+  40% {
+    opacity: 1;
+  }
+  50%,
+  90% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.hero-toggle {
+  animation: hero-toggle 3.6s ease-in-out infinite;
+}
+
+@keyframes hero-port-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.hero-port-blink {
+  animation: hero-port-blink 2.2s ease-in-out infinite;
+  animation-delay: var(--hero-port-delay, 0ms);
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Illustration                                                                                      */
 /* ---------------------------------------------------------------------------------------------- */
 
 .hero-illustration [data-layer] {
-  animation: hero-settle 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--hero-delay, 0ms);
+  animation-name: hero-settle, hero-bob;
+  animation-duration: 520ms, 3200ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1), ease-in-out;
+  animation-delay: var(--hero-delay, 0ms), calc(var(--hero-delay, 0ms) + 520ms);
+  animation-fill-mode: both, none;
+  animation-iteration-count: 1, infinite;
 }
 
 .hero-illustration [data-connector] {
@@ -142,11 +262,6 @@
   transform-origin: center;
 }
 
-.hero-illustration .hero-caption {
-  animation: hero-fade 260ms ease-out both;
-  animation-delay: var(--hero-delay, 0ms);
-}
-
 .hero-illustration.hero-frame {
   animation: hero-fade 200ms ease-out both;
 }
@@ -171,6 +286,84 @@
 
 .hero-chrome {
   animation: hero-fade 200ms ease-out both;
+}
+
+/*
+ * The two CTA buttons' own resting "alive" state — soft, slow, never touching the label's own opacity so
+ * the text stays fully legible throughout. The accent button pulses its fill toward the page background;
+ * the outline button pulses its border toward the same background — same technique, mirrored, so the two
+ * buttons read as a matched pair rather than two unrelated effects.
+ */
+@keyframes hero-btn-fill-pulse {
+  0%,
+  100% {
+    background-color: var(--color-accent);
+  }
+  50% {
+    background-color: color-mix(in srgb, var(--color-accent) 65%, var(--color-paper));
+  }
+}
+
+.hero-btn-fill-pulse {
+  animation: hero-btn-fill-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes hero-btn-border-pulse {
+  0%,
+  100% {
+    border-color: var(--color-ink);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--color-ink) 30%, var(--color-paper));
+  }
+}
+
+.hero-btn-border-pulse {
+  animation: hero-btn-border-pulse 2.4s ease-in-out infinite;
+}
+
+/*
+ * The title-block's own border, cycling through the site's existing layer palette instead of the plain
+ * ink rule every other title-block uses — this one instance only, not the utility itself. Two background
+ * layers, the standard technique for an animated gradient border: a solid paper fill clipped to the
+ * padding box sits on top of a wider gradient clipped to the border box, and only the strip of gradient
+ * showing *outside* the padding box (the border itself) ever reads as colour. `background-position`
+ * sliding the gradient layer is what "moves"; nothing here touches layout, so it costs the browser
+ * almost nothing to keep running. `border-color: transparent` is what lets the border-box gradient
+ * show through in the first place — the utility's own ink border is overridden here, not removed
+ * elsewhere.
+ */
+.hero-border-flow {
+  border-color: transparent;
+  background-image:
+    linear-gradient(var(--color-paper), var(--color-paper)),
+    linear-gradient(
+      90deg,
+      var(--color-cobalt),
+      var(--color-mint),
+      var(--color-butter),
+      var(--color-signal),
+      var(--color-lilac),
+      var(--color-rose),
+      var(--color-cobalt)
+    );
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  background-size:
+    100% 100%,
+    300% 100%;
+  background-position:
+    0 0,
+    0 0;
+  animation: hero-border-flow 9s linear infinite;
+}
+
+@keyframes hero-border-flow {
+  to {
+    background-position:
+      0 0,
+      300% 0;
+  }
 }
 
 /* Mobile: the same relationships, smaller spatial separation (the illustration's own SVG-space offsets

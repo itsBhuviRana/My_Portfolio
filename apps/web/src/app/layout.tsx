@@ -3,8 +3,8 @@ import { Archivo, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { site } from "@assembly/content";
 import { color } from "@assembly/tokens";
+import { LoadingIntro } from "../components/site/loading-intro";
 import { SiteFooter } from "../components/site/site-footer";
-import { SiteHeader } from "../components/site/site-header";
 import "./globals.css";
 
 // Two families, Latin subset, self-hosted at build time (D9). The `variable` names are what the
@@ -39,13 +39,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        <LoadingIntro />
         <a
           href="#main"
           className="type-small sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-paper focus:px-4 focus:py-2"
         >
           Skip to content
         </a>
-        <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
       </body>

@@ -1,6 +1,6 @@
 import { careerRange, getAtlasSummary } from "@assembly/content";
 import { SheetStrip } from "./sheet-strip";
-import { DomainTag, TechChips } from "./atlas-parts";
+import { DomainTag, StackBadge } from "./atlas-parts";
 
 const SECTION_LINKS = [
   ["featured", "Featured"],
@@ -84,10 +84,33 @@ export function AtlasOverview() {
         />
       </dl>
 
-      <div className="mt-8 grid gap-3 lg:grid-cols-12 lg:items-baseline lg:gap-10">
+      {summary.companies.some((company) => !company.freelance) ? (
+        <div className="mt-8 grid gap-3 lg:grid-cols-12 lg:items-baseline lg:gap-10">
+          <p className="tech-label m-0 lg:col-span-2">Worked with</p>
+          <div className="lg:col-span-10">
+            <ul className="m-0 flex list-none flex-wrap gap-3 p-0">
+              {summary.companies
+                .filter((company) => !company.freelance)
+                .map((company, index) => (
+                  <li key={company.name}>
+                    <StackBadge name={company.name} index={index} />
+                  </li>
+                ))}
+            </ul>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-12 lg:items-baseline lg:gap-10">
         <p className="tech-label m-0 lg:col-span-2">Range</p>
         <div className="lg:col-span-10">
-          <TechChips items={careerRange} />
+          <ul className="m-0 flex list-none flex-wrap gap-3 p-0">
+            {careerRange.map((item, index) => (
+              <li key={item}>
+                <StackBadge name={item} index={index} />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
