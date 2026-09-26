@@ -1,0 +1,175 @@
+/*
+ * Cursor glow (cursor-glow.tsx): a glass orb with white light drifting inside it, behind the content.
+ * The track is moved by JS; the orb inside is centred on it, fades in only once the pointer has moved,
+ * and its three inner lights orbit at different speeds so the glow never looks like a static disc.
+ */
+
+@keyframes cursor-glow-orbit {
+  from {
+    rotate: var(--start, 0deg);
+  }
+  to {
+    rotate: calc(var(--start, 0deg) + 360deg);
+  }
+}
+
+.cursor-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cursor-glow-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+/*
+ * The torch. `.torch-source` is a soft light pooled on the top edge of the window (the lamp itself is
+ * off-screen); `.torch-beam` is a 1000px-tall cone, wide end down, whose track is rotated and stretched
+ * each frame (see the tsx) so its wide end always lands on the orb. Softness comes from a blur, not hard
+ * edges, and brightness stays low and constant along the beam so text behind it stays readable.
+ */
+.torch-source {
+  position: absolute;
+  top: -70px;
+  left: -260px;
+  width: 520px;
+  height: 140px;
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-ink) 16%, transparent),
+    transparent
+  );
+}
+
+.torch-beam {
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 300px;
+  height: 1000px;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ink) 13%, transparent),
+    color-mix(in srgb, var(--color-ink) 8%, transparent) 55%,
+    transparent 100%
+  );
+  filter: blur(26px);
+}
+
+.cursor-glow[data-on] .torch-source,
+.cursor-glow[data-on] .torch-beam {
+  opacity: 1;
+}
+
+.cursor-glow-orb {
+  --orb-size: 210px;
+  position: absolute;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  margin: calc(var(--orb-size) / -2) 0 0 calc(var(--orb-size) / -2);
+  border-radius: 999px;
+  overflow: hidden;
+  opacity: 0;
+  scale: 0.85;
+  transition:
+    opacity 500ms ease,
+    scale 500ms ease;
+  background: radial-gradient(
+    circle at 32% 28%,
+    color-mix(in srgb, var(--color-ink) 8%, transparent),
+    color-mix(in srgb, var(--color-ink) 4%, transparent) 55%,
+    transparent 78%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+  box-shadow:
+    0 0 80px 16px color-mix(in srgb, var(--color-ink) 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-ink) 26%, transparent),
+    inset 0 -12px 28px color-mix(in srgb, var(--color-ink) 5%, transparent);
+}
+
+.cursor-glow[data-on] .cursor-glow-orb {
+  opacity: 1;
+  scale: 1;
+}
+
+/*
+ * The trailing light: a wide, very soft radial wash with no edge at all. It is a separate element on its
+ * own, slower-eased track (see the tsx), so it lags behind the orb and catches up when the pointer stops.
+ */
+.cursor-glow-halo {
+  --halo-size: 620px;
+  position: absolute;
+  width: var(--halo-size);
+  height: var(--halo-size);
+  margin: calc(var(--halo-size) / -2) 0 0 calc(var(--halo-size) / -2);
+  border-radius: 999px;
+  opacity: 0;
+  scale: 0.8;
+  transition:
+    opacity 900ms ease,
+    scale 900ms ease;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-ink) 9%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink) 4%, transparent) 38%,
+    transparent 68%
+  );
+}
+
+.cursor-glow[data-on] .cursor-glow-halo {
+  opacity: 1;
+  scale: 1;
+}
+
+.cursor-glow-light {
+  position: absolute;
+  inset: 0;
+  animation: cursor-glow-orbit var(--spin, 14s) linear infinite;
+}
+
+.cursor-glow-light::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: 42%;
+  height: 42%;
+  translate: -50% 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  filter: blur(30px);
+}
+
+.cursor-glow-light-a {
+  --spin: 13s;
+}
+
+.cursor-glow-light-b {
+  --spin: 21s;
+  animation-direction: reverse;
+  scale: 0.8;
+}
+
+.cursor-glow-light-c {
+  --spin: 33s;
+  --start: 120deg;
+  scale: 1.1;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
+}

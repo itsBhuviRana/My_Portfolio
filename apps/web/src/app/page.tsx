@@ -5,7 +5,7 @@ import { WorkSection } from "../components/work/work-section";
 export default function Page() {
   return (
     <main id="main">
-      <SectionStage isFirst number={1}>
+      <SectionStage isFirst>
         <Hero />
       </SectionStage>
       <WorkSection />

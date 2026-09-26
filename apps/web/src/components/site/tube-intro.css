@@ -1,0 +1,392 @@
+/*
+ * The tube-light intro (tube-intro.tsx). `html[data-intro]` is set by an inline head script before first
+ * paint; without it the overlay is `display: none`, so no-JS, reduced-motion and repeat visits get the
+ * page directly.
+ *
+ * Layers, back to front: the black page colour (the overlay's own background), `.tube-room` (the white,
+ * blown-out room, brightest at the bottom where the tube is), the tube fixture, and the copy + switch.
+ *
+ * On load the fixture rises in from below the screen edge and the copy fades in after it.
+ * Turning off (`.tube-intro--off`) is one slow, staged sequence on a single clock:
+ *   0-450ms     the rocker flips to OFF, the label and status text switch
+ *   200-2600    the tube dims: two soft dips, then a long fade (small area only, ~2 flashes a second at most)
+ *   1600-5000   the white light drifts UP and out of the screen: a soft-edged mask lifts from the bottom
+ *               (the tube's end) toward the top, so darkness follows the light upward
+ *   2000-2900   copy and switch fade out (the OFF switch stays readable for ~1.5s first), before the
+ *               wipe reaches them
+ *   3400        the page's own animations are released (see the tsx)
+ *   4800-5500   the overlay itself fades away; it is removed at 5800
+ * The white values are `white`/`black` keywords mixed with the warm `ink` token, not new palette colours.
+ */
+
+@property --lift {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 135%;
+}
+
+.tube-intro {
+  --white: white;
+  --room-mid: color-mix(in srgb, var(--color-ink) 22%, white);
+  --room-low: color-mix(in srgb, var(--color-ink) 62%, white);
+  --housing: color-mix(in srgb, var(--color-ink) 74%, black);
+  --housing-edge: color-mix(in srgb, var(--color-ink) 48%, black);
+  --tube-off: color-mix(in srgb, var(--color-ink) 80%, black);
+  --copy: var(--color-vellum);
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  overflow: hidden;
+  background: var(--color-vellum);
+  color: var(--copy);
+  opacity: 1;
+  transition: opacity 700ms ease-in-out 4800ms;
+}
+
+html[data-intro] .tube-intro {
+  display: block;
+}
+
+html[data-intro="on"] {
+  overflow: hidden;
+}
+
+/* Hold every animation in the page until the light is out, so the Hero prints in on reveal, not underneath. */
+html[data-intro="on"] main *,
+html[data-intro="on"] main *::before,
+html[data-intro="on"] main *::after {
+  animation-play-state: paused !important;
+}
+
+.tube-intro--off {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+ * The room. Fully white at first paint (nothing of the site may show), lit from the bottom. Off: a
+ * soft-edged mask lifts from the bottom toward the top (`--lift` 135% -> 0%), so the white leaves
+ * upward and the dark comes up behind it. The opacity fade is only a fallback for engines that can't
+ * animate the registered `--lift` property; it starts late enough not to be seen otherwise.
+ */
+.tube-room {
+  position: absolute;
+  inset: 0;
+  --lift: 135%;
+  background: radial-gradient(
+    130% 100% at 50% 100%,
+    var(--white) 0%,
+    var(--white) 30%,
+    var(--room-mid) 72%,
+    var(--room-low) 100%
+  );
+  mask-image: linear-gradient(to bottom, black calc(var(--lift) - 34%), transparent var(--lift));
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black calc(var(--lift) - 34%),
+    transparent var(--lift)
+  );
+  transition:
+    --lift 3400ms cubic-bezier(0.45, 0.05, 0.35, 1) 1600ms,
+    opacity 800ms ease 4700ms;
+}
+
+.tube-intro--off .tube-room {
+  --lift: 0%;
+  opacity: 0;
+}
+
+/* The fixture sits on the bottom edge and rises into place on load. */
+@keyframes tube-rise {
+  from {
+    translate: 0 160%;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+.tube-fixture {
+  --fixture-width: min(82vw, 720px);
+  position: absolute;
+  bottom: max(env(safe-area-inset-bottom), clamp(0.75rem, 3.5vh, 2rem));
+  left: 50%;
+  width: var(--fixture-width);
+  margin-left: calc(var(--fixture-width) / -2);
+  animation: tube-rise 1500ms cubic-bezier(0.2, 0.8, 0.2, 1) 150ms both;
+}
+
+.tube-intro--off .tube-fixture {
+  animation: none;
+  opacity: 0.35;
+  transition: opacity 2200ms ease 400ms;
+}
+
+.tube-housing {
+  position: relative;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: linear-gradient(to bottom, var(--housing), var(--housing-edge));
+  box-shadow:
+    0 -6px 18px -6px color-mix(in srgb, black 35%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 70%, transparent);
+}
+
+.tube-body {
+  position: relative;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--tube-off);
+  transition: background-color 2000ms ease 400ms;
+}
+
+.tube-intro--off .tube-body {
+  background: color-mix(in srgb, var(--color-ink) 30%, black);
+}
+
+/* The lit tube: solid white with a wide upward bloom. This is the only thing that flickers. */
+.tube-lit {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--white);
+  opacity: 1;
+  box-shadow:
+    0 -4px 14px 4px var(--white),
+    0 -20px 60px 28px color-mix(in srgb, white 90%, transparent),
+    0 -60px 160px 80px color-mix(in srgb, white 70%, transparent);
+  animation: tube-ignite 1600ms ease-out 900ms both;
+}
+
+@keyframes tube-ignite {
+  from {
+    opacity: 0.55;
+    scale: 0.97 1;
+  }
+  to {
+    opacity: 1;
+    scale: 1 1;
+  }
+}
+
+@keyframes tube-flicker {
+  0% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  20% {
+    opacity: 1;
+  }
+  34% {
+    opacity: 0.4;
+  }
+  46% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.tube-intro--off .tube-lit {
+  animation: tube-flicker 2400ms ease-in-out 200ms both;
+}
+
+/* Copy and the switch. */
+@keyframes tube-ui-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+.tube-ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem 7rem;
+  text-align: center;
+  animation: tube-ui-in 900ms ease 700ms backwards;
+  transition: opacity 900ms ease 2000ms;
+}
+
+.tube-intro--off .tube-ui {
+  opacity: 0;
+}
+
+.tube-title {
+  max-width: 22ch;
+  font-size: clamp(1.4rem, 3.6vw, 2.4rem);
+  line-height: 1.15;
+  text-wrap: balance;
+  color: var(--copy);
+}
+
+.tube-switch {
+  border-radius: 20px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tube-switch:focus-visible {
+  outline: 3px solid var(--color-vellum);
+  outline-offset: 6px;
+  box-shadow: none;
+}
+
+.tube-plate {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 168px;
+  border-radius: 20px;
+  background: linear-gradient(
+    to bottom right,
+    color-mix(in srgb, var(--color-ink) 30%, white),
+    color-mix(in srgb, var(--color-ink) 78%, white)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-ink) 60%, black);
+  box-shadow:
+    0 16px 30px -12px color-mix(in srgb, black 45%, transparent),
+    inset 0 1px 0 var(--white);
+  perspective: 300px;
+}
+
+/*
+ * The rocker is unmistakable in both states: it tips hard toward the pressed end (ON = top pressed,
+ * OFF = bottom pressed), and its face turns from light to dark when off.
+ */
+.tube-rocker {
+  width: 54px;
+  height: 92px;
+  border-radius: 12px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ink) 40%, white),
+    color-mix(in srgb, var(--color-ink) 92%, black)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-ink) 55%, black);
+  box-shadow:
+    0 10px 16px -6px color-mix(in srgb, black 55%, transparent),
+    inset 0 1px 0 var(--white);
+  transform: rotateX(-30deg);
+  transition:
+    transform 450ms cubic-bezier(0.3, 1.5, 0.5, 1),
+    background 450ms ease,
+    box-shadow 450ms ease;
+}
+
+.tube-intro--off .tube-rocker {
+  transform: rotateX(30deg);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-ink) 35%, black),
+    color-mix(in srgb, var(--color-ink) 58%, black)
+  );
+  box-shadow:
+    0 -10px 16px -6px color-mix(in srgb, black 55%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, white 30%, transparent);
+}
+
+.tube-mark {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-ink) 45%, black);
+  opacity: 0.55;
+  transition:
+    background-color 450ms ease,
+    color 450ms ease,
+    opacity 450ms ease;
+}
+
+.tube-mark-on {
+  top: 8px;
+}
+
+.tube-mark-off {
+  bottom: 8px;
+}
+
+/* The active end is a filled dark pill: readable at a glance without relying on the rocker alone. */
+.tube-mark-on,
+.tube-intro--off .tube-mark-off {
+  background: var(--color-vellum);
+  color: var(--white);
+  opacity: 1;
+}
+
+.tube-intro--off .tube-mark-on {
+  background: transparent;
+  color: color-mix(in srgb, var(--color-ink) 45%, black);
+  opacity: 0.55;
+}
+
+.tube-status {
+  color: color-mix(in srgb, var(--color-vellum) 78%, white);
+}
+
+.tube-status-value {
+  font-weight: 700;
+  color: var(--color-vellum);
+}
+
+@keyframes tube-hint-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tube-nudge {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.05;
+  }
+}
+
+/* A patient nudge: nothing for a few seconds, then a soft pulse and a one-line hint. */
+.tube-hint {
+  color: color-mix(in srgb, var(--color-vellum) 70%, white);
+  opacity: 0;
+  animation: tube-hint-in 700ms ease 4s forwards;
+}
+
+.tube-switch .tube-plate {
+  animation: tube-nudge 2.2s ease-in-out 4s infinite;
+}
+
+.tube-intro--off .tube-plate {
+  animation: none;
+}
+
+@media (max-width: 480px) {
+  .tube-ui {
+    gap: 1.25rem;
+    padding-bottom: 6rem;
+  }
+}

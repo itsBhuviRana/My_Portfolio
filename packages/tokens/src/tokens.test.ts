@@ -78,19 +78,19 @@ describe("color", () => {
 
   it("is exactly the approved Vellum & Layers palette", () => {
     expect(color).toEqual({
-      vellum: "#ede8da",
-      paper: "#f8f4e9",
-      ink: "#1a1916",
-      inkSoft: "#55514a",
-      line: "#7d7666",
-      rule: "#b8b19f",
-      accent: "#bf351b",
-      cobalt: "#2b47e8",
-      mint: "#8bd8b6",
-      butter: "#f2cb4a",
-      signal: "#f2583a",
-      lilac: "#b7a4f2",
-      rose: "#f4a3be",
+      vellum: "#0a0a09",
+      paper: "#211f16",
+      ink: "#f2efe6",
+      inkSoft: "#a39c8c",
+      line: "#8a8370",
+      rule: "#2b2820",
+      accent: "#f5f2ea",
+      cobalt: "#d6d6d6",
+      mint: "#2a2a2a",
+      butter: "#363636",
+      signal: "#434343",
+      lilac: "#4f4f4f",
+      rose: "#5c5c5c",
     });
   });
 
@@ -111,10 +111,10 @@ describe("color", () => {
   });
 
   it("matches the contrast figures recorded in the brand guide", () => {
-    expect(contrast("ink", "vellum")).toBeCloseTo(14.36, 1);
-    expect(contrast("ink", "paper")).toBeCloseTo(16.0, 1);
-    expect(contrast("paper", "cobalt")).toBeCloseTo(6.03, 1);
-    expect(contrast("ink", "cobalt")).toBeCloseTo(2.65, 1);
+    expect(contrast("ink", "vellum")).toBeCloseTo(17.23, 1);
+    expect(contrast("ink", "paper")).toBeCloseTo(14.36, 1);
+    expect(contrast("paper", "cobalt")).toBeCloseTo(11.36, 1);
+    expect(contrast("ink", "cobalt")).toBeCloseTo(1.26, 1);
   });
 });
 

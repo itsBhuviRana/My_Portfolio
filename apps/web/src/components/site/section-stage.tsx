@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { cloneElement, useEffect, useRef, useState } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 /** How far the outgoing section keeps travelling upward, in %, on top of its own shrink. */
 const EXIT_TRAVEL = 15;
@@ -47,15 +47,20 @@ export function SectionStage({
   isFirst,
   isLast,
   tint,
-  number,
+  sketch,
 }: {
   children: ReactNode;
   isFirst?: boolean;
   isLast?: boolean;
   /** This section's own identity colour — see `Tint` above. Omit for no background tint at all. */
   tint?: Tint;
-  /** This section's number in the 7-sheet sequence, drawn as a large outline watermark. Omit for none. */
-  number?: number;
+  /**
+   * This section's corner line-figure (see `sketch-figures.tsx`), as an already-rendered element —
+   * `<SketchIntro />`, not the component itself. A component reference is a function, and functions
+   * can't cross from the server components that call `SectionStage` into this client component; a
+   * rendered element is just data, so it can.
+   */
+  sketch?: ReactElement<{ className?: string }>;
 }) {
   const spacerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -138,7 +143,7 @@ export function SectionStage({
       // the colour never competes with the section's own content while it's actually being read.
       if (tint) {
         const tintStrength = Math.max(1 - entryProgress, exitProgress);
-        frame.style.backgroundColor = `color-mix(in srgb, var(--color-${tint}) ${tintStrength * MAX_TINT}%, var(--color-vellum))`;
+        frame.style.backgroundColor = `color-mix(in srgb, var(--color-${tint}) ${tintStrength * MAX_TINT}%, transparent)`;
       }
     };
 
@@ -185,22 +190,12 @@ export function SectionStage({
   return (
     <div ref={spacerRef} className="relative">
       <div ref={frameRef} className="sticky top-0 h-screen overflow-hidden">
-        {number !== undefined ? (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-4 -top-4 select-none text-[26rem] font-black leading-none sm:-right-8 sm:-top-10"
-            style={
-              tint
-                ? {
-                    color: "transparent",
-                    WebkitTextStroke: `1.5px color-mix(in srgb, var(--color-${tint}) 45%, var(--color-rule))`,
-                  }
-                : { color: "transparent", WebkitTextStroke: "1.5px var(--color-rule)" }
-            }
-          >
-            {number}
-          </span>
-        ) : null}
+        {sketch
+          ? cloneElement(sketch, {
+              className:
+                "pointer-events-none absolute -right-6 -top-6 size-64 select-none text-line opacity-70 sm:size-80 lg:-right-10 lg:-top-10 lg:size-96",
+            })
+          : null}
         <div ref={contentRef} className="relative">
           {children}
         </div>

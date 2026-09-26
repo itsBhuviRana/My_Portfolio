@@ -1,4 +1,11 @@
 import { SectionStage } from "../site/section-stage";
+import {
+  SketchAtlas,
+  SketchCapabilities,
+  SketchFeatured,
+  SketchInspect,
+  SketchRegister,
+} from "../site/sketch-figures";
 import { AtlasOverview } from "./atlas-overview";
 import { CapabilityMatrix } from "./capability-matrix";
 import { ContactPrompt } from "./contact-prompt";
@@ -19,20 +26,20 @@ import { ProjectRegister } from "./project-register";
 export function WorkSection() {
   return (
     <>
-      <SectionStage tint="cobalt" number={2}>
+      <SectionStage tint="cobalt" sketch={<SketchAtlas />}>
         <AtlasOverview />
       </SectionStage>
-      <SectionStage tint="mint" number={3}>
+      <SectionStage tint="mint" sketch={<SketchFeatured />}>
         <FeaturedProjects />
       </SectionStage>
-      <SectionStage tint="butter" number={4}>
+      <SectionStage tint="butter" sketch={<SketchInspect />}>
         <CurrentProject />
       </SectionStage>
       <ContactPrompt />
-      <SectionStage tint="signal" number={5}>
+      <SectionStage tint="signal" sketch={<SketchRegister />}>
         <ProjectRegister />
       </SectionStage>
-      <SectionStage tint="lilac" number={6}>
+      <SectionStage tint="lilac" sketch={<SketchCapabilities />}>
         <CapabilityMatrix />
       </SectionStage>
     </>

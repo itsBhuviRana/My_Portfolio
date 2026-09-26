@@ -13,8 +13,8 @@ function CapabilityCard({
   index: number;
 }) {
   return (
-    <li className="flex flex-col border-[1.5px] border-ink bg-paper transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-cut-sm">
-      <h3 className="type-label m-0 flex min-h-11 items-center gap-3 border-b-[1.5px] border-ink bg-vellum px-3">
+    <li className="glass flex flex-col transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-cut-sm">
+      <h3 className="type-label m-0 flex min-h-11 items-center gap-3 border-b-[1.5px] border-ink px-3">
         <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
         {label}
       </h3>

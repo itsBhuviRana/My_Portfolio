@@ -3,6 +3,7 @@ import { site } from "@assembly/content";
 import { layer, layerIds } from "@assembly/tokens";
 import { sheetCount } from "../../lib/nav";
 import { ArchitectureTabs } from "./architecture-tabs";
+import { HeroDesk } from "./hero-desk";
 
 /** The approved concept line (README and brand guide). It is the tagline, not a claim about the work. */
 const CONCEPT =
@@ -90,55 +91,59 @@ export function Hero() {
         <span className="tech-label">Exploded</span>
       </div>
 
-      <div className="mt-8">
-        <p className="tech-label m-0">
-          <span className="sr-only">Assembly · Developer portfolio</span>
-          <PrintChars text="Assembly · Developer portfolio" baseDelay={EYEBROW_DELAY} />
-        </p>
-        {/* Below 380px the display floor (40px) is wider than the screen: 8.46em is the width of "Bhuvneshwar". */}
-        <h1
-          id="hero-title"
-          className="type-display-2 m-0 mt-3 max-[380px]:text-[length:calc((100vw_-_2rem)/8.6)]"
-        >
-          <span className="sr-only">Bhuvneshwar Rana</span>
-          <PrintChars text="Bhuvneshwar Rana" baseDelay={NAME_DELAY} />
-        </h1>
-        <div className="mt-5">
-          <p className="type-h3 m-0">
-            <span className="sr-only">{craft}</span>
-            <PrintChars text={craft} baseDelay={ROLE_DELAY} />
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-x-12 lg:gap-y-8">
+        <div className="[container-type:inline-size] lg:col-start-1 lg:row-start-1 lg:self-end">
+          <p className="tech-label m-0">
+            <span className="sr-only">Assembly · Developer portfolio</span>
+            <PrintChars text="Assembly · Developer portfolio" baseDelay={EYEBROW_DELAY} />
           </p>
-          <p className="type-h3 m-0 mt-1 text-ink-soft">
-            <span className="sr-only">{site.role}</span>
-            <PrintChars text={site.role} baseDelay={ROLE_LINE_2_DELAY} />
-          </p>
+          {/* Below 380px the display floor (40px) is wider than the screen: 8.46em is the width of "Bhuvneshwar". */}
+          <h1
+            id="hero-title"
+            className="type-display-2 m-0 mt-3 max-[380px]:text-[length:calc((100vw_-_2rem)/8.6)] lg:text-[length:min(4.5rem,calc(100cqw/8.7))]"
+          >
+            <span className="sr-only">Bhuvneshwar Rana</span>
+            <PrintChars text="Bhuvneshwar Rana" baseDelay={NAME_DELAY} />
+          </h1>
+          <div className="mt-5">
+            <p className="type-h3 m-0">
+              <span className="sr-only">{craft}</span>
+              <PrintChars text={craft} baseDelay={ROLE_DELAY} />
+            </p>
+            <p className="type-h3 m-0 mt-1 text-ink-soft">
+              <span className="sr-only">{site.role}</span>
+              <PrintChars text={site.role} baseDelay={ROLE_LINE_2_DELAY} />
+            </p>
+          </div>
+        </div>
+        <HeroDesk className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center" />
+        <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
+          <div
+            style={{ "--hero-delay": `${CTA_DELAY}ms` } as Vars}
+            className="hero-text-group flex flex-col gap-6"
+          >
+            <div className="rule-info" />
+            <p className="type-body-lg m-0 max-w-[44ch]">{CONCEPT}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="#layer-key"
+                className="hero-btn-fill-pulse type-body inline-flex min-h-12 items-center rounded-pill bg-accent px-6 font-bold text-paper"
+              >
+                Inspect the layers
+              </a>
+              <a
+                href="#contact"
+                className="hero-btn-border-pulse glass type-body inline-flex min-h-12 items-center rounded-pill px-6 font-bold text-ink"
+              >
+                Get in touch
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-10">
         <ArchitectureTabs />
-      </div>
-
-      <div
-        style={{ "--hero-delay": `${CTA_DELAY}ms` } as Vars}
-        className="hero-text-group mt-8 flex flex-col gap-6"
-      >
-        <div className="rule-info" />
-        <p className="type-body-lg m-0 max-w-[44ch]">{CONCEPT}</p>
-        <div className="flex flex-wrap items-center gap-3">
-          <a
-            href="#layer-key"
-            className="hero-btn-fill-pulse type-body inline-flex min-h-12 items-center rounded-pill bg-accent px-6 font-bold text-paper"
-          >
-            Inspect the layers
-          </a>
-          <a
-            href="#contact"
-            className="hero-btn-border-pulse type-body inline-flex min-h-12 items-center rounded-pill border-[1.5px] border-ink px-6 font-bold text-ink"
-          >
-            Get in touch
-          </a>
-        </div>
       </div>
 
       <ol

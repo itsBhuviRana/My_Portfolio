@@ -3,10 +3,13 @@ import { Archivo, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { site } from "@assembly/content";
 import { color } from "@assembly/tokens";
-import { LoadingIntro } from "../components/site/loading-intro";
+import { CursorGlow } from "../components/site/cursor-glow";
 import { SectionStage } from "../components/site/section-stage";
+import { SketchContact } from "../components/site/sketch-figures";
 import { SiteFooter } from "../components/site/site-footer";
 import { SmoothScroll } from "../components/site/smooth-scroll";
+import { TubeIntro } from "../components/site/tube-intro";
+import { TUBE_INTRO_SCRIPT } from "../components/site/tube-intro-script";
 import "./globals.css";
 
 // Two families, Latin subset, self-hosted at build time (D9). The `variable` names are what the
@@ -39,10 +42,18 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="en"
+      className={`${archivo.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: TUBE_INTRO_SCRIPT }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <SmoothScroll />
-        <LoadingIntro />
+        <CursorGlow />
+        <TubeIntro />
         <a
           href="#main"
           className="type-small sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-paper focus:px-4 focus:py-2"
@@ -50,7 +61,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <div className="flex-1">{children}</div>
-        <SectionStage isLast tint="rose" number={7}>
+        <SectionStage isLast tint="rose" sketch={<SketchContact />}>
           <SiteFooter />
         </SectionStage>
       </body>

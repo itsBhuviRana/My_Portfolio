@@ -6,7 +6,7 @@ import { Monogram } from "../../generated/brand-marks";
 /** The contact destination (`#contact`) and a status line, with the approved monogram (32 px, its minimum). */
 export function SiteFooter() {
   return (
-    <footer id="contact" className="rule-ink mt-12 bg-vellum">
+    <footer id="contact" className="rule-ink mt-12">
       <div className="page-shell py-10">
         <div className="title-block" aria-hidden="true">
           <span className="tech-label">

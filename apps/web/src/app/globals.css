@@ -2,4 +2,7 @@
 @import "../generated/tokens.css";
 @import "./foundations.css";
 @import "../components/hero/hero-motion.css";
-@import "../components/site/loading-intro.css";
+@import "../components/site/tube-intro.css";
+@import "../components/site/tilt-stage.css";
+@import "../components/hero/hero-desk.css";
+@import "../components/site/cursor-glow.css";

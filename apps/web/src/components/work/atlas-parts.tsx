@@ -35,7 +35,7 @@ export function TechChips({ items }: { items: readonly string[] }) {
       {items.map((item) => (
         <li
           key={item}
-          className="type-label rounded-sm border border-ink bg-vellum px-2 py-1 [overflow-wrap:anywhere]"
+          className="glass-chip type-label rounded-sm px-2 py-1 [overflow-wrap:anywhere]"
         >
           {item}
         </li>
@@ -98,7 +98,7 @@ const BADGE_FILL = [
 export function StackBadge({ name, index }: { name: string; index: number }) {
   const fill = BADGE_FILL[index % BADGE_FILL.length]!;
   return (
-    <span className="inline-flex items-center gap-2 border-[1.5px] border-ink bg-paper py-1 pr-3 pl-1">
+    <span className="glass-chip inline-flex items-center gap-2 py-1 pr-3 pl-1">
       <span
         aria-hidden="true"
         className={`type-label flex h-6 min-w-6 shrink-0 items-center justify-center rounded-sm px-1 ${fill.bg} ${fill.text}`}
@@ -117,7 +117,7 @@ export function StackBadge({ name, index }: { name: string; index: number }) {
 export function DomainTag({ domain, fromName }: { domain: string; fromName?: boolean }) {
   return (
     <span
-      className={`type-label inline-flex w-fit items-center rounded-sm border bg-vellum px-2 py-1 [overflow-wrap:anywhere] ${
+      className={`type-label inline-flex w-fit items-center rounded-sm border bg-[color-mix(in_srgb,var(--color-paper)_40%,transparent)] px-2 py-1 [overflow-wrap:anywhere] ${
         fromName ? "border-dashed border-line" : "border-ink"
       }`}
     >
