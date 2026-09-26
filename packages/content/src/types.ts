@@ -37,6 +37,8 @@ export interface Site {
   };
   readonly location?: string;
   readonly availability?: Availability;
+  /** Total professional experience in whole years, as supplied by the owner. */
+  readonly yearsOfExperience?: number;
 }
 
 // ── Social links ──────────────────────────────────────────────────────────

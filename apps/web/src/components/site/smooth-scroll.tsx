@@ -23,15 +23,10 @@ export function SmoothScroll() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const lenis = new Lenis({
-      // Slower than Lenis's own default on purpose: the `SectionStage` handoffs (section-stage.tsx) need
-      // enough physical scroll input to read clearly rather than being blown through in a couple of wheel
-      // ticks. `duration` softens the easing itself; the wheel multiplier cuts how far a single wheel tick
-      // moves the page. Both were tuned down further than this on the first pass and felt like the
-      // transitions dragged on too long — this is the eased-back version.
-      duration: 1.3,
+      duration: 1.1,
       smoothWheel: true,
-      wheelMultiplier: 0.85,
-      touchMultiplier: 0.95,
+      // In-page `#anchor` links (like the Hero's scroll cue) glide instead of jumping.
+      anchors: true,
     });
 
     let rafId = 0;

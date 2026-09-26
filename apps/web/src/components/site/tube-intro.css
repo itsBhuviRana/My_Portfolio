@@ -4,17 +4,17 @@
  * page directly.
  *
  * Layers, back to front: the black page colour (the overlay's own background), `.tube-room` (the white,
- * blown-out room, brightest at the bottom where the tube is), the tube fixture, and the copy + switch.
+ * blown-out room, brightest at the top where the tube is), the tube fixture, and the copy + switch.
  *
- * On load the fixture rises in from below the screen edge and the copy fades in after it.
+ * On load the fixture lowers in from above the screen edge and the copy fades in after it.
  * Turning off (`.tube-intro--off`) is one slow, staged sequence on a single clock:
  *   0-450ms     the rocker flips to OFF, the label and status text switch
  *   200-2600    the tube dims: two soft dips, then a long fade (small area only, ~2 flashes a second at most)
- *   1600-5000   the white light drifts UP and out of the screen: a soft-edged mask lifts from the bottom
- *               (the tube's end) toward the top, so darkness follows the light upward
+ *   1600-5000   the white light drains DOWN and out of the screen, away from the tube: a soft-edged mask
+ *               sinks from the top toward the bottom, so darkness follows the tube's light-out downward
  *   2000-2900   copy and switch fade out (the OFF switch stays readable for ~1.5s first), before the
  *               wipe reaches them
- *   3400        the page's own animations are released (see the tsx)
+ *   2400        the page's own animations are released (see tube-intro-script.ts), just as the top clears
  *   4800-5500   the overlay itself fades away; it is removed at 5800
  * The white values are `white`/`black` keywords mixed with the warm `ink` token, not new palette colours.
  */
@@ -65,9 +65,9 @@ html[data-intro="on"] main *::after {
 }
 
 /*
- * The room. Fully white at first paint (nothing of the site may show), lit from the bottom. Off: a
- * soft-edged mask lifts from the bottom toward the top (`--lift` 135% -> 0%), so the white leaves
- * upward and the dark comes up behind it. The opacity fade is only a fallback for engines that can't
+ * The room. Fully white at first paint (nothing of the site may show), lit from the top. Off: a
+ * soft-edged mask shrinks toward the bottom (`--lift` 135% -> 0%), so the white drains downward
+ * and the dark spreads down from the tube behind it. The opacity fade is only a fallback for engines that can't
  * animate the registered `--lift` property; it starts late enough not to be seen otherwise.
  */
 .tube-room {
@@ -75,15 +75,15 @@ html[data-intro="on"] main *::after {
   inset: 0;
   --lift: 135%;
   background: radial-gradient(
-    130% 100% at 50% 100%,
+    130% 100% at 50% 6%,
     var(--white) 0%,
     var(--white) 30%,
     var(--room-mid) 72%,
     var(--room-low) 100%
   );
-  mask-image: linear-gradient(to bottom, black calc(var(--lift) - 34%), transparent var(--lift));
+  mask-image: linear-gradient(to top, black calc(var(--lift) - 34%), transparent var(--lift));
   -webkit-mask-image: linear-gradient(
-    to bottom,
+    to top,
     black calc(var(--lift) - 34%),
     transparent var(--lift)
   );
@@ -97,10 +97,10 @@ html[data-intro="on"] main *::after {
   opacity: 0;
 }
 
-/* The fixture sits on the bottom edge and rises into place on load. */
+/* The fixture hangs from the top edge and lowers into place on load. */
 @keyframes tube-rise {
   from {
-    translate: 0 160%;
+    translate: 0 -160%;
     opacity: 0;
   }
   to {
@@ -112,7 +112,7 @@ html[data-intro="on"] main *::after {
 .tube-fixture {
   --fixture-width: min(82vw, 720px);
   position: absolute;
-  bottom: max(env(safe-area-inset-bottom), clamp(0.75rem, 3.5vh, 2rem));
+  top: max(env(safe-area-inset-top), clamp(1.25rem, 6vh, 3.5rem));
   left: 50%;
   width: var(--fixture-width);
   margin-left: calc(var(--fixture-width) / -2);
@@ -125,13 +125,30 @@ html[data-intro="on"] main *::after {
   transition: opacity 2200ms ease 400ms;
 }
 
+.tube-wire {
+  position: absolute;
+  bottom: 100%;
+  width: 2px;
+  height: 100vh;
+  background: var(--housing-edge);
+  opacity: 0.55;
+}
+
+.tube-wire-left {
+  left: 14%;
+}
+
+.tube-wire-right {
+  right: 14%;
+}
+
 .tube-housing {
   position: relative;
   padding: 5px 9px;
   border-radius: 8px;
   background: linear-gradient(to bottom, var(--housing), var(--housing-edge));
   box-shadow:
-    0 -6px 18px -6px color-mix(in srgb, black 35%, transparent),
+    0 6px 18px -6px color-mix(in srgb, black 35%, transparent),
     inset 0 1px 0 color-mix(in srgb, white 70%, transparent);
 }
 
@@ -147,7 +164,7 @@ html[data-intro="on"] main *::after {
   background: color-mix(in srgb, var(--color-ink) 30%, black);
 }
 
-/* The lit tube: solid white with a wide upward bloom. This is the only thing that flickers. */
+/* The lit tube: solid white with a wide downward bloom. This is the only thing that flickers. */
 .tube-lit {
   position: absolute;
   inset: 0;
@@ -155,9 +172,9 @@ html[data-intro="on"] main *::after {
   background: var(--white);
   opacity: 1;
   box-shadow:
-    0 -4px 14px 4px var(--white),
-    0 -20px 60px 28px color-mix(in srgb, white 90%, transparent),
-    0 -60px 160px 80px color-mix(in srgb, white 70%, transparent);
+    0 4px 14px 4px var(--white),
+    0 20px 60px 28px color-mix(in srgb, white 90%, transparent),
+    0 60px 160px 80px color-mix(in srgb, white 70%, transparent);
   animation: tube-ignite 1600ms ease-out 900ms both;
 }
 
@@ -213,7 +230,7 @@ html[data-intro="on"] main *::after {
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-  padding: 2rem 1.5rem 7rem;
+  padding: 7rem 1.5rem 2rem;
   text-align: center;
   animation: tube-ui-in 900ms ease 700ms backwards;
   transition: opacity 900ms ease 2000ms;
@@ -232,6 +249,7 @@ html[data-intro="on"] main *::after {
 }
 
 .tube-switch {
+  touch-action: manipulation;
   border-radius: 20px;
   background: none;
   border: 0;
@@ -384,9 +402,14 @@ html[data-intro="on"] main *::after {
   animation: none;
 }
 
+.tube-intro--off .tube-hint {
+  animation: none;
+  opacity: 0;
+}
+
 @media (max-width: 480px) {
   .tube-ui {
     gap: 1.25rem;
-    padding-bottom: 6rem;
+    padding-top: 6rem;
   }
 }

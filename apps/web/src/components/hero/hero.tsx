@@ -1,9 +1,17 @@
 import type { CSSProperties, ReactNode } from "react";
-import { site } from "@assembly/content";
+import { getCurrentExperience, site } from "@assembly/content";
 import { layer, layerIds } from "@assembly/tokens";
-import { sheetCount } from "../../lib/nav";
+import { formatPeriod } from "../../lib/format";
 import { ArchitectureTabs } from "./architecture-tabs";
 import { HeroDesk } from "./hero-desk";
+import { HeroScrollCue } from "./hero-scroll-cue";
+
+/**
+ * The architecture illustration — `ArchitectureTabs`, the six-layer key under it, and the "Inspect the
+ * layers" button that scrolls to that key — is switched off for now. Nothing was deleted: set this to
+ * `true` to bring all three back.
+ */
+const SHOW_ARCHITECTURE = false;
 
 /** The approved concept line (README and brand guide). It is the tagline, not a claim about the work. */
 const CONCEPT =
@@ -83,15 +91,56 @@ const KEY_DELAY: Record<string, number> = {
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
 export function Hero() {
+  const current = getCurrentExperience();
+
   return (
-    <section aria-labelledby="hero-title" className="page-shell py-6 md:py-8">
-      <div className="hero-chrome hero-border-flow title-block" aria-hidden="true">
-        <span className="tech-label">Sheet 1/{sheetCount}</span>
-        <span className="tech-label">Hero</span>
-        <span className="tech-label">Exploded</span>
+    <section
+      aria-labelledby="hero-title"
+      className="page-shell flex min-h-dvh flex-col py-6 md:py-8"
+    >
+      {/*
+       * The status bar: whether the owner is open to something new, where they are right now, and how long
+       * they have been working. All of it comes from the content package (`site`, the current experience),
+       * so nothing here is written in this file.
+       */}
+      <div
+        className="hero-chrome hero-border-flow hero-status-bar title-block"
+        aria-label="Current status"
+      >
+        {site.availability?.status === "open" ? (
+          <p className="tech-label m-0 flex items-center gap-2 text-ink">
+            <span className="hero-status-dot" aria-hidden="true" />
+            Open to new opportunities
+          </p>
+        ) : null}
+        {current?.period ? (
+          <p className="tech-label m-0 flex items-center gap-2">
+            <span
+              className="hero-status-dot"
+              style={{ "--dot-delay": "0.8s" } as Vars}
+              aria-hidden="true"
+            />
+            <span>
+              At <span className="text-ink">{current.company}</span> ·{" "}
+              {formatPeriod(current.period)}
+            </span>
+          </p>
+        ) : null}
+        {site.yearsOfExperience ? (
+          <p className="tech-label m-0 flex items-center gap-2 max-sm:hidden">
+            <span
+              className="hero-status-dot"
+              style={{ "--dot-delay": "1.6s" } as Vars}
+              aria-hidden="true"
+            />
+            <span>
+              Holding <span className="text-ink">{site.yearsOfExperience} years</span> of experience
+            </span>
+          </p>
+        ) : null}
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-x-12 lg:gap-y-8">
+      <div className="mt-8 grid flex-1 content-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-x-12 lg:gap-y-8">
         <div className="[container-type:inline-size] lg:col-start-1 lg:row-start-1 lg:self-end">
           <p className="tech-label m-0">
             <span className="sr-only">Assembly · Developer portfolio</span>
@@ -100,7 +149,7 @@ export function Hero() {
           {/* Below 380px the display floor (40px) is wider than the screen: 8.46em is the width of "Bhuvneshwar". */}
           <h1
             id="hero-title"
-            className="type-display-2 m-0 mt-3 max-[380px]:text-[length:calc((100vw_-_2rem)/8.6)] lg:text-[length:min(4.5rem,calc(100cqw/8.7))]"
+            className="hero-glass-name type-display-2 m-0 mt-3 max-[380px]:text-[length:calc((100vw_-_2rem)/8.6)] lg:text-[length:min(4.5rem,calc(100cqw/8.7))]"
           >
             <span className="sr-only">Bhuvneshwar Rana</span>
             <PrintChars text="Bhuvneshwar Rana" baseDelay={NAME_DELAY} />
@@ -125,51 +174,52 @@ export function Hero() {
             <div className="rule-info" />
             <p className="type-body-lg m-0 max-w-[44ch]">{CONCEPT}</p>
             <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="#layer-key"
-                className="hero-btn-fill-pulse type-body inline-flex min-h-12 items-center rounded-pill bg-accent px-6 font-bold text-paper"
-              >
-                Inspect the layers
-              </a>
-              <a
-                href="#contact"
-                className="hero-btn-border-pulse glass type-body inline-flex min-h-12 items-center rounded-pill px-6 font-bold text-ink"
-              >
-                Get in touch
-              </a>
+              {SHOW_ARCHITECTURE ? (
+                <a
+                  href="#layer-key"
+                  className="hero-btn-fill-pulse type-body inline-flex min-h-12 items-center rounded-pill bg-accent px-6 font-bold text-paper"
+                >
+                  Inspect the layers
+                </a>
+              ) : null}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-10">
-        <ArchitectureTabs />
-      </div>
+      {SHOW_ARCHITECTURE ? (
+        <>
+          <div className="mt-10">
+            <ArchitectureTabs />
+          </div>
 
-      <ol
-        id="layer-key"
-        aria-label="The six layers of the exploded illustration"
-        className="m-0 mt-10 grid list-none grid-cols-2 gap-x-4 gap-y-5 p-0 sm:grid-cols-3 lg:grid-cols-6"
-      >
-        {layerIds.map((id) => (
-          <li
-            key={id}
-            style={{ "--hero-delay": `${KEY_DELAY[id]}ms` } as Vars}
-            className="hero-key-item"
+          <ol
+            id="layer-key"
+            aria-label="The six layers of the exploded illustration"
+            className="m-0 mt-10 grid list-none grid-cols-2 gap-x-4 gap-y-5 p-0 sm:grid-cols-3 lg:grid-cols-6"
           >
-            <div
-              className={`layer-${id} type-label flex min-h-11 items-center gap-3 rounded-sm px-3`}
-            >
-              <span aria-hidden="true">{layer[id].number}</span>
-              {id}
-            </div>
-            <div
-              className={`hatch-${id} h-3 border-x-[1.5px] border-b-[1.5px] border-ink`}
-              aria-hidden="true"
-            />
-          </li>
-        ))}
-      </ol>
+            {layerIds.map((id) => (
+              <li
+                key={id}
+                style={{ "--hero-delay": `${KEY_DELAY[id]}ms` } as Vars}
+                className="hero-key-item"
+              >
+                <div
+                  className={`layer-${id} type-label flex min-h-11 items-center gap-3 rounded-sm px-3`}
+                >
+                  <span aria-hidden="true">{layer[id].number}</span>
+                  {id}
+                </div>
+                <div
+                  className={`hatch-${id} h-3 border-x-[1.5px] border-b-[1.5px] border-ink`}
+                  aria-hidden="true"
+                />
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : null}
+      <HeroScrollCue />
     </section>
   );
 }
