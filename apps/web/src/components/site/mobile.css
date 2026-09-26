@@ -53,4 +53,67 @@
   .hero-scroll-cue {
     display: none;
   }
+
+  /* ---- Hero portrait: no dots or labels, and it tilts with the phone -------------------------------- */
+
+  .hero-desk {
+    position: relative;
+  }
+
+  .hero-desk-hotspots {
+    display: none;
+  }
+
+  /* Stronger tilt and parallax than the mouse version: the whole screen is the picture. */
+  .hero-desk .tilt-plane {
+    transform: rotateX(calc(var(--ty) * -9deg)) rotateY(calc(var(--tx) * 12deg));
+  }
+
+  .hero-desk .tilt-layer {
+    transform: translate3d(
+      calc(var(--tx) * var(--depth, 0) * 1.8px),
+      calc(var(--ty) * var(--depth, 0) * 1.8px),
+      var(--z, 0px)
+    );
+  }
+
+  .tilt-gyro-btn {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0 0.95rem 0 0.75rem;
+    border-radius: 999px;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-paper) 40%, transparent),
+      color-mix(in srgb, var(--color-paper) 18%, transparent)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-paper) 45%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    backdrop-filter: blur(16px) saturate(170%);
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, black 80%, transparent);
+  }
+
+  .tilt-gyro-btn[hidden] {
+    display: none;
+  }
+
+  .tilt-gyro-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 }
