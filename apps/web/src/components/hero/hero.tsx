@@ -95,6 +95,7 @@ export function Hero() {
 
   return (
     <section
+      id="home"
       aria-labelledby="hero-title"
       className="page-shell flex min-h-dvh flex-col py-6 md:py-8"
     >
@@ -142,7 +143,7 @@ export function Hero() {
 
       <div className="mt-8 grid flex-1 content-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-x-12 lg:gap-y-8">
         <div className="[container-type:inline-size] lg:col-start-1 lg:row-start-1 lg:self-end">
-          <p className="tech-label m-0">
+          <p className="tech-label hero-eyebrow m-0">
             <span className="sr-only">Assembly · Developer portfolio</span>
             <PrintChars text="Assembly · Developer portfolio" baseDelay={EYEBROW_DELAY} />
           </p>
@@ -171,8 +172,8 @@ export function Hero() {
             style={{ "--hero-delay": `${CTA_DELAY}ms` } as Vars}
             className="hero-text-group flex flex-col gap-6"
           >
-            <div className="rule-info" />
-            <p className="type-body-lg m-0 max-w-[44ch]">{CONCEPT}</p>
+            <div className="rule-info hero-rule" />
+            <p className="type-body-lg hero-concept m-0 max-w-[44ch]">{CONCEPT}</p>
             <div className="flex flex-wrap items-center gap-3">
               {SHOW_ARCHITECTURE ? (
                 <a

@@ -1,0 +1,56 @@
+/*
+ * Phone-only foundations. Every rule is inside a max-width: 767px query (Tailwind's `md` starts at 768px), so
+ * tablets and desktops render exactly as before. Section-specific phone layouts live with their sections.
+ */
+@media (max-width: 767px) {
+  /* Room for the floating dock, so the last thing on the page is never hidden behind it. */
+  body {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Comfortable side gutters (was 1rem). */
+  .page-shell {
+    padding-inline: 1.25rem;
+  }
+
+  /* Anchors land with a little air above the section instead of flush with the top. */
+  #home,
+  #work,
+  #dijkastra,
+  #capabilities,
+  #contact {
+    scroll-margin-top: 0.75rem;
+  }
+
+  /* Every button is a real thumb target (Apple's minimum is 44px). */
+  .min-h-9 {
+    min-height: 2.75rem;
+  }
+
+  /* No tap-flash and no double-tap delay on controls. */
+  a,
+  button,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* ---- Hero ------------------------------------------------------------------------------------ */
+
+  /* The status bar keeps its one line that matters on a phone; the rest is on the page below. */
+  .hero-status-bar > :nth-child(n + 2) {
+    display: none;
+  }
+
+  /* Quiet the top of the page: no eyebrow label, no divider, no tagline. The name and role carry it. */
+  .hero-eyebrow,
+  .hero-rule,
+  .hero-concept {
+    display: none;
+  }
+
+  /* The dock replaces the scroll arrow as the way down. */
+  .hero-scroll-cue {
+    display: none;
+  }
+}

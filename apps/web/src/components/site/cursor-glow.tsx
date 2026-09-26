@@ -12,7 +12,10 @@ import { useEffect, useRef } from "react";
  * beam is a fixed-size element that is only rotated and stretched toward the orb, and the orb's flowing
  * light is pure CSS.
  *
- * Fine pointers only: touch has no cursor to follow, and reduced-motion users get no glow at all.
+ * Two modes. Fine pointers (mouse/pen): the orb follows the cursor, as described above. Phones: there is no
+ * cursor, so the torch follows a finger while it is down, and when it lifts the light eases back into a slow
+ * ambient drift that a scroll nudges (see `startPhoneMode`). Tablets with touch keep the old behaviour (no
+ * glow), and reduced-motion users get no glow at all.
  */
 const ORB_EASE = 0.1;
 const HALO_EASE = 0.045;
@@ -34,8 +37,13 @@ export function CursorGlow() {
     const source = sourceRef.current;
     if (!root || !orb || !halo || !beam || !source) return;
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const phone = window.matchMedia("(max-width: 767px) and (hover: none) and (pointer: coarse)");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!finePointer.matches || reduceMotion.matches) return;
+    if (reduceMotion.matches) return;
+    const phoneMode = phone.matches && !finePointer.matches;
+    if (!finePointer.matches && !phoneMode) return;
+    // Sizes for the phone variant come from the CSS under [data-touch]; set it before they are read below.
+    if (phoneMode) root.dataset.touch = "true";
 
     let targetX = window.innerWidth / 2;
     let targetY = window.innerHeight / 2;
@@ -117,6 +125,89 @@ export function CursorGlow() {
         Math.abs(targetY - haloY) < 0.2;
       frame = settled ? 0 : requestAnimationFrame(tick);
     };
+
+    if (phoneMode) {
+      // ---- phone: a finger drives the torch; otherwise it drifts, nudged by scrolling ------------------
+      let touching = false;
+      let fingerX = window.innerWidth / 2;
+      let fingerY = window.innerHeight / 2;
+      let release = 0; // 1 right after the finger lifts, easing to 0 (blends finger position into the drift)
+      let nudge = 0;
+      let lastY = window.scrollY;
+      let raf = 0;
+      let skip = false;
+      let prev = performance.now();
+
+      const loop = (now: number) => {
+        raf = requestAnimationFrame(loop);
+        const dt = Math.min(0.1, (now - prev) / 1000);
+        prev = now;
+        // Ambient drift only needs ~30fps; a finger on the glass gets every frame.
+        if (!touching && release < 0.02) {
+          skip = !skip;
+          if (skip) return;
+        }
+        // The contact scene has its own light; the CSS hides this one, so don't spend battery moving it.
+        if (document.documentElement.hasAttribute("data-contact-lit")) return;
+
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const t = now / 1000;
+        nudge *= Math.exp(-dt * 2.2);
+        const ambientX = w * (0.5 + 0.3 * Math.sin(t * 0.23));
+        const ambientY = h * (0.34 + 0.13 * Math.sin(t * 0.17 + 1)) + nudge;
+        if (!touching) release = Math.max(0, release - dt / 1.6);
+        const blend = touching ? 1 : release * release;
+        targetX = ambientX + (fingerX - ambientX) * blend;
+        targetY = ambientY + (fingerY - ambientY) * blend;
+
+        const follow = touching ? 0.22 : ORB_EASE;
+        orbX += (targetX - orbX) * follow;
+        orbY += (targetY - orbY) * follow;
+        haloX += (targetX - haloX) * HALO_EASE;
+        haloY += (targetY - haloY) * HALO_EASE;
+        place(orb, orbX, orbY);
+        place(halo, haloX, haloY);
+        aim();
+      };
+
+      const onTouch = (event: TouchEvent) => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        touching = true;
+        fingerX = touch.clientX;
+        fingerY = touch.clientY;
+      };
+      const onEnd = () => {
+        touching = false;
+        release = 1;
+      };
+      const onScroll = () => {
+        const y = window.scrollY;
+        // Scrolling down pushes the light up the screen a little (and the reverse), like the page sliding past it.
+        nudge = Math.max(-140, Math.min(140, nudge - (y - lastY) * 0.5));
+        lastY = y;
+      };
+
+      orbX = haloX = targetX = window.innerWidth * 0.5;
+      orbY = haloY = targetY = window.innerHeight * 0.34;
+      root.dataset.on = "true";
+      raf = requestAnimationFrame(loop);
+      window.addEventListener("touchstart", onTouch, { passive: true });
+      window.addEventListener("touchmove", onTouch, { passive: true });
+      window.addEventListener("touchend", onEnd, { passive: true });
+      window.addEventListener("touchcancel", onEnd, { passive: true });
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener("touchstart", onTouch);
+        window.removeEventListener("touchmove", onTouch);
+        window.removeEventListener("touchend", onEnd);
+        window.removeEventListener("touchcancel", onEnd);
+        window.removeEventListener("scroll", onScroll);
+        delete root.dataset.touch;
+      };
+    }
 
     const onMove = (event: PointerEvent) => {
       if (event.pointerType === "touch") return;
