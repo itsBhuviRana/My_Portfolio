@@ -1,0 +1,25 @@
+Copyright (c) 2026 Bhuvneshwar Rana. All rights reserved.
+
+This repository is published so that it can be viewed. It is not open source.
+
+You may:
+  - read and browse the source code and the published website;
+  - use short excerpts for review, criticism or discussion, with credit to the author.
+
+You may not, without the author's prior written permission:
+  - copy, fork for reuse, modify, redistribute or sell the code, the design, the text or any of the images
+    and illustrations in this repository, in whole or in part;
+  - use them in another website, application or product, or present them as your own work;
+  - use them to train or fine-tune machine-learning models.
+
+The site's text, illustrations, character artwork and the design system (the "Vellum & Layers" look) are the
+author's original work and are covered by this notice as well as the code.
+
+Third-party software used by this project (for example Next.js, React, three.js, Lenis and Tailwind CSS) and
+third-party fonts (Archivo and JetBrains Mono, via Google Fonts) remain under their own licenses. This
+notice does not change or replace those licenses, and does not claim ownership of them.
+
+THE MATERIAL IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. TO THE FULLEST EXTENT PERMITTED BY LAW, THE
+AUTHOR IS NOT LIABLE FOR ANY CLAIM OR DAMAGES ARISING FROM ITS USE.
+
+To ask for permission: ranabhuvi98@gmail.com

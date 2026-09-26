@@ -1,6 +1,7 @@
 {
   "name": "assembly",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "description": "ASSEMBLY: personal developer portfolio monorepo",
   "engines": {
     "node": ">=24 <25"

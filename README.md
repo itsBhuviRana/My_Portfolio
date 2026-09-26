@@ -6,6 +6,8 @@ ASSEMBLY is the personal developer portfolio of Bhuvneshwar Rana: a React Native
 Application Module Development Lead. The concept is an exploded-view engineering illustration: layered
 product views, precise callouts, and a cartoon character as a recurring narrator.
 
+> **License:** the source is viewable, not open source. All rights reserved, see [LICENSE](LICENSE).
+
 ## Status
 
 **Phase 4A: Global Shell + Hero.** Phase 1 (monorepo, tooling, typed content,
