@@ -22,6 +22,12 @@
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
+  transition: opacity 900ms ease;
+}
+
+/* The closing contact scene has its own light (contact-light.tsx); while it is on, the torch steps aside. */
+html[data-contact-lit="true"] .cursor-glow {
+  opacity: 0;
 }
 
 .cursor-glow-track {

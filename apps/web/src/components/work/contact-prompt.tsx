@@ -14,8 +14,8 @@ export function ContactPrompt() {
     <div className="page-shell py-6 md:py-8">
       <div className="glass flex flex-col items-start gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <p className="type-body m-0">
-          That is one project in full detail. {otherProjects} more are in the register below, with
-          the full capability breakdown after it.
+          That is one project in full detail. {otherProjects} more are in the atlas above, with the
+          full capability breakdown after it.
         </p>
         <a
           href="#contact"

@@ -43,7 +43,7 @@ export interface Site {
 
 // ── Social links ──────────────────────────────────────────────────────────
 
-export type SocialId = "github" | "linkedin" | "email" | "website";
+export type SocialId = "github" | "linkedin" | "email" | "whatsapp" | "website";
 
 export interface SocialLink {
   readonly id: SocialId;

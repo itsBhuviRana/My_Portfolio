@@ -36,7 +36,7 @@ export function HeroDesk({ className = "" }: { className?: string }) {
             chip: "Now building",
             title: "Now building",
             body: `${project.name}: ${project.tagline}`,
-            href: "#discastra",
+            href: "#dijkastra",
             side: "top",
             align: "right",
           } satisfies Hotspot,

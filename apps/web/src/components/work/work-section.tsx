@@ -1,23 +1,18 @@
 import { AtlasOverview } from "./atlas-overview";
 import { CapabilityMatrix } from "./capability-matrix";
-import { ContactPrompt } from "./contact-prompt";
 import { CurrentProject } from "./current-project";
-import { FeaturedProjects } from "./featured-projects";
-import { ProjectRegister } from "./project-register";
 
 /**
- * The Work section, in reading order: the breadth of the atlas, the featured projects, the current
- * project in detail, then a single contact touchpoint (see `ContactPrompt` for why it sits exactly here),
- * then the full register, then the wider engineering capabilities.
+ * The Work section, in reading order: the 3D project atlas (which carries every project's details, the
+ * featured ones included), the current project in detail, then the wider engineering capabilities. The
+ * separate Featured and Register sections were folded into the atlas, and the contact prompt bar was
+ * dropped; their components are still in this folder.
  */
 export function WorkSection() {
   return (
     <>
       <AtlasOverview />
-      <FeaturedProjects />
       <CurrentProject />
-      <ContactPrompt />
-      <ProjectRegister />
       <CapabilityMatrix />
     </>
   );

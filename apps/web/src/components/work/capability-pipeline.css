@@ -1,0 +1,12 @@
+/* Capability chips pop in one after the other whenever a pipeline station becomes active. */
+@keyframes cap-chip-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+    scale: 0.92;
+  }
+}
+
+.cap-chip-in {
+  animation: cap-chip-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}

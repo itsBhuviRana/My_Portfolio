@@ -26,8 +26,8 @@ export const FREELANCE = "Freelance";
 export const atlasProjects: readonly AtlasProject[] = [
   // ── Featured ──────────────────────────────────────────────────────────────
   {
-    id: "discastra",
-    name: "Discastra",
+    id: "dijkastra",
+    name: "Dijkastra",
     company: "Telus Digital",
     client: "Talis Agriculture",
     platform: "mobile",
@@ -38,7 +38,7 @@ export const atlasProjects: readonly AtlasProject[] = [
     years: { from: 2025, to: "present" },
     framework: "React Native + Expo",
     product: "Mobile agriculture field-management application",
-    // Titles match the current role's responsibilities. The full breakdown is the Discastra section.
+    // Titles match the current role's responsibilities. The full breakdown is the Dijkastra section.
     personalWork: [
       "Feature development",
       "Refactoring and improvements",
