@@ -1,0 +1,348 @@
+/*
+ * The closing "turn the light on" contact (contact-light.tsx). The tube hangs from the top of the section; while
+ * `data-lit="false"` the room is dark and the cards are dim (but real, clickable links); switching on ignites
+ * the tube, opens a cone of light downward and lifts the cards into it. Without JavaScript nothing could turn
+ * it on, so `@media (scripting: none)` shows it lit.
+ */
+.contact-light {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 7rem 0 3rem;
+  text-align: center;
+}
+
+.contact-tube {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(70vw, 520px);
+  translate: -50% 0;
+  z-index: 1;
+}
+
+.contact-wire {
+  position: absolute;
+  bottom: 100%;
+  width: 2px;
+  height: 100vh;
+  background: color-mix(in srgb, var(--color-ink) 45%, black);
+  opacity: 0.6;
+}
+
+.contact-wire-left {
+  left: 14%;
+}
+
+.contact-wire-right {
+  right: 14%;
+}
+
+.contact-tube-housing {
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ink) 70%, black),
+    color-mix(in srgb, var(--color-ink) 42%, black)
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 50%, transparent);
+}
+
+.contact-tube-body {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 28%, black);
+}
+
+.contact-tube-lit {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: white;
+  opacity: 0;
+  box-shadow:
+    0 4px 14px 4px white,
+    0 22px 60px 26px color-mix(in srgb, white 55%, transparent),
+    0 40px 110px 50px color-mix(in srgb, white 25%, transparent);
+  transition: opacity 1400ms ease;
+}
+
+.contact-light[data-lit="true"] .contact-tube-lit {
+  opacity: 1;
+  animation: contact-ignite 1300ms ease-out both;
+}
+
+@keyframes contact-ignite {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.9;
+  }
+  30% {
+    opacity: 0.15;
+  }
+  46% {
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/*
+ * The cone of light. Three layers, because `clip-path` is applied after `filter`: clipping the blurred shape would
+ * cut the soft edge off again. So the innermost layer is the hard-edged cone, the middle layer blurs it, and
+ * the outer layer only positions and fades it (with a mask so it also dissolves toward the bottom).
+ */
+.contact-beam {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  width: min(125%, 1150px);
+  height: 108%;
+  translate: -50% 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 1500ms ease 200ms;
+  mask-image: linear-gradient(to bottom, black 45%, transparent 98%);
+  -webkit-mask-image: linear-gradient(to bottom, black 45%, transparent 98%);
+}
+
+.contact-beam-blur {
+  position: absolute;
+  inset: 0;
+  filter: blur(48px);
+}
+
+.contact-beam-shape {
+  position: absolute;
+  inset: 0 6%;
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ink) 17%, transparent),
+    color-mix(in srgb, var(--color-ink) 5%, transparent) 70%,
+    transparent
+  );
+}
+
+.contact-light[data-lit="true"] .contact-beam {
+  opacity: 1;
+}
+
+.contact-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact-switch {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.contact-plate {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 100px;
+  border-radius: 14px;
+  perspective: 240px;
+  background: linear-gradient(
+    to bottom right,
+    color-mix(in srgb, var(--color-ink) 30%, white),
+    color-mix(in srgb, var(--color-ink) 74%, white)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-ink) 55%, black);
+  box-shadow: 0 12px 24px -10px color-mix(in srgb, black 60%, transparent);
+}
+
+.contact-rocker {
+  width: 34px;
+  height: 56px;
+  border-radius: 9px;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-ink) 35%, black),
+    color-mix(in srgb, var(--color-ink) 58%, black)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-ink) 55%, black);
+  transform: rotateX(28deg);
+  transition:
+    transform 400ms cubic-bezier(0.3, 1.5, 0.5, 1),
+    background 400ms ease;
+}
+
+.contact-light[data-lit="true"] .contact-rocker {
+  transform: rotateX(-28deg);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ink) 40%, white),
+    color-mix(in srgb, var(--color-ink) 92%, black)
+  );
+}
+
+.contact-switch:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 6px;
+  box-shadow: none;
+}
+
+.contact-cards {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 3rem !important;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  text-align: left;
+}
+
+@media (min-width: 720px) {
+  .contact-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+  }
+}
+
+.contact-card-wrap {
+  display: flex;
+  opacity: 0.32;
+  translate: 0 14px;
+  transition:
+    opacity 900ms ease calc(var(--i, 0) * 140ms + 400ms),
+    translate 900ms cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 140ms + 400ms);
+}
+
+/* Every wrapper down to the card stretches, so all the cards end up exactly as tall as the tallest. */
+.contact-card-wrap > .tilt-stage,
+.contact-card-wrap .tilt-plane,
+.contact-card {
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
+.contact-light[data-lit="true"] .contact-card-wrap {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.contact-card {
+  position: relative;
+  display: flex;
+  min-height: 9.5rem;
+  color: var(--color-ink);
+}
+
+.contact-card-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+  padding-right: 3.75rem;
+}
+
+/* The whole card is the link; the copy button sits above it in the corner. */
+.contact-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.contact-card-value {
+  overflow-wrap: anywhere;
+}
+
+.contact-card-go {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.contact-card:hover .contact-card-go,
+.contact-card-link:focus-visible .contact-card-go {
+  color: var(--color-ink);
+}
+
+.contact-copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.contact-copy:hover,
+.contact-copy:focus-visible {
+  color: var(--color-ink);
+  background: color-mix(in srgb, var(--color-paper) 40%, transparent);
+  border-color: color-mix(in srgb, var(--color-ink) 25%, transparent);
+}
+
+.contact-copy-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: contact-icon-in 240ms ease both;
+}
+
+@keyframes contact-icon-in {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+@media (scripting: none) {
+  .contact-switch {
+    display: none;
+  }
+  .contact-card-wrap {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .contact-tube-lit,
+  .contact-beam {
+    opacity: 1;
+  }
+}

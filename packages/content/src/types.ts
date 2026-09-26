@@ -37,11 +37,13 @@ export interface Site {
   };
   readonly location?: string;
   readonly availability?: Availability;
+  /** Total professional experience in whole years, as supplied by the owner. */
+  readonly yearsOfExperience?: number;
 }
 
 // ── Social links ──────────────────────────────────────────────────────────
 
-export type SocialId = "github" | "linkedin" | "email" | "website";
+export type SocialId = "github" | "linkedin" | "email" | "whatsapp" | "website";
 
 export interface SocialLink {
   readonly id: SocialId;

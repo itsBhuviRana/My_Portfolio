@@ -346,7 +346,7 @@ describe("current experience", () => {
   });
 });
 
-describe("Discastra profile", () => {
+describe("Dijkastra profile", () => {
   const current = getCurrentExperience();
   const project = current?.project;
 
@@ -378,7 +378,7 @@ describe("Discastra profile", () => {
   });
 
   it("keeps the supplied facts and adds no numbers or dates it was not given", () => {
-    expect(project!.name).toBe("Discastra");
+    expect(project!.name).toBe("Dijkastra");
     expect(project!.context).toBe("Talis Agriculture");
     expect(project!.platform).toBe("React Native + Expo · iOS · Android");
     const facts = JSON.stringify([project!.description, project!.tagline, current!.summary]);
@@ -409,9 +409,10 @@ describe("Discastra profile", () => {
 });
 
 describe("social links", () => {
-  it("has the supplied email, GitHub and LinkedIn destinations", () => {
+  it("has the supplied email, WhatsApp, GitHub and LinkedIn destinations", () => {
     expect(Object.fromEntries(socials.map((link) => [link.id, link.url]))).toEqual({
       email: "mailto:ranabhuvi98@gmail.com",
+      whatsapp: "https://wa.me/917409974400",
       github: "https://github.com/itsBhuviRana",
       linkedin: "https://www.linkedin.com/in/itsbhuvirana/",
     });
@@ -433,7 +434,7 @@ describe("project atlas", () => {
     expect(summary.total).toBe(28);
     expect(atlasProjects.map((project) => project.name).sort()).toEqual(
       [
-        "Discastra",
+        "Dijkastra",
         "IFL",
         "Coca-Cola",
         "Pinpoinx",
@@ -469,7 +470,7 @@ describe("project atlas", () => {
     const names = (tier: string) =>
       atlasProjects.filter((project) => project.tier === tier).map((project) => project.name);
     expect(names("featured")).toEqual([
-      "Discastra",
+      "Dijkastra",
       "IFL",
       "Coca-Cola",
       "Pinpoinx",
@@ -570,18 +571,18 @@ describe("project atlas", () => {
     expect(JSON.stringify(ohana)).not.toMatch(/student|study/i);
   });
 
-  it("keeps Telus Digital as the current employer and links Discastra to its detailed profile", () => {
-    const discastra = byId("discastra")!;
+  it("keeps Telus Digital as the current employer and links Dijkastra to its detailed profile", () => {
+    const dijkastra = byId("dijkastra")!;
     const current = getCurrentExperience()!;
     expect(current.company).toBe("Telus Digital");
-    expect(current.projectIds).toEqual(["discastra"]);
-    expect(discastra.company).toBe(current.company);
-    expect(discastra.client).toBe(current.project?.context);
-    expect(discastra.years).toEqual({ from: 2025, to: "present" });
+    expect(current.projectIds).toEqual(["dijkastra"]);
+    expect(dijkastra.company).toBe(current.company);
+    expect(dijkastra.client).toBe(current.project?.context);
+    expect(dijkastra.years).toEqual({ from: 2025, to: "present" });
     const titles = new Set((current.responsibilities ?? []).map((item) => item.title));
-    expect((discastra.personalWork ?? []).filter((item) => !titles.has(item))).toEqual([]);
+    expect((dijkastra.personalWork ?? []).filter((item) => !titles.has(item))).toEqual([]);
     expect(atlasProjects.filter((p) => p.years?.to === "present").map((p) => p.id)).toEqual([
-      "discastra",
+      "dijkastra",
     ]);
   });
 
@@ -757,7 +758,7 @@ describe("atlas enrichment", () => {
   });
 
   it("keeps domains cautious: confirmed only where the product is confirmed, otherwise flagged as from the name", () => {
-    const confirmed = ["discastra", "ifl", "coca-cola", "jsw-connection", "poito"];
+    const confirmed = ["dijkastra", "ifl", "coca-cola", "jsw-connection", "poito"];
     for (const project of atlasProjects) {
       if (project.domain === undefined) continue;
       expect(project.domainFromName === true, project.name).toBe(!confirmed.includes(project.id));

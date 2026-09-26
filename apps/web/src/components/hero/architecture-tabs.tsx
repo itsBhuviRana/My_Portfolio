@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Architecture3D } from "./architecture-3d";
 import { ExplodedPhone } from "./exploded-phone";
 
 type Variant = "mobile" | "web";
@@ -33,11 +34,8 @@ function WebIcon() {
 /**
  * Switches the Hero illustration between its two architecture readings. The stack underneath is the
  * same six layers either way — it represents one developer's practice, not two different codebases — so
- * only the frame changes: a browser chrome bar (address bar + traffic lights) appears above the
- * illustration for "Web", exactly the way a real browser window would sit above a rendered page. Mobile
- * is the default: it renders on the server with no client state needed, so a visitor without JavaScript
- * (or before this component hydrates) still sees the complete, correct illustration — switching tabs is
- * the only thing that needs the client.
+ * only the slab shape changes: a phone for Mobile, a browser window for Web. Mobile is the default and the
+ * server renders the SVG fallback, so a visitor without JavaScript still sees a complete illustration.
  */
 export function ArchitectureTabs() {
   const [variant, setVariant] = useState<Variant>("mobile");
@@ -66,28 +64,30 @@ export function ArchitectureTabs() {
       </div>
 
       {/*
-       * The illustration now spans the full width the Hero gives it (matching the tab bar above), but
-       * its height stays fixed at what it rendered at before this was fluid — otherwise the near-square
-       * illustration would simply grow taller along with the width, right back to spending far too much
-       * of the Hero on it. `aspectRatio: "auto"` overrides `ExplodedPhone`'s own default ratio-driven
-       * sizing so an explicit height can win instead; the SVG's own `preserveAspectRatio` (untouched)
-       * still draws the complete artwork centred within that wider, shorter box.
+       * The 3D scene is the illustration now; the original SVG exploded view is its fallback (what the
+       * server renders, and what stays for reduced-motion visitors and browsers without WebGL). The fake
+       * browser chrome only belongs to that SVG fallback: in 3D the Web variant reshapes the slabs into
+       * browser windows instead.
        */}
-      <div className="h-[234px] w-full sm:h-[293px] lg:h-[381px]">
-        {variant === "web" ? (
-          <div
-            aria-hidden="true"
-            className="flex items-center gap-2 border-x-[1.5px] border-t-[1.5px] border-ink bg-paper px-3 py-2"
-          >
-            <span className="size-2 shrink-0 rounded-full bg-accent" />
-            <span className="size-2 shrink-0 rounded-full bg-butter" />
-            <span className="size-2 shrink-0 rounded-full bg-mint" />
-            <span className="tech-label ml-2 truncate">assembly.dev/architecture</span>
+      <Architecture3D
+        variant={variant}
+        fallback={
+          <div className="h-full w-full">
+            {variant === "web" ? (
+              <div
+                aria-hidden="true"
+                className="flex items-center gap-2 border-x-[1.5px] border-t-[1.5px] border-ink bg-paper px-3 py-2"
+              >
+                <span className="size-2 shrink-0 rounded-full bg-accent" />
+                <span className="size-2 shrink-0 rounded-full bg-butter" />
+                <span className="size-2 shrink-0 rounded-full bg-mint" />
+                <span className="tech-label ml-2 truncate">assembly.dev/architecture</span>
+              </div>
+            ) : null}
+            <ExplodedPhone style={{ aspectRatio: "auto", height: "100%" }} />
           </div>
-        ) : null}
-
-        <ExplodedPhone style={{ aspectRatio: "auto", height: "100%" }} />
-      </div>
+        }
+      />
     </div>
   );
 }

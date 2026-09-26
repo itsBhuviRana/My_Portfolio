@@ -94,7 +94,7 @@ function DeepContent({ project, hasDetail }: { project: AtlasProject; hasDetail:
       {project.years ? <p className="tech-label m-0 mt-4">{formatYears(project.years)}</p> : null}
       {hasDetail ? (
         <a
-          href="#discastra"
+          href="#dijkastra"
           className="type-small mt-4 inline-flex min-h-12 items-center gap-2 text-accent underline underline-offset-4"
         >
           Open the full engineering breakdown ↓
@@ -138,7 +138,7 @@ function CalloutPin({ index, isAnchor }: { index: number; isAnchor: boolean }) {
  * rest of the field, and this object reveals `DeepContent`. Nothing about this needs JavaScript.
  *
  * `variant="anchor"` is the one project with a full detailed section elsewhere on the page (today,
- * Discastra): a wider band with its own internal layout, and the accent border that also marks `hasDetail`
+ * Dijkastra): a wider band with its own internal layout, and the accent border that also marks `hasDetail`
  * for a project without an anchor slot (there is at most one of each today, but they are independent).
  */
 function ProjectObject({
@@ -265,10 +265,10 @@ function FieldDivider({ label, delayMs }: { label: string; delayMs: number }) {
  * straight off the project's own `years` field, so it is information the closed card does not already
  * show, not a restatement of the platform/domain/technology chips already on it.
  *
- * While Discastra is open, the label darkens from the muted `tech-label` tone to full ink and its leader
+ * While Dijkastra is open, the label darkens from the muted `tech-label` tone to full ink and its leader
  * thickens to match — the annotation staying legibly "attached" to the object it names now that the
  * object itself is the one under inspection. `group-has-[[open]]/flagship` is the small named group on
- * `FeaturedProjects`' wrapper around this and the anchor `<ol>` (see below): it reacts only to Discastra's
+ * `FeaturedProjects`' wrapper around this and the anchor `<ol>` (see below): it reacts only to Dijkastra's
  * own open state, never to a supporting object opening elsewhere in the field.
  */
 function FlagshipAnnotation({ years, delayMs }: { years?: string; delayMs: number }) {

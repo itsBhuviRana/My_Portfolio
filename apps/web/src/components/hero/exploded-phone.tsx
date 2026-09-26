@@ -377,7 +377,7 @@ export function ExplodedPhone({ style }: { style?: CSSProperties } = {}) {
     <div
       role="img"
       aria-label={description}
-      className="hero-illustration hero-frame grid-iso relative w-full border border-rule bg-vellum"
+      className="hero-illustration hero-frame glass grid-iso relative w-full"
       style={{ aspectRatio: `${VIEW.width} / ${VIEW.height}`, ...style }}
     >
       <svg

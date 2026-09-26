@@ -15,9 +15,9 @@ export const experience: readonly Experience[] = [
     role: "Application Module Development Lead",
     period: { start: "2025-11" },
     summary:
-      "Working on Discastra, a mobile agriculture field-management application for iOS and Android, used by agronomists and farmers.",
+      "Working on Dijkastra, a mobile agriculture field-management application for iOS and Android, used by agronomists and farmers.",
     impact: [],
-    projectIds: ["discastra"],
+    projectIds: ["dijkastra"],
     responsibilities: [
       {
         title: "Feature development",
@@ -47,7 +47,7 @@ export const experience: readonly Experience[] = [
       },
     ],
     project: {
-      name: "Discastra",
+      name: "Dijkastra",
       tagline: "Mobile Agriculture Field Management",
       description:
         "A mobile agriculture field-management application for iOS and Android, used by agronomists and farmers. It is multi-tenant and white-label.",

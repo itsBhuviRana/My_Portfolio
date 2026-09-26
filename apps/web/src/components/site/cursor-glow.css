@@ -1,0 +1,215 @@
+/*
+ * Cursor glow (cursor-glow.tsx): a glass orb with white light drifting inside it, behind the content.
+ * The track is moved by JS; the orb inside is centred on it, fades in only once the pointer has moved,
+ * and its three inner lights orbit at different speeds so the glow never looks like a static disc.
+ */
+
+@keyframes cursor-glow-orbit {
+  from {
+    rotate: var(--start, 0deg);
+  }
+  to {
+    rotate: calc(var(--start, 0deg) + 360deg);
+  }
+}
+
+.cursor-glow {
+  --orb-size: 210px;
+  --torch-head: 44px;
+  --torch-pad: 28px;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 900ms ease;
+}
+
+/* The closing contact scene has its own light (contact-light.tsx); while it is on, the torch steps aside. */
+html[data-contact-lit="true"] .cursor-glow {
+  opacity: 0;
+}
+
+.cursor-glow-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+/*
+ * The torch. `.torch-source` is a soft light pooled on the top edge of the window (the lamp itself is
+ * off-screen); `.torch-beam` is a 1000px-tall cone, wide end down, whose track is rotated and stretched
+ * each frame (see the tsx) so its wide end always lands on the orb. Softness comes from a blur, not hard
+ * edges, and brightness stays low and constant along the beam so text behind it stays readable.
+ */
+.torch-source {
+  position: absolute;
+  top: -70px;
+  left: -260px;
+  width: 520px;
+  height: 140px;
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-ink) 16%, transparent),
+    transparent
+  );
+}
+
+/*
+ * The beam. `.torch-beam` is the sized, rotated box (width, height, rotation and `--mask-y` are set every
+ * frame in the tsx): it is only a mask, cutting the orb's circle out of the light so the beam ends exactly
+ * on the orb's rim. Inside it, `.torch-beam-blur` softens the light, and `.torch-beam-shape` is the cone
+ * itself (a narrow torch head widening to the tangent points), clipped before it is blurred so the edges
+ * come out soft. Brightness rises toward the orb, so the light reads as landing there.
+ */
+.torch-beam {
+  transform-origin: 50% 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  --rim: calc(var(--orb-size) / 2);
+  mask-image: radial-gradient(
+    circle at 50% calc(100% + var(--mask-y, 0px)),
+    transparent calc(var(--rim) - 1px),
+    black var(--rim)
+  );
+  -webkit-mask-image: radial-gradient(
+    circle at 50% calc(100% + var(--mask-y, 0px)),
+    transparent calc(var(--rim) - 1px),
+    black var(--rim)
+  );
+}
+
+.torch-beam-blur {
+  position: absolute;
+  inset: 0;
+  filter: blur(9px);
+}
+
+.torch-beam-shape {
+  position: absolute;
+  inset: 0 var(--torch-pad);
+  clip-path: polygon(
+    calc(50% - var(--torch-head) / 2) 0,
+    calc(50% + var(--torch-head) / 2) 0,
+    100% 100%,
+    0 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ink) 5%, transparent),
+    color-mix(in srgb, var(--color-ink) 10%, transparent) 55%,
+    color-mix(in srgb, var(--color-ink) 14%, transparent)
+  );
+}
+
+.cursor-glow[data-on] .torch-source,
+.cursor-glow[data-on] .torch-beam {
+  opacity: 1;
+}
+
+.cursor-glow-orb {
+  position: absolute;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  margin: calc(var(--orb-size) / -2) 0 0 calc(var(--orb-size) / -2);
+  border-radius: 999px;
+  overflow: hidden;
+  opacity: 0;
+  scale: 0.85;
+  transition:
+    opacity 500ms ease,
+    scale 500ms ease;
+  background: radial-gradient(
+    circle at calc(50% + var(--ux, 0) * 34%) calc(50% + var(--uy, -1) * 34%),
+    color-mix(in srgb, var(--color-ink) 10%, transparent),
+    color-mix(in srgb, var(--color-ink) 5%, transparent) 52%,
+    transparent 82%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+  box-shadow:
+    0 0 80px 16px color-mix(in srgb, var(--color-ink) 6%, transparent),
+    inset calc(var(--ux, 0) * -1px) calc(var(--uy, -1) * -1px) 0
+      color-mix(in srgb, var(--color-ink) 26%, transparent),
+    inset calc(var(--ux, 0) * -12px) calc(var(--uy, -1) * -12px) 26px
+      color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+.cursor-glow[data-on] .cursor-glow-orb {
+  opacity: 1;
+  scale: 1;
+}
+
+/*
+ * The trailing light: a wide, very soft radial wash with no edge at all. It is a separate element on its
+ * own, slower-eased track (see the tsx), so it lags behind the orb and catches up when the pointer stops.
+ */
+.cursor-glow-halo {
+  --halo-size: 620px;
+  position: absolute;
+  width: var(--halo-size);
+  height: var(--halo-size);
+  margin: calc(var(--halo-size) / -2) 0 0 calc(var(--halo-size) / -2);
+  border-radius: 999px;
+  opacity: 0;
+  scale: 0.8;
+  transition:
+    opacity 900ms ease,
+    scale 900ms ease;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-ink) 7%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink) 3%, transparent) 38%,
+    transparent 68%
+  );
+}
+
+.cursor-glow[data-on] .cursor-glow-halo {
+  opacity: 1;
+  scale: 1;
+}
+
+.cursor-glow-light {
+  position: absolute;
+  inset: 0;
+  animation: cursor-glow-orbit var(--spin, 14s) linear infinite;
+}
+
+.cursor-glow-light::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: 42%;
+  height: 42%;
+  translate: -50% 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  filter: blur(30px);
+}
+
+.cursor-glow-light-a {
+  --spin: 13s;
+}
+
+.cursor-glow-light-b {
+  --spin: 21s;
+  animation-direction: reverse;
+  scale: 0.8;
+}
+
+.cursor-glow-light-c {
+  --spin: 33s;
+  --start: 120deg;
+  scale: 1.1;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
+}

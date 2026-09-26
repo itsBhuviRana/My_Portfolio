@@ -373,3 +373,121 @@
     --hero-label-from: 3px 0;
   }
 }
+
+/*
+ * The scroll cue that replaced the second CTA: a glowing glass disc with a down arrow, and rings of light
+ * that expand from it forever, like a tap that never lands — no label, the motion says "keep going down".
+ * The arrow is two chevrons that fade in one after the other while drifting down, so it reads as moving.
+ */
+@keyframes hero-cue-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 22px 2px color-mix(in srgb, var(--color-ink) 24%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-paper) 55%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 42px 10px color-mix(in srgb, var(--color-ink) 42%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-paper) 55%, transparent);
+  }
+}
+
+@keyframes hero-cue-ripple {
+  0% {
+    opacity: 0.7;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+
+@keyframes hero-cue-chevron {
+  0% {
+    opacity: 0.25;
+    translate: 0 -5px;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.25;
+    translate: 0 6px;
+  }
+}
+
+.hero-scroll-cue {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 3.25rem);
+  left: 50%;
+  margin-left: -1.75rem;
+  z-index: 30;
+  transition:
+    opacity 400ms ease,
+    visibility 400ms;
+  display: inline-grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  color: var(--color-ink);
+  /* Frosted, not see-through: it floats over whatever the page has at that height, text included. */
+  background:
+    radial-gradient(
+      circle at 32% 26%,
+      color-mix(in srgb, var(--color-ink) 34%, transparent),
+      color-mix(in srgb, var(--color-ink) 12%, transparent) 70%
+    ),
+    color-mix(in srgb, var(--color-vellum) 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--color-ink) 45%, transparent);
+  animation: hero-cue-glow 2.6s ease-in-out infinite;
+}
+
+.hero-scroll-ripple {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1.5px solid color-mix(in srgb, var(--color-ink) 80%, transparent);
+  pointer-events: none;
+  animation: hero-cue-ripple 2.6s ease-out infinite;
+}
+
+.hero-scroll-ripple-late {
+  animation-delay: 1.3s;
+}
+
+.hero-scroll-arrow {
+  width: 1.9rem;
+  height: 1.9rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-scroll-chevron {
+  animation: hero-cue-chevron 1.8s ease-in-out infinite;
+}
+
+.hero-scroll-chevron-late {
+  animation-delay: 0.35s;
+}
+
+/* Scrolled away from the top: the cue steps out of the way (and out of the tab order) until they return. */
+.hero-scroll-cue[data-away="true"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Without JavaScript nothing would ever hide it, so it isn't shown at all. */
+@media (scripting: none) {
+  .hero-scroll-cue {
+    display: none;
+  }
+}

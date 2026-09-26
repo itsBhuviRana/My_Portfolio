@@ -1,44 +1,56 @@
 import { site, socials } from "@assembly/content";
 import { displayUrl } from "../../lib/format";
-import { sheetCount, sheetNumber } from "../../lib/nav";
 import { Monogram } from "../../generated/brand-marks";
+import { ContactLight, type ContactCard } from "./contact-light";
 
-/** The contact destination (`#contact`) and a status line, with the approved monogram (32 px, its minimum). */
+/** Chip label for a social link; `website` and future ids fall back to their own label. */
+const CARD_LABEL: Record<string, string> = {
+  email: "Email",
+  whatsapp: "WhatsApp",
+  linkedin: "LinkedIn",
+  github: "GitHub",
+};
+
+/**
+ * The contact destination (`#contact`): the closing "turn the light on" scene (see `ContactLight`), built from
+ * the socials in the content package, plus the approved monogram (32 px, its minimum) and a status line.
+ */
 export function SiteFooter() {
+  const order = ["email", "whatsapp", "linkedin", "github"];
+  const cards: ContactCard[] = [...socials]
+    .sort((a, b) => {
+      const ai = order.indexOf(a.id);
+      const bi = order.indexOf(b.id);
+      return (ai === -1 ? order.length : ai) - (bi === -1 ? order.length : bi);
+    })
+    .map((link) => ({
+      id: link.id,
+      label: CARD_LABEL[link.id] ?? link.label,
+      display: link.id === "whatsapp" ? "+91 74099 74400" : displayUrl(link.url),
+      href: link.url,
+      external: link.url.startsWith("https:"),
+      copy: link.id === "email" ? displayUrl(link.url) : undefined,
+    }));
+
   return (
-    <footer id="contact" className="rule-ink mt-12 bg-vellum">
-      <div className="page-shell py-10">
-        <div className="title-block" aria-hidden="true">
-          <span className="tech-label">
-            Sheet {sheetNumber("contact")}/{sheetCount}
-          </span>
-          <span className="tech-label">Contact</span>
-        </div>
-        <div className="mt-8 grid gap-6 lg:grid-cols-12 lg:gap-10">
-          <h2 className="type-h1 m-0 lg:col-span-5">Get in touch</h2>
-          <ul className="m-0 list-none p-0 lg:col-span-7">
-            {socials.map((link) => (
-              <li key={link.id} className="border-t border-rule first:border-t-0">
-                <a
-                  href={link.url}
-                  {...(link.url.startsWith("https:") ? { rel: "noopener noreferrer" } : {})}
-                  className="flex min-h-12 flex-wrap items-baseline gap-x-6 gap-y-1 py-3"
-                >
-                  <span className="tech-label w-24 shrink-0">{link.label}</span>
-                  <span className="type-body-lg text-accent underline underline-offset-4 [overflow-wrap:anywhere]">
-                    {displayUrl(link.url)}
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <footer id="contact" className="rule-ink mt-12">
+      <div className="page-shell">
+        <ContactLight
+          cards={cards}
+          status={
+            site.availability?.status === "open" ? (
+              <>
+                <span className="hero-status-dot" aria-hidden="true" />
+                Open to new opportunities
+              </>
+            ) : null
+          }
+        />
       </div>
       <div className="rule-info">
         <div className="page-shell flex flex-wrap items-center gap-x-4 gap-y-2 py-6">
           <Monogram className="size-8 shrink-0" />
           <p className="type-small m-0">{site.name}</p>
-          <p className="tech-label m-0 md:ml-auto">Assembly · Sections in progress</p>
         </div>
       </div>
     </footer>

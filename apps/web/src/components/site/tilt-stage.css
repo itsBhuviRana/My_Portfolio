@@ -1,0 +1,63 @@
+/*
+ * Generic 3D tilt stage (see tilt-stage.tsx, which only writes --tx/--ty/--gx/--gy).
+ *   .tilt-stage  the perspective container
+ *   .tilt-plane  the surface that rotates toward the pointer
+ *   .tilt-layer  a child that shifts by `--depth` px and sits `--z` px in front of the plane
+ *   .tilt-glare  a soft light that follows the pointer
+ */
+
+.tilt-stage {
+  --tx: 0;
+  --ty: 0;
+  --gx: 50%;
+  --gy: 30%;
+  perspective: 1100px;
+}
+
+.tilt-plane {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--ty) * -5deg)) rotateY(calc(var(--tx) * 7deg));
+  will-change: transform;
+}
+
+.tilt-layer {
+  transform: translate3d(
+    calc(var(--tx) * var(--depth, 0) * 1px),
+    calc(var(--ty) * var(--depth, 0) * 1px),
+    var(--z, 0px)
+  );
+}
+
+.tilt-glare {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    380px circle at var(--gx) var(--gy),
+    color-mix(in srgb, var(--color-ink) 26%, transparent),
+    transparent 62%
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.tilt-stage:hover .tilt-glare {
+  opacity: 1;
+}
+
+@keyframes tilt-sway {
+  from {
+    transform: rotateX(-1.5deg) rotateY(-3deg);
+  }
+  to {
+    transform: rotateX(1.5deg) rotateY(3deg);
+  }
+}
+
+@media (hover: none) {
+  .tilt-plane {
+    animation: tilt-sway 7s ease-in-out infinite alternate;
+  }
+}

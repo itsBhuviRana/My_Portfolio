@@ -95,11 +95,11 @@ Repeat for each role you want shown.
 | Current role title                                 | `Experience.role`                        | **CONFIRMED:** Application Module Development Lead                                                                                                    | Provided  |
 | Company                                            | `Experience.company`                     | **CONFIRMED (2026-09-20):** Telus Digital, supplied by the owner. Employer clearance is still the owner's to confirm                                  | Provided  |
 | Dates                                              | `Experience.period`                      | **CONFIRMED (2026-09-20):** started 24 November 2025 (stored as `2025-11`) and ongoing                                                                | Provided  |
-| Summary                                            | `Experience.summary`                     | **CONFIRMED (2026-09-20):** written only from the supplied Discastra facts. Wording to be approved by the owner                                       | Provided  |
+| Summary                                            | `Experience.summary`                     | **CONFIRMED (2026-09-20):** written only from the supplied Dijkastra facts. Wording to be approved by the owner                                       | Provided  |
 | Impact, with sources                               | `Experience.impact`                      | **INPUT REQUIRED.** No metric, outcome or impact was supplied, so the page shows "Project details coming soon."                                       | Phase 4   |
 | Leadership scope (team size, ownership, mentoring) | `Experience.leadership`                  | **INPUT REQUIRED.** Not supplied, so nothing is claimed about team size or ownership                                                                  |
 | Responsibilities                                   | `Experience.responsibilities`            | **CONFIRMED (2026-09-20):** six responsibilities, worded from what was supplied and no stronger                                                       | Provided  |
-| Technologies used                                  | `Experience.stack`, `Experience.project` | **CONFIRMED (2026-09-20):** the Discastra technologies, grouped by layer. They are technologies used in the project, not claims of personal ownership | Provided  |
+| Technologies used                                  | `Experience.stack`, `Experience.project` | **CONFIRMED (2026-09-20):** the Dijkastra technologies, grouped by layer. They are technologies used in the project, not claims of personal ownership | Provided  |
 | Other roles to include                             | `experience`                             | **INPUT REQUIRED.** Which roles, if any                                                                                                               | Phase 4   |
 | Employer clearance                                 | Recorded in the intake or notes          | **INPUT REQUIRED.** Which employers and work you may name or show                                                                                     | Phase 4   |
 
@@ -116,7 +116,7 @@ general engineering description from the confirmed work patterns, not a product 
 only the project name indicates is marked "from name". Still **INPUT REQUIRED** where the page is silent:
 product details for every project that has only a general summary, the BT-Ohana / HRMS product (the supplied
 description contradicted the name, so "Internal HRMS / business application" is only a cautious context), periods
-for the projects without years, and the full stack of every project except Discastra. Curetus App and Dr LaBike
+for the projects without years, and the full stack of every project except Dijkastra. Curetus App and Dr LaBike
 are left without a domain because their names do not clearly support one. "Candour Software" is the normalised
 name for Candoure, to be confirmed by the owner.
 

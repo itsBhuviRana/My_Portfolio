@@ -12,4 +12,8 @@ export const site: Site = {
     short: "React Native and React developer, leading application module development.",
     long: "React Native and React developer, leading application module development.",
   },
+  // Supplied by the owner (September 2026): currently employed and looking for a good opportunity, with
+  // six years of professional experience. Update `yearsOfExperience` by hand as the years pass.
+  availability: { status: "open" },
+  yearsOfExperience: 6,
 };

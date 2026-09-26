@@ -145,6 +145,49 @@
 }
 
 /*
+ * Liquid glass (the iOS reading of it): a thick, curved-looking pane of frosted glass sitting above the
+ * near-black page, not just a tinted overlay. Four things do that work together —
+ *   1. A real frost: heavy blur plus a saturation and brightness lift, so whatever's behind a panel (the
+ *      page's own grid/illustration lines, another panel, a sketch watermark) reads as glowing soft shapes
+ *      through it, not a flat tint.
+ *   2. A diagonal sheen: the background is a gradient, not a flat colour, so the panel itself looks like
+ *      it's catching light unevenly — brighter along one corner, thinner through the middle — the way a
+ *      curved glass surface actually would.
+ *   3. A bright rim: the border and the inset top highlight are both close to full-strength `paper`, not
+ *      a dim tint of `ink`, so the edge reads as a lit contour around the glass rather than a drawn line.
+ *   4. A soft, real shadow: unlike the rest of the site's flat "cut paper" shadows, this one blurs and
+ *      sits below the panel, so the glass looks like it's genuinely floating a few pixels above the page.
+ * Rounded corners are part of the same read (glass doesn't have sharp drafting-table corners), so the
+ * radius lives here rather than at each call site — every consumer gets it for free.
+ *
+ * `glass-chip` is the same *idea*, without the blur or the sheen, for small/dense repeats (badges, tags)
+ * where many independent `backdrop-filter` layers would cost far more than the effect is worth there.
+ */
+@utility glass {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-paper) 26%, transparent) 0%,
+    color-mix(in srgb, var(--color-paper) 10%, transparent) 45%,
+    color-mix(in srgb, var(--color-paper) 18%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-paper) 30%, transparent);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.15);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.15);
+  box-shadow:
+    0 16px 40px -12px color-mix(in srgb, var(--color-ink) 70%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-paper) 55%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 6%, transparent);
+}
+
+@utility glass-chip {
+  background-color: color-mix(in srgb, var(--color-paper) 16%, transparent);
+  border: var(--shape-hairline) solid color-mix(in srgb, var(--color-paper) 30%, transparent);
+  border-radius: var(--radius-md);
+}
+
+/*
  * Generic phone frame (no manufacturer likeness). The outer corner is `lg` (16) and the bezel is
  * 12, so the screen corner is `sm` (4). Put media inside `device-screen`.
  */
@@ -164,21 +207,38 @@
 
 /*
  * Engineering title block: a strip of cells (for example SHEET, SECTION, REV, SCALE) with ink
- * rules between them. Cell text is HTML and normally uses `tech-label`.
+ * rules between them. Cell text is HTML and normally uses `tech-label`. Glass (see `glass` above):
+ * this is the strip that appears on every sheet (Hero's own title-block, every `SheetStrip`, the
+ * footer's, and the architecture tab bar all use this one utility), so making it glass here is what
+ * puts a frosted panel on all of them without editing any of those four files.
  */
 @utility title-block {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  border: var(--shape-stroke) solid var(--color-ink);
-  background-color: var(--color-paper);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-paper) 30%, transparent);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-paper) 26%, transparent) 0%,
+    color-mix(in srgb, var(--color-paper) 10%, transparent) 45%,
+    color-mix(in srgb, var(--color-paper) 18%, transparent) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.15);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.15);
+  box-shadow:
+    0 16px 40px -12px color-mix(in srgb, var(--color-ink) 70%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-paper) 55%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 6%, transparent);
 
   & > * {
     padding: 0.5rem 0.75rem;
   }
 
   & > * + * {
-    border-left: var(--shape-stroke) solid var(--color-ink);
+    border-left: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
   }
 }
 

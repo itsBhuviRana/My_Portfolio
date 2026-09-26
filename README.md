@@ -6,6 +6,8 @@ ASSEMBLY is the personal developer portfolio of Bhuvneshwar Rana: a React Native
 Application Module Development Lead. The concept is an exploded-view engineering illustration: layered
 product views, precise callouts, and a cartoon character as a recurring narrator.
 
+> **License:** the source is viewable, not open source. All rights reserved, see [LICENSE](LICENSE).
+
 ## Status
 
 **Phase 4A: Global Shell + Hero.** Phase 1 (monorepo, tooling, typed content,
@@ -14,7 +16,7 @@ repository now also has the approved Vellum & Layers tokens, a small typography 
 JetBrains Mono), and a handful of CSS primitives (technical labels, rules, grids, layer surfaces, device
 and title-block styling). The site now has a real global shell (header, footer) and the first Hero, an
 exploded-view phone. The main sections (Layers, Work, Release notes, Engineering thinking, About, Contact),
-the character and all animation are still to come. The Work section shows the current role and the Discastra
+the character and all animation are still to come. The Work section shows the current role and the Dijkastra
 product profile, and the contact links are live.
 
 ## Repository structure
@@ -164,7 +166,7 @@ were confirmed) and `capabilityGroups` (cross-project capabilities, never attach
 `packages/content/src/data/atlas.ts` with only what you know, and update the counts in the tests.
 
 The Featured Projects grid is a small interactive field: one project (whichever `Experience.project` links
-to, today Discastra) renders as a full-width anchor band, the rest as a quad beneath it. `<details name="...">`
+to, today Dijkastra) renders as a full-width anchor band, the rest as a quad beneath it. `<details name="...">`
 gives native, scriptless exclusive selection (opening one closes any other), `:has()` dims the rest of the
 field while one is open, and `AtlasField` (`components/work/atlas-field.tsx`) is the one small client
 component in the section: it uses `IntersectionObserver` to settle the field into place once scrolled into

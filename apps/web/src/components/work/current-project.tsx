@@ -4,7 +4,7 @@ import { layer } from "@assembly/tokens";
 import { formatPeriod } from "../../lib/format";
 import { ArchitectureSteps, SyncFlowDiagram } from "./diagrams";
 import { EngineeringLayers } from "./engineering-layers";
-import { SheetStrip } from "./sheet-strip";
+import { DijkastraLive } from "./dijkastra-live";
 
 /** A titled block of the section, marked with a letter like a callout on a drawing sheet. */
 function Block({
@@ -52,22 +52,18 @@ export function CurrentProject() {
 
   return (
     <section
-      id="discastra"
-      aria-labelledby="discastra-title"
+      id="dijkastra"
+      aria-labelledby="dijkastra-title"
       className="page-shell mt-12 pb-10 md:mt-16 md:pb-12"
     >
       <div className="rule-ink" />
-      <div className="mt-10">
-        <SheetStrip tag="Deep inspection" />
-      </div>
-
-      <p className="tech-label m-0 mt-8">The one project shown in full engineering detail</p>
+      <p className="tech-label m-0 mt-10">The one project shown in full engineering detail</p>
       <div className="mt-3 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
         <div className="lg:col-span-7">
           <p className="tech-label m-0">
             {current.role} · {current.company} · {formatPeriod(current.period)}
           </p>
-          <h2 id="discastra-title" className="type-h1 m-0 mt-3">
+          <h2 id="dijkastra-title" className="type-h1 m-0 mt-3">
             {project.name}
           </h2>
         </div>
@@ -83,73 +79,98 @@ export function CurrentProject() {
         ))}
       </dl>
 
-      <div className="mt-12 grid gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-7">
-          <Block mark="A" title="Product characteristics">
-            <ul className="m-0 grid list-none p-0 sm:grid-cols-2 sm:gap-x-8">
-              {project.characteristics.map((item) => (
-                <li
-                  key={item}
-                  className="border-t border-rule py-3 first:border-t-0 sm:[&:nth-child(2)]:border-t-0"
-                >
-                  <span className="type-body font-medium">{item}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6">
-              <SyncFlowDiagram flow={project.syncFlow} />
-            </div>
-          </Block>
-        </div>
-        <div className="lg:col-span-5">
-          <Block mark="B" title="Architecture" note={project.architecture.name}>
-            <ArchitectureSteps architecture={project.architecture} />
-          </Block>
-        </div>
-      </div>
-
-      <div className="mt-12">
-        <Block mark="C" title="Engineering layers" note="Technologies used in the project">
-          <EngineeringLayers groups={project.technologyGroups} />
-        </Block>
-      </div>
-
-      <div className="mt-12 grid gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <Block mark="D" title="Responsibilities" note={`In the ${current.role} role`}>
-            <div>
-              <div
-                className={`layer-leadership type-label flex min-h-11 items-center gap-3 rounded-t-sm px-3`}
-              >
-                <span aria-hidden="true">{layer.leadership.number}</span>
-                Personal role
-              </div>
-              <div
-                className="hatch-leadership h-3 border-x-[1.5px] border-b-[1.5px] border-ink"
-                aria-hidden="true"
-              />
-              <ol className="m-0 grid list-none gap-px border-x-[1.5px] border-b-[1.5px] border-ink bg-rule p-0 md:grid-cols-2">
-                {responsibilities.map((item, index) => (
-                  <li key={item.title} className="flex flex-col gap-1 bg-paper p-4">
-                    <span className="tech-label" aria-hidden="true">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="type-body font-bold">{item.title}</span>
-                    <span className="type-small">{item.detail}</span>
+      <DijkastraLive
+        data={{
+          name: project.name,
+          tagline: project.tagline,
+          syncNodes: project.syncFlow.nodes.map((node) => ({
+            label: node.label,
+            detail: node.detail,
+          })),
+          syncNote: project.syncFlow.note,
+          architecture: {
+            name: project.architecture.name,
+            summary: project.architecture.summary,
+            levels: [...project.architecture.levels],
+          },
+          responsibilities: responsibilities.map((item) => ({
+            title: item.title,
+            detail: item.detail,
+          })),
+          stack: project.technologyGroups.map((group) => ({
+            label: group.label,
+            technologies: [...group.technologies],
+          })),
+        }}
+      >
+        <div className="mt-12 grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <Block mark="A" title="Product characteristics">
+              <ul className="m-0 grid list-none p-0 sm:grid-cols-2 sm:gap-x-8">
+                {project.characteristics.map((item) => (
+                  <li
+                    key={item}
+                    className="border-t border-rule py-3 first:border-t-0 sm:[&:nth-child(2)]:border-t-0"
+                  >
+                    <span className="type-body font-medium">{item}</span>
                   </li>
                 ))}
-              </ol>
-            </div>
+              </ul>
+              <div className="mt-6">
+                <SyncFlowDiagram flow={project.syncFlow} />
+              </div>
+            </Block>
+          </div>
+          <div className="lg:col-span-5">
+            <Block mark="B" title="Architecture" note={project.architecture.name}>
+              <ArchitectureSteps architecture={project.architecture} />
+            </Block>
+          </div>
+        </div>
+
+        <div className="mt-12">
+          <Block mark="C" title="Engineering layers" note="Technologies used in the project">
+            <EngineeringLayers groups={project.technologyGroups} />
           </Block>
         </div>
-        <div className="lg:col-span-4">
-          <Block mark="E" title="Outcome and impact">
-            <p className="type-body m-0 border-[1.5px] border-dashed border-line bg-paper p-4">
-              {project.outcome}
-            </p>
-          </Block>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <Block mark="D" title="Responsibilities" note={`In the ${current.role} role`}>
+              <div>
+                <div
+                  className={`layer-leadership type-label flex min-h-11 items-center gap-3 rounded-t-sm px-3`}
+                >
+                  <span aria-hidden="true">{layer.leadership.number}</span>
+                  Personal role
+                </div>
+                <div
+                  className="hatch-leadership h-3 border-x-[1.5px] border-b-[1.5px] border-ink"
+                  aria-hidden="true"
+                />
+                <ol className="m-0 grid list-none gap-px border-x-[1.5px] border-b-[1.5px] border-ink bg-rule p-0 md:grid-cols-2">
+                  {responsibilities.map((item, index) => (
+                    <li key={item.title} className="flex flex-col gap-1 bg-paper p-4">
+                      <span className="tech-label" aria-hidden="true">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="type-body font-bold">{item.title}</span>
+                      <span className="type-small">{item.detail}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </Block>
+          </div>
+          <div className="lg:col-span-4">
+            <Block mark="E" title="Outcome and impact">
+              <p className="type-body m-0 border-[1.5px] border-dashed border-line bg-paper p-4">
+                {project.outcome}
+              </p>
+            </Block>
+          </div>
         </div>
-      </div>
+      </DijkastraLive>
     </section>
   );
 }
