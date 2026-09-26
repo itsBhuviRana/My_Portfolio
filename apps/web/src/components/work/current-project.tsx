@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { getCurrentExperience } from "@assembly/content";
 import { layer } from "@assembly/tokens";
-import { formatPeriod } from "../../lib/format";
 import { ArchitectureSteps, SyncFlowDiagram } from "./diagrams";
 import { EngineeringLayers } from "./engineering-layers";
 import { DijkastraLive } from "./dijkastra-live";
@@ -62,15 +61,9 @@ export function CurrentProject() {
       </p>
       <div className="mt-3 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
         <div className="lg:col-span-7">
-          <p className="tech-label m-0 max-md:hidden">
-            {current.role} · {current.company} · {formatPeriod(current.period)}
-          </p>
           <h2 id="dijkastra-title" className="type-h1 m-0 mt-3">
-            {project.name}
+            Current project
           </h2>
-          <p className="type-small m-0 mt-2 text-ink-soft md:hidden">
-            {current.company} · {formatPeriod(current.period)}
-          </p>
         </div>
         <p className="type-body-lg m-0 max-md:hidden lg:col-span-5">{project.description}</p>
       </div>

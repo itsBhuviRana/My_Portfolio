@@ -111,7 +111,12 @@ export function ContactLight({
           role="switch"
           aria-checked={lit}
           aria-label="Light"
-          onClick={() => setLit((value) => !value)}
+          onClick={() => {
+            (window as unknown as { __tubeFx?: (kind: "on" | "off") => void }).__tubeFx?.(
+              lit ? "off" : "on",
+            );
+            setLit((value) => !value);
+          }}
           className="contact-switch"
         >
           <span className="contact-plate">

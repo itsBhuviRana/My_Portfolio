@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import type { Detent } from "../site/bottom-sheet";
+import { CapabilityPhone } from "./capability-phone";
 import type {
   BufferGeometry,
   Color,
@@ -28,7 +30,13 @@ export interface PipelineGroup {
   items: string[];
 }
 
-type Api = { setActive: (index: number) => void };
+type Api = {
+  setActive: (index: number) => void;
+  /** Pixels at the bottom of the scene covered by the phone bottom sheet. */
+  setInset: (px: number) => void;
+};
+
+const PHONE_QUERY = "(max-width: 767px)";
 
 const SPACING = 3.6;
 const FOV = 32;
@@ -37,9 +45,12 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 export function CapabilityPipeline({
   groups,
+  note,
   children,
 }: {
   groups: PipelineGroup[];
+  /** The honesty note shown with the full capability list on phones. */
+  note: string;
   children: ReactNode;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -50,6 +61,9 @@ export function CapabilityPipeline({
   const [hiring, setHiring] = useState(false);
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [detent, setDetent] = useState<Detent>(1);
+  const insetRef = useRef(0);
+  const swipe = useRef<{ x: number; y: number } | null>(null);
 
   const count = groups.length;
   const group = groups[active];
@@ -57,6 +71,14 @@ export function CapabilityPipeline({
   useEffect(() => {
     apiRef.current?.setActive(active);
   }, [active, ready]);
+
+  const onSheetVisible = useCallback((px: number) => {
+    insetRef.current = px;
+    apiRef.current?.setInset(px);
+  }, []);
+  useEffect(() => {
+    apiRef.current?.setInset(insetRef.current);
+  }, [ready]);
 
   useEffect(() => {
     if (!playing) return;
@@ -79,6 +101,20 @@ export function CapabilityPipeline({
   const play = () => {
     if (active >= count - 1) setActive(0);
     setPlaying((value) => !value);
+  };
+
+  // Phones: swipe the scene left/right to move to the previous/next station (the stories pattern).
+  const onSwipeStart = (event: React.PointerEvent<HTMLDivElement>) => {
+    swipe.current = { x: event.clientX, y: event.clientY };
+  };
+  const onSwipeEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = swipe.current;
+    swipe.current = null;
+    if (!start || !window.matchMedia(PHONE_QUERY).matches) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    go(active + (dx < 0 ? 1 : -1));
   };
 
   useEffect(() => {
@@ -319,6 +355,10 @@ export function CapabilityPipeline({
       let width = 1;
       let height = 1;
       let narrow = false;
+      // Phone-only view tuning (desktop keeps `isPhoneView` false and the shift at 0, so it is unchanged).
+      let isPhoneView = false;
+      let inset = 0;
+      let curShift = 0;
       let visible = false;
       let entered = false;
       let enteredAt = 0;
@@ -335,6 +375,12 @@ export function CapabilityPipeline({
         const aspect = width / height;
         const halfH = narrow ? 2.4 : 2.6;
         const halfW = narrow ? 1.9 : 3.0;
+        if (isPhoneView) {
+          // Fit the station into the part of the scene the bottom sheet leaves visible.
+          const visibleFraction = Math.max(0.4, 1 - inset / height);
+          goalDist = Math.max(halfW / (tan * aspect), halfH / (tan * visibleFraction)) * 1.05 + 1.2;
+          return;
+        }
         goalDist = Math.max(halfW / (tan * aspect), halfH / tan) * 1.05 + 1.5;
       };
 
@@ -342,12 +388,17 @@ export function CapabilityPipeline({
         setActive: (index) => {
           activeIndex = index;
         },
+        setInset: (px) => {
+          inset = px;
+          fit();
+        },
       };
 
       const resize = () => {
         width = Math.max(1, host.clientWidth);
         height = Math.max(1, host.clientHeight);
         narrow = width < 720;
+        isPhoneView = window.matchMedia(PHONE_QUERY).matches;
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -399,12 +450,17 @@ export function CapabilityPipeline({
         curDist += (goalDist * (1 + 0.6 * (1 - enter)) - curDist) * k;
         yaw += (px * 0.5 - yaw) * k;
         const elevation = 0.16 - py * 0.1;
+        // Phones: look a little below the station so it sits in the space above the bottom sheet.
+        const shiftGoal = isPhoneView
+          ? Math.tan((FOV * Math.PI) / 360) * curDist * (inset / height)
+          : 0;
+        curShift += (shiftGoal - curShift) * k;
         camera.position.set(
           Math.sin(yaw) * curDist,
-          camY + Math.sin(elevation) * curDist + 0.4,
+          camY + Math.sin(elevation) * curDist + 0.4 - curShift,
           Math.cos(yaw) * curDist,
         );
-        camera.lookAt(0, camY - 0.1, 0);
+        camera.lookAt(0, camY - 0.1 - curShift, 0);
 
         // glow travels down the pipe to the active station
         glowLen += (activeIndex * SPACING - glowLen) * k;
@@ -467,7 +523,11 @@ export function CapabilityPipeline({
   return (
     <div>
       {ready ? (
-        <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label="View">
+        <div
+          className="mt-8 flex flex-wrap items-center gap-2 max-md:hidden"
+          role="group"
+          aria-label="View"
+        >
           <button
             type="button"
             aria-pressed={!hiring}
@@ -496,7 +556,7 @@ export function CapabilityPipeline({
       ) : null}
 
       <div
-        className={`glass grid-iso relative mt-4 w-full overflow-hidden ${
+        className={`cap-stage glass grid-iso relative mt-4 w-full overflow-hidden ${
           showStage
             ? "flex flex-col sm:block sm:h-[76dvh] sm:max-h-[800px] sm:min-h-[560px]"
             : "hidden"
@@ -504,7 +564,10 @@ export function CapabilityPipeline({
       >
         <div
           ref={hostRef}
-          className="relative h-[52dvh] min-h-[340px] sm:absolute sm:inset-0 sm:h-auto sm:min-h-0"
+          onPointerDown={onSwipeStart}
+          onPointerUp={onSwipeEnd}
+          data-covered={detent === 2}
+          className="dj-host relative h-[52dvh] min-h-[340px] sm:absolute sm:inset-0 sm:h-auto sm:min-h-0"
         >
           <canvas
             ref={canvasRef}
@@ -513,7 +576,7 @@ export function CapabilityPipeline({
           />
           <ol
             aria-label="Pipeline stations"
-            className="absolute left-3 top-3 z-10 m-0 flex max-w-[calc(100%-1.5rem)] list-none gap-1.5 overflow-x-auto p-0 sm:left-4 sm:top-4 sm:max-w-none sm:flex-col sm:overflow-visible"
+            className="absolute left-3 top-3 z-10 m-0 flex max-w-[calc(100%-1.5rem)] list-none gap-1.5 overflow-x-auto p-0 max-md:hidden sm:left-4 sm:top-4 sm:max-w-none sm:flex-col sm:overflow-visible"
           >
             {groups.map((g, i) => (
               <li key={g.id} className="shrink-0">
@@ -533,7 +596,7 @@ export function CapabilityPipeline({
           </ol>
         </div>
 
-        <div className="relative z-10 flex flex-col gap-2 p-3 sm:absolute sm:bottom-4 sm:right-4 sm:top-4 sm:w-[22rem] sm:p-0">
+        <div className="relative z-10 flex flex-col gap-2 p-3 max-md:hidden sm:absolute sm:bottom-4 sm:right-4 sm:top-4 sm:w-[22rem] sm:p-0">
           <div className="glass flex flex-col gap-3 p-3 sm:max-h-full sm:overflow-y-auto sm:p-4">
             <div>
               <p className="tech-label m-0">
@@ -580,9 +643,21 @@ export function CapabilityPipeline({
             </div>
           </div>
         </div>
+
+        <CapabilityPhone
+          groups={groups}
+          active={active}
+          onGo={go}
+          playing={playing}
+          onPlay={play}
+          note={note}
+          detent={detent}
+          onDetent={setDetent}
+          onVisible={onSheetVisible}
+        />
       </div>
 
-      <div hidden={showStage} className="mt-4">
+      <div hidden={showStage} className="mt-4 max-md:hidden">
         {children}
       </div>
     </div>

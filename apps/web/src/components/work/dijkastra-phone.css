@@ -6,7 +6,8 @@
  */
 @media (max-width: 767px) {
   /* One tall scene that nearly fills the screen above the dock; the sheet lives inside it. */
-  .dj-stage {
+  .dj-stage,
+  .cap-stage {
     display: block !important;
     height: calc(100svh - 14rem - env(safe-area-inset-bottom, 0px)) !important;
     min-height: 27rem !important;
@@ -437,5 +438,41 @@
     border-radius: 12px;
     font-size: 0.9375rem;
     color: var(--color-ink-soft);
+  }
+
+  /* ---- capability pipeline (capability-phone.tsx) --------------------------------------------------- */
+  .cap-group {
+    padding: 12px 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+
+  .cap-group h4 {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 4px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-ink-soft);
+  }
+
+  .cap-group h4 > span {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-soft);
+  }
+
+  .cap-group p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+  }
+
+  .cap-group[data-active="true"] h4,
+  .cap-group[data-active="true"] p {
+    color: var(--color-ink);
   }
 }
