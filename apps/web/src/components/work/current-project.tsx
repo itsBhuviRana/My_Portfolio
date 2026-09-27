@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { getCurrentExperience } from "@assembly/content";
 import { layer } from "@assembly/tokens";
-import { formatPeriod } from "../../lib/format";
 import { ArchitectureSteps, SyncFlowDiagram } from "./diagrams";
 import { EngineeringLayers } from "./engineering-layers";
 import { DijkastraLive } from "./dijkastra-live";
@@ -57,20 +56,19 @@ export function CurrentProject() {
       className="page-shell mt-12 pb-10 md:mt-16 md:pb-12"
     >
       <div className="rule-ink" />
-      <p className="tech-label m-0 mt-10">The one project shown in full engineering detail</p>
+      <p className="tech-label m-0 mt-10 max-md:hidden">
+        The one project shown in full engineering detail
+      </p>
       <div className="mt-3 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
         <div className="lg:col-span-7">
-          <p className="tech-label m-0">
-            {current.role} · {current.company} · {formatPeriod(current.period)}
-          </p>
           <h2 id="dijkastra-title" className="type-h1 m-0 mt-3">
-            {project.name}
+            Current project
           </h2>
         </div>
-        <p className="type-body-lg m-0 lg:col-span-5">{project.description}</p>
+        <p className="type-body-lg m-0 max-md:hidden lg:col-span-5">{project.description}</p>
       </div>
 
-      <dl className="m-0 mt-8 grid gap-[1.5px] border-[1.5px] border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="m-0 mt-8 grid gap-[1.5px] border-[1.5px] border-ink bg-ink max-md:hidden sm:grid-cols-2 lg:grid-cols-4">
         {facts.map(([label, value]) => (
           <div key={label} className="flex min-w-0 flex-col gap-1 bg-paper p-4">
             <dt className="tech-label">{label}</dt>
@@ -101,6 +99,12 @@ export function CurrentProject() {
             label: group.label,
             technologies: [...group.technologies],
           })),
+          about: {
+            description: project.description,
+            facts,
+            characteristics: [...project.characteristics],
+            outcome: project.outcome,
+          },
         }}
       >
         <div className="mt-12 grid gap-10 lg:grid-cols-12">

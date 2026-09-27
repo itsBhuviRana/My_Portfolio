@@ -61,3 +61,12 @@
     animation: tilt-sway 7s ease-in-out infinite alternate;
   }
 }
+
+/* A phone's motion sensor is driving the scene (tilt-stage.tsx): the idle sway steps aside, the glare shows. */
+.tilt-stage[data-gyro] .tilt-plane {
+  animation: none;
+}
+
+.tilt-stage[data-gyro] .tilt-glare {
+  opacity: 1;
+}
