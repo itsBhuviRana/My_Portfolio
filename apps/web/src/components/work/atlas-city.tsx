@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import type { Detent } from "../site/bottom-sheet";
+import { ATLAS_DEFAULT_DETENT, AtlasPhone, type AtlasView } from "./atlas-phone";
 import type {
   BufferGeometry,
   CanvasTexture,
@@ -37,7 +39,14 @@ type Api = {
   frame: (ids: string[] | null) => void;
   highlight: (ids: string[] | null) => void;
   select: (id: string | null) => void;
+  /** Pixels at the bottom of the scene covered by the phone bottom sheet. */
+  setInset: (px: number) => void;
 };
+
+const PHONE_QUERY = "(max-width: 767px)";
+const PHONE_DESCRIPTION =
+  "Projects worked on across companies, platforms and stacks. Details appear only where they are confirmed.";
+const PHONE_LEGEND = "Slim tower = mobile · wide slab = web · taller = featured";
 
 type LabelInfo = { key: string; label: string; count: number };
 
@@ -92,10 +101,24 @@ export function AtlasCity({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tourIndex, setTourIndex] = useState<number | null>(null);
   const [labels, setLabels] = useState<LabelInfo[]>([]);
+  // Phone sheet height: remembered per view, so opening a project or the tour starts at that view's own default.
+  const [sheet, setSheet] = useState<{ key: string; detent: Detent } | null>(null);
+  const insetRef = useRef(0);
 
   const tour = useMemo(() => buildTour(projects), [projects]);
   const step = tourIndex === null ? null : (tour[tourIndex] ?? null);
   const selected = projects.find((p) => p.id === selectedId) ?? null;
+  const view: AtlasView = selected ? "project" : step ? "tour" : "browse";
+  const sheetKey = selected ? `project:${selected.id}` : view;
+  const detent: Detent =
+    sheet && sheet.key === sheetKey ? sheet.detent : ATLAS_DEFAULT_DETENT[view];
+  const onSheetVisible = useCallback((px: number) => {
+    insetRef.current = px;
+    apiRef.current?.setInset(px);
+  }, []);
+  useEffect(() => {
+    apiRef.current?.setInset(insetRef.current);
+  }, [ready]);
 
   // Push React state into the scene.
   useEffect(() => {
@@ -346,6 +369,11 @@ export function AtlasCity({
       let enteredAt = 0;
       let width = 1;
       let height = 1;
+      // Phone-only view tuning (desktop keeps `isPhoneView` false, so its framing and camera are unchanged).
+      let isPhoneView = false;
+      let inset = 0;
+      let curInset = 0;
+      const labelWidths = new Map<string, number>();
       let raf = 0;
       let previous = performance.now();
 
@@ -353,6 +381,11 @@ export function AtlasCity({
         const tan = Math.tan((FOV * Math.PI) / 360);
         const aspect = width / height;
         const vertical = halfZ * Math.sin(PITCH) + halfY * Math.cos(PITCH);
+        if (isPhoneView) {
+          // Fit into the part of the scene the bottom sheet leaves visible.
+          const visibleFraction = Math.max(0.4, 1 - inset / height);
+          return Math.max(halfX / (tan * aspect), vertical / (tan * visibleFraction)) * 1.1 + 1;
+        }
         return (
           Math.max(halfX / (tan * aspect), vertical / tan) * (aspect < 0.8 ? 1.42 : 1.18) + 1.5
         );
@@ -391,7 +424,7 @@ export function AtlasCity({
         const shift = single ? goalDist * (narrow ? 0 : 0.2) : 0;
         goalTarget.set(
           cx + Math.cos(yaw) * shift,
-          narrow && single ? maxH / 2 - goalDist * 0.1 : maxH / 2,
+          narrow && single && !isPhoneView ? maxH / 2 - goalDist * 0.1 : maxH / 2,
           cz - Math.sin(yaw) * shift,
         );
       };
@@ -443,6 +476,10 @@ export function AtlasCity({
         select: (id) => {
           selectedIdLocal = id;
         },
+        setInset: (px) => {
+          inset = px;
+          applyFrame();
+        },
       };
 
       const resize = () => {
@@ -450,6 +487,8 @@ export function AtlasCity({
         height = Math.max(1, host.clientHeight);
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
+        isPhoneView = window.matchMedia(PHONE_QUERY).matches;
+        if (!isPhoneView) camera.clearViewOffset();
         camera.updateProjectionMatrix();
         if (Math.abs(width / height - layoutAspect) > 0.3) relayout(false);
         else applyFrame();
@@ -574,6 +613,11 @@ export function AtlasCity({
           curTarget.z + curDist * Math.cos(curPitch) * Math.cos(curYaw),
         );
         camera.lookAt(curTarget);
+        if (isPhoneView) {
+          // Slide the picture up so it sits in the space above the bottom sheet.
+          curInset += (inset - curInset) * k;
+          camera.setViewOffset(width, height, 0, curInset / 2, width, height);
+        }
         // Fog is relative to how far the camera is, so a zoomed-out portrait view is not swallowed by it.
         fog.near = curDist * 0.9;
         fog.far = curDist * 3;
@@ -616,19 +660,40 @@ export function AtlasCity({
           b.edgeMat.opacity = (0.35 + 0.55 * b.hi) * alpha;
         }
 
-        // District labels follow their groups on the ground.
+        // District labels follow their groups on the ground. On phones the labels are small, kept inside the
+        // scene, and any label that would land on a bigger group's label stays hidden (the sheet lists every group).
         scene.updateMatrixWorld();
-        for (const group of groups) {
+        const placed: { x0: number; x1: number; y0: number; y1: number }[] = [];
+        const ordered = isPhoneView
+          ? [...groups].sort((p, q) => q.ids.length - p.ids.length)
+          : groups;
+        for (const group of ordered) {
           const a = anchors[group.key];
           const el = labelEls.current.get(group.key);
           if (!a || !el) continue;
           tmp.set(a.x, 0.05, a.z + a.d / 2 + 1.05);
           tmp.project(camera);
-          const px = ((tmp.x + 1) / 2) * width;
+          let px = ((tmp.x + 1) / 2) * width;
           const py = ((1 - tmp.y) / 2) * height;
-          el.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, 0)`;
           const dimmed = highlightIds && !group.ids.some((id) => highlightIds?.has(id));
-          el.style.opacity = entered ? (dimmed ? "0.25" : "1") : "0";
+          let opacity = entered ? (dimmed ? 0.25 : 1) : 0;
+          if (isPhoneView) {
+            let w = labelWidths.get(group.key) ?? 0;
+            if (!w && el.offsetWidth > 0) {
+              w = el.offsetWidth;
+              labelWidths.set(group.key, w);
+            }
+            w = w || 90;
+            px = Math.min(width - w / 2 - 6, Math.max(w / 2 + 6, px));
+            const rect = { x0: px - w / 2 - 4, x1: px + w / 2 + 4, y0: py - 2, y1: py + 26 };
+            const clash = placed.some(
+              (r) => rect.x0 < r.x1 && rect.x1 > r.x0 && rect.y0 < r.y1 && rect.y1 > r.y0,
+            );
+            if (clash) opacity = 0;
+            else placed.push(rect);
+          }
+          el.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, 0)`;
+          el.style.opacity = String(opacity);
         }
 
         renderer.render(scene, camera);
@@ -678,7 +743,7 @@ export function AtlasCity({
       <div
         ref={hostRef}
         data-ready={stageOpen}
-        className={`glass grid-iso relative mt-8 w-full overflow-hidden ${
+        className={`atlas-stage glass grid-iso relative mt-8 w-full overflow-hidden ${
           stageOpen ? "h-[80dvh] max-h-[880px] min-h-[540px]" : "pointer-events-none h-0"
         }`}
       >
@@ -701,7 +766,7 @@ export function AtlasCity({
                 if (el) labelEls.current.set(label.key, el);
                 else labelEls.current.delete(label.key);
               }}
-              className="absolute left-0 top-0 whitespace-nowrap opacity-0 transition-opacity duration-500"
+              className="atlas-label absolute left-0 top-0 whitespace-nowrap opacity-0 transition-opacity duration-500"
             >
               <span className="glass-chip type-label inline-flex items-center gap-2 px-2.5 py-1 text-ink">
                 {label.label}
@@ -717,7 +782,7 @@ export function AtlasCity({
         {selected ? (
           <aside
             aria-label={`${selected.name} details`}
-            className="glass absolute inset-x-3 bottom-3 z-20 max-h-[52%] overflow-y-auto p-4 sm:inset-x-auto sm:bottom-auto sm:right-4 sm:top-16 sm:max-h-[calc(100%-6rem)] sm:w-[22rem]"
+            className="glass absolute inset-x-3 bottom-3 z-20 max-h-[52%] overflow-y-auto p-4 max-md:hidden sm:inset-x-auto sm:bottom-auto sm:right-4 sm:top-16 sm:max-h-[calc(100%-6rem)] sm:w-[22rem]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -805,7 +870,7 @@ export function AtlasCity({
           </aside>
         ) : null}
 
-        <div className="absolute inset-x-3 bottom-3 z-10 flex flex-col items-stretch gap-2 sm:inset-x-4 sm:bottom-4">
+        <div className="absolute inset-x-3 bottom-3 z-10 flex flex-col items-stretch gap-2 max-md:hidden sm:inset-x-4 sm:bottom-4">
           {step && !selected ? (
             <div className="glass flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
               <p className="type-body m-0 flex-1" aria-live="polite">
@@ -877,9 +942,28 @@ export function AtlasCity({
             </div>
           ) : null}
         </div>
+
+        <AtlasPhone
+          projects={projects}
+          mode={mode}
+          onMode={setMode}
+          selected={selected}
+          onSelect={setSelectedId}
+          tour={tour}
+          tourIndex={tourIndex}
+          onStep={goStep}
+          onExitTour={exitTour}
+          detent={detent}
+          onDetent={(next) => setSheet({ key: sheetKey, detent: next })}
+          onVisible={onSheetVisible}
+          description={PHONE_DESCRIPTION}
+          legend={PHONE_LEGEND}
+        />
       </div>
 
-      <div hidden={stageOpen}>{children}</div>
+      <div hidden={stageOpen} className="max-md:hidden">
+        {children}
+      </div>
     </div>
   );
 }
