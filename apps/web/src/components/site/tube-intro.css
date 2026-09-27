@@ -3,36 +3,38 @@
  * paint; without it the overlay is `display: none`, so no-JS, reduced-motion and repeat visits get the
  * page directly.
  *
- * Layers, back to front: the black page colour (the overlay's own background), `.tube-room` (the white,
- * blown-out room, brightest at the top where the tube is), the tube fixture, and the copy + switch.
+ * A dark room lit by one shaded fixture — a tube light on desktop, a bulb on phones (max-width: 767px) —
+ * throwing a soft cone of light down to the floor, dust hanging in it, and a wall switch. Layers, back to
+ * front: the dark page colour (the overlay's own background), the light and its dust (`.intro-beam`, shared
+ * by both fixtures), the fixture, and the copy + switch. `--white` (below) is that light's one colour, so
+ * the tube, the bulb, the light and the dust all warm together from a single change.
  *
- * On load the fixture lowers in from above the screen edge and the copy fades in after it.
- * Turning off (`.tube-intro--off`) is one slow, staged sequence on a single clock:
- *   0-450ms     the rocker flips to OFF, the label and status text switch
- *   200-2600    the tube dims: two soft dips, then a long fade (small area only, ~2 flashes a second at most)
- *   1600-5000   the white light drains DOWN and out of the screen, away from the tube: a soft-edged mask
- *               sinks from the top toward the bottom, so darkness follows the tube's light-out downward
- *   2000-2900   copy and switch fade out (the OFF switch stays readable for ~1.5s first), before the
- *               wipe reaches them
- *   2400        the page's own animations are released (see tube-intro-script.ts), just as the top clears
- *   4800-5500   the overlay itself fades away; it is removed at 5800
- * The white values are `white`/`black` keywords mixed with the warm `ink` token, not new palette colours.
+ * On desktop the tube lowers in from above the screen edge and its light comes up as it ignites; the copy
+ * fades in after it. Turning off (`.tube-intro--off`) is short and quick — the visitor asked for the site,
+ * so it shows almost at once. On one clock (the timings in tube-intro-script.ts must match):
+ *   0-450ms     the rocker flips to OFF; the tube/bulb flickers out, its light and dust fading with it
+ *   200-550     the copy and the switch fade into the dark
+ *   250-800     the fixture is pulled up on its wires, out of sight
+ *   700         the page's own animations are released
+ *   700-1100    the overlay fades away, the site underneath; it is removed at 1150
  */
 
-@property --lift {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 135%;
-}
-
 .tube-intro {
-  --white: white;
-  --room-mid: color-mix(in srgb, var(--color-ink) 22%, white);
-  --room-low: color-mix(in srgb, var(--color-ink) 62%, white);
+  /* A soft incandescent tone, not a stark white screen-glow — every "lit" surface below reads off this one
+     value, so warming it warms the tube, the bulb and the light they throw in one place. */
+  --white: color-mix(in srgb, #ffb347 36%, white);
   --housing: color-mix(in srgb, var(--color-ink) 74%, black);
   --housing-edge: color-mix(in srgb, var(--color-ink) 48%, black);
   --tube-off: color-mix(in srgb, var(--color-ink) 80%, black);
-  --copy: var(--color-vellum);
+  --copy: var(--color-ink);
+  /* Desktop's fixture: the tube's top edge, and its width (see .tube-fixture). */
+  --tube-top: max(env(safe-area-inset-top), clamp(1.25rem, 6vh, 3.5rem));
+  --fixture-width: min(82vw, 720px);
+  /* Where the light (.intro-beam) starts and half its width there: the tube's vertical middle (5px of
+     housing padding + half its 16px height), and the lit tube's own width (the housing's 9px side padding
+     off each end). The phone block below points these at the bulb instead. */
+  --light-top: calc(var(--tube-top) + 13px);
+  --light-half: calc(var(--fixture-width) / 2 - 9px);
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -41,7 +43,7 @@
   background: var(--color-vellum);
   color: var(--copy);
   opacity: 1;
-  transition: opacity 700ms ease-in-out 4800ms;
+  transition: opacity 400ms ease 700ms;
 }
 
 html[data-intro] .tube-intro {
@@ -64,40 +66,7 @@ html[data-intro="on"] main *::after {
   pointer-events: none;
 }
 
-/*
- * The room. Fully white at first paint (nothing of the site may show), lit from the top. Off: a
- * soft-edged mask shrinks toward the bottom (`--lift` 135% -> 0%), so the white drains downward
- * and the dark spreads down from the tube behind it. The opacity fade is only a fallback for engines that can't
- * animate the registered `--lift` property; it starts late enough not to be seen otherwise.
- */
-.tube-room {
-  position: absolute;
-  inset: 0;
-  --lift: 135%;
-  background: radial-gradient(
-    130% 100% at 50% 6%,
-    var(--white) 0%,
-    var(--white) 30%,
-    var(--room-mid) 72%,
-    var(--room-low) 100%
-  );
-  mask-image: linear-gradient(to top, black calc(var(--lift) - 34%), transparent var(--lift));
-  -webkit-mask-image: linear-gradient(
-    to top,
-    black calc(var(--lift) - 34%),
-    transparent var(--lift)
-  );
-  transition:
-    --lift 3400ms cubic-bezier(0.45, 0.05, 0.35, 1) 1600ms,
-    opacity 800ms ease 4700ms;
-}
-
-.tube-intro--off .tube-room {
-  --lift: 0%;
-  opacity: 0;
-}
-
-/* The fixture hangs from the top edge and lowers into place on load. */
+/* The tube hangs from the top edge and lowers into place on load. */
 @keyframes tube-rise {
   from {
     translate: 0 -160%;
@@ -110,19 +79,28 @@ html[data-intro="on"] main *::after {
 }
 
 .tube-fixture {
-  --fixture-width: min(82vw, 720px);
   position: absolute;
-  top: max(env(safe-area-inset-top), clamp(1.25rem, 6vh, 3.5rem));
+  top: var(--tube-top);
   left: 50%;
   width: var(--fixture-width);
   margin-left: calc(var(--fixture-width) / -2);
   animation: tube-rise 1500ms cubic-bezier(0.2, 0.8, 0.2, 1) 150ms both;
 }
 
+/* Pulled up on its wires, out past the top edge (the shade reaches 20px above the fixture's own box). An
+   animation, not a transition: swapping tube-rise out and a translate transition in on the same frame made
+   the browser skip the transition, and the tube just vanished. */
+@keyframes tube-retract {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 calc(-100% - var(--tube-top) - 24px);
+  }
+}
+
 .tube-intro--off .tube-fixture {
-  animation: none;
-  opacity: 0.35;
-  transition: opacity 2200ms ease 400ms;
+  animation: tube-retract 550ms cubic-bezier(0.45, 0, 0.55, 1) 250ms both;
 }
 
 .tube-wire {
@@ -157,24 +135,26 @@ html[data-intro="on"] main *::after {
   height: 16px;
   border-radius: 999px;
   background: var(--tube-off);
-  transition: background-color 2000ms ease 400ms;
+  transition: background-color 450ms ease;
 }
 
 .tube-intro--off .tube-body {
   background: color-mix(in srgb, var(--color-ink) 30%, black);
 }
 
-/* The lit tube: solid white with a wide downward bloom. This is the only thing that flickers. */
+/* The lit tube. This and the bulb's glass are the only things that flicker. */
 .tube-lit {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: var(--white);
   opacity: 1;
+  /* The light leaving the tube's own outline: a tight glow, weighted downward (the offset) so the part up
+     under the shade stays hidden by it. The cone below (.intro-beam) starts behind the tube and takes over
+     from here, so it all reads as one light spreading from the tube's edges. */
   box-shadow:
-    0 4px 14px 4px var(--white),
-    0 20px 60px 28px color-mix(in srgb, white 90%, transparent),
-    0 60px 160px 80px color-mix(in srgb, white 70%, transparent);
+    0 0 10px 2px var(--white),
+    0 10px 22px 3px color-mix(in srgb, var(--white) 60%, transparent);
   animation: tube-ignite 1600ms ease-out 900ms both;
 }
 
@@ -189,21 +169,16 @@ html[data-intro="on"] main *::after {
   }
 }
 
-@keyframes tube-flicker {
+/* Off: a quick flicker out, not a long fade. */
+@keyframes light-quick-off {
   0% {
     opacity: 1;
   }
-  10% {
-    opacity: 0.5;
+  25% {
+    opacity: 0.35;
   }
-  20% {
-    opacity: 1;
-  }
-  34% {
-    opacity: 0.4;
-  }
-  46% {
-    opacity: 0.8;
+  45% {
+    opacity: 0.9;
   }
   100% {
     opacity: 0;
@@ -211,7 +186,31 @@ html[data-intro="on"] main *::after {
 }
 
 .tube-intro--off .tube-lit {
-  animation: tube-flicker 2400ms ease-in-out 200ms both;
+  animation: light-quick-off 450ms ease-in both;
+}
+
+/*
+ * The tube's shade: a long reflector over it, wider than the tube at the bottom and narrower at the top, and
+ * low enough to overlap the tube's top edge — the tube sits up inside it, as the bulb sits inside its own
+ * shade (.bulb-shade). It's what keeps the light from going up and gives it a reason to fall as a cone. A
+ * plain trapezoid clip-path, in px from each end so it stretches to any fixture width with the same slope;
+ * the blur below rounds its corners off. (A rounded rectangle tipped back in perspective, tried first,
+ * pulled its far ends out into sharp points across a fixture this wide.) Last in .tube-fixture, so it
+ * paints over the wires and the housing.
+ */
+.tube-shade {
+  position: absolute;
+  top: -20px;
+  left: -22px;
+  right: -22px;
+  height: 28px;
+  clip-path: polygon(30px 0, calc(100% - 30px) 0, 100% 100%, 0 100%);
+  background: linear-gradient(to bottom, var(--housing), var(--housing-edge));
+  /* The same soft edge and warm under-glow as the bulb's shade. */
+  filter: blur(1.5px);
+  box-shadow:
+    0 8px 16px -6px color-mix(in srgb, black 45%, transparent),
+    0 6px 14px -6px color-mix(in srgb, var(--white) 55%, transparent);
 }
 
 /* Copy and the switch. */
@@ -232,23 +231,33 @@ html[data-intro="on"] main *::after {
   gap: 1.5rem;
   padding: 7rem 1.5rem 2rem;
   text-align: center;
+  /* Text only, mostly: this box covers the whole overlay, so without this the empty space around the words
+     would swallow touches meant for anything behind it. Only the switch, an actual control, opts back in. */
+  pointer-events: none;
   animation: tube-ui-in 900ms ease 700ms backwards;
-  transition: opacity 900ms ease 2000ms;
+  transition: opacity 350ms ease 200ms;
 }
 
 .tube-intro--off .tube-ui {
   opacity: 0;
 }
 
+/*
+ * Genuinely translucent, not a solid colour with a highlight drawn on top of it: the light (`.intro-beam`)
+ * sits behind this in paint order, so whatever it's doing right now — lit, flickering, gone once the light
+ * is off — shows straight through the letters on its own. No separate glow to keep in sync; there's nothing
+ * to sync, it's the same light.
+ */
 .tube-title {
   max-width: 22ch;
   font-size: clamp(1.4rem, 3.6vw, 2.4rem);
   line-height: 1.15;
   text-wrap: balance;
-  color: var(--copy);
+  color: color-mix(in srgb, var(--color-ink) 62%, transparent);
 }
 
 .tube-switch {
+  pointer-events: auto;
   touch-action: manipulation;
   border-radius: 20px;
   background: none;
@@ -258,8 +267,9 @@ html[data-intro="on"] main *::after {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Light, not the page's dark colour: the ring has to show against the dark room. */
 .tube-switch:focus-visible {
-  outline: 3px solid var(--color-vellum);
+  outline: 3px solid var(--color-ink);
   outline-offset: 6px;
   box-shadow: none;
 }
@@ -359,15 +369,6 @@ html[data-intro="on"] main *::after {
   opacity: 0.55;
 }
 
-.tube-status {
-  color: color-mix(in srgb, var(--color-vellum) 78%, white);
-}
-
-.tube-status-value {
-  font-weight: 700;
-  color: var(--color-vellum);
-}
-
 @keyframes tube-hint-in {
   from {
     opacity: 0;
@@ -389,7 +390,7 @@ html[data-intro="on"] main *::after {
 
 /* A patient nudge: nothing for a few seconds, then a soft pulse and a one-line hint. */
 .tube-hint {
-  color: color-mix(in srgb, var(--color-vellum) 70%, white);
+  color: color-mix(in srgb, var(--color-ink) 75%, black);
   opacity: 0;
   animation: tube-hint-in 700ms ease 4s forwards;
 }
@@ -411,5 +412,432 @@ html[data-intro="on"] main *::after {
   .tube-ui {
     gap: 1.25rem;
     padding-top: 6rem;
+  }
+}
+
+/*
+ * The phone fixture: a shaded bulb hanging fixed in place, turned off with the same wall switch as the
+ * desktop's tube.
+ */
+.bulb-fixture {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+}
+
+/* Pulled up on its wire, out of sight. */
+.tube-intro--off .bulb-fixture {
+  translate: -50% -100%;
+  transition: translate 550ms cubic-bezier(0.45, 0, 0.55, 1) 250ms;
+}
+
+/* Hung from the very top of the screen, from somewhere above it, rather than a ceiling mount drawn partway
+   down: the wire runs from the top edge, down past the status bar area, to the lamp. */
+.bulb-wire {
+  display: block;
+  width: 2px;
+  height: calc(var(--fixture-top) + 28px);
+  margin: 0 auto;
+  background: var(--housing-edge);
+  opacity: 0.7;
+}
+
+.bulb-grab {
+  position: relative;
+  width: 112px;
+  height: 140px;
+  margin: 0 auto;
+}
+
+.bulb-cap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 22px;
+  height: 16px;
+  translate: -50% 0;
+  border-radius: 3px;
+  background: linear-gradient(to bottom, var(--housing), var(--housing-edge));
+}
+
+.bulb-glass {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  translate: -50% 0;
+  width: 52px;
+  height: 64px;
+  border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
+  /* No overflow: hidden here — the glow below is most of the point, and clipping it to the glass's own
+     shape left only a flat, near-invisible disc. */
+  background: color-mix(in srgb, var(--color-ink) 18%, black);
+}
+
+/*
+ * The shade: wider than the glass on every side and positioned to overlap its top by about a tenth of its
+ * height (see .bulb-glass's `top` above), the way a bulb actually sits inside a real shade rather than
+ * level with its rim — it's also what gives the light below a reason to read as directional (down and
+ * softly out) rather than an even sphere around an uncovered bulb. `clip-path: path(...)`, not `polygon()`,
+ * so the corners are gently rounded instead of drafting-table sharp.
+ */
+.bulb-shade {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 98px;
+  height: 32px;
+  translate: -50% 0;
+  clip-path: path(
+    "M37.36 0 L60.64 0 Q66.64 0 70.84 4.29 L93.8 27.71 Q98 32 92 32 L6 32 Q0 32 4.2 27.71 L27.16 4.29 Q31.36 0 37.36 0 Z"
+  );
+  background: linear-gradient(to bottom, var(--housing), var(--housing-edge));
+  /* A slight blur feathers the path's otherwise razor-sharp lines, and the warm under-glow softens the
+     hard seam where the dark material meets the bright opening beneath it. */
+  filter: blur(1.5px);
+  box-shadow:
+    0 8px 16px -6px color-mix(in srgb, black 45%, transparent),
+    0 6px 14px -6px color-mix(in srgb, var(--white) 55%, transparent);
+}
+
+.bulb-lit {
+  position: absolute;
+  inset: 0;
+  /* Without this it's a plain rectangle sitting inside the glass's rounded shape. */
+  border-radius: inherit;
+  background: var(--white);
+  /* The light leaving the glass's own outline: a tight glow hugging the egg shape, weighted downward (the
+     offset) so the part up inside the shade stays hidden under it. The cone below (.intro-beam) starts
+     behind the glass and takes over from here, so it all reads as one light spreading from the bulb's
+     border. */
+  box-shadow:
+    0 0 10px 2px var(--white),
+    0 10px 20px 2px color-mix(in srgb, var(--white) 60%, transparent);
+  mix-blend-mode: screen;
+  animation: tube-ignite 1600ms ease-out 900ms both;
+}
+
+.tube-intro--off .bulb-lit {
+  animation: light-quick-off 450ms ease-in both;
+}
+
+/*
+ * The light, spreading from the fixture's own edges — the tube's on desktop, the bulb's glass on phones
+ * (`--light-top`/`--light-half`, set on .tube-intro): the cone's narrow end is the fixture's own width,
+ * halfway down it and behind it (earlier in the markup), so the fixture itself hides where it starts — no
+ * edge or line anywhere near it — and its sides run out from the fixture's sides. It ends exactly at the
+ * bottom of the window and is exactly the window's width there, so the light reaches the floor and spreads
+ * across its full width. One layer for both fixtures, so the dust in it is only in the markup once.
+ * The same nested shape/blur structure as the closing contact scene's beam (contact-light.css: `.contact-beam`
+ * / `-blur` / `-shape`): `.intro-beam-shape` is the hard-edged, clip-path cone; `.intro-beam-blur` is a plain
+ * wrapper around it with nothing but a blur, which is what softens the cone's lines (blurring and clipping the
+ * *same* element just cuts the soft edge straight back off — the wrapper is the whole trick). No mask on
+ * `.intro-beam`: a mask ends at the box's edges, and both earlier versions' visible lines were exactly that.
+ */
+.intro-beam {
+  position: absolute;
+  top: var(--light-top);
+  left: 0;
+  width: 100%;
+  height: calc(100dvh - var(--light-top));
+  pointer-events: none;
+  /* Comes up with the tube as it ignites (desktop; see the phone block for the bulb, which is lit at once). */
+  animation: tube-hint-in 900ms ease-out 900ms backwards;
+}
+
+.intro-beam-blur {
+  position: absolute;
+  inset: 0;
+  filter: blur(30px);
+}
+
+.intro-beam-shape {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    calc(50% - var(--light-half)) 0,
+    calc(50% + var(--light-half)) 0,
+    100% 100%,
+    0 100%
+  );
+  /* Brightest at the fixture, still faintly there at the floor rather than fading out on the way down. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--white) 60%, transparent),
+    color-mix(in srgb, var(--white) 26%, transparent) 20%,
+    color-mix(in srgb, var(--white) 16%, transparent) 60%,
+    color-mix(in srgb, var(--white) 12%, transparent)
+  );
+}
+
+.tube-intro--off .intro-beam {
+  animation: none;
+  opacity: 0;
+  transition: opacity 450ms ease-in;
+}
+
+/*
+ * The dust (see DUST in tube-intro.tsx): a layer the same size as the light. Each mote sits at its own depth
+ * down the cone (`--y`) and fraction of its width at that depth (`--u`); the cone is `--light-half` either
+ * side of centre at the top and the full width at the bottom (.intro-beam-shape), hence the `left` formula.
+ * Not clipped to the cone: the light's edge is soft, and a hard clip cut the motes' halos into faint lines
+ * along it — instead motes are placed inside it, wander less where it's narrow (`dust-wander-near` below)
+ * and fade toward its edges.
+ *
+ * Only `--y`/`--u`/`--p` are per-mote; the rest is shared here to keep the markup small. The wander and glint
+ * start mid-way (negative delays, from the mote's own position, so neighbours never move in step) so the
+ * room is already full of dust on the first frame, and the nth-child groups below use different cycle
+ * lengths (3, 5, 6, 7) so no two motes share the same size, loop, pace and glint.
+ *
+ * Every keyframe below is plain literal values — no `var()` or `calc()` inside them — so the browser can run
+ * all ~800 animations on the compositor; with per-mote variables in the keyframes they ran on the main thread
+ * and halved the frame rate on a throttled phone. That's why each loop is its own named keyframe, and why a
+ * mote's brightness (`--p`) lives in its colour's alpha rather than in the animated opacity.
+ */
+.intro-dust {
+  position: absolute;
+  inset: 0;
+}
+
+/* Slow, small loops — dust in still air hangs and wanders; it doesn't fall. */
+@keyframes dust-wander-a {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  33% {
+    translate: 24px -18px;
+  }
+  66% {
+    translate: -14px -13px;
+  }
+}
+
+@keyframes dust-wander-b {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  33% {
+    translate: -30px 12px;
+  }
+  66% {
+    translate: 18px 8px;
+  }
+}
+
+@keyframes dust-wander-c {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  33% {
+    translate: 16px 26px;
+  }
+  66% {
+    translate: -10px 18px;
+  }
+}
+
+@keyframes dust-wander-d {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  33% {
+    translate: -12px -24px;
+  }
+  66% {
+    translate: 7px -17px;
+  }
+}
+
+@keyframes dust-wander-e {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  33% {
+    translate: 34px 8px;
+  }
+  66% {
+    translate: -20px 6px;
+  }
+}
+
+/* The narrow top of the light, right under the fixture: the same kind of loop, a third the size. */
+@keyframes dust-wander-near {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  33% {
+    translate: 8px -7px;
+  }
+  66% {
+    translate: -6px 5px;
+  }
+}
+
+/* Turning in the air, each speck catches the light and loses it again. */
+@keyframes dust-glint {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.intro-dust > span {
+  --size: 1px;
+  --wander: 18s;
+  --glint: 4s;
+  position: absolute;
+  top: calc(var(--y) * 100%);
+  left: calc(50% + var(--u) * (var(--light-half) + (50% - var(--light-half)) * var(--y)));
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--white) calc(var(--p) * 100%), transparent);
+  /* Brighter than the light around it, as dust in sun is: a fine hot point with the faintest halo. */
+  box-shadow: 0 0 2px 0.5px color-mix(in srgb, var(--white) calc(var(--p) * 70%), transparent);
+  opacity: 0.35;
+  animation:
+    dust-wander-a var(--wander) ease-in-out calc(var(--u) * 9s - var(--y) * 23s) infinite,
+    dust-glint var(--glint) ease-in-out calc(var(--y) * -31s - var(--u) * 7s) infinite;
+}
+
+.intro-dust > span:nth-child(3n) {
+  --size: 1.5px;
+}
+
+.intro-dust > span:nth-child(5n + 1) {
+  animation-name: dust-wander-b, dust-glint;
+}
+
+.intro-dust > span:nth-child(5n + 2) {
+  animation-name: dust-wander-c, dust-glint;
+}
+
+.intro-dust > span:nth-child(5n + 3) {
+  animation-name: dust-wander-d, dust-glint;
+}
+
+.intro-dust > span:nth-child(5n + 4) {
+  animation-name: dust-wander-e, dust-glint;
+}
+
+/* The first 60 (sorted top down in tube-intro.tsx) are the ones in the narrow light right under the bulb. */
+.intro-dust > span:nth-child(-n + 60) {
+  animation-name: dust-wander-near, dust-glint;
+}
+
+.intro-dust > span:nth-child(6n + 1) {
+  --wander: 14s;
+}
+
+.intro-dust > span:nth-child(6n + 2) {
+  --wander: 22s;
+}
+
+.intro-dust > span:nth-child(6n + 3) {
+  --wander: 16s;
+}
+
+.intro-dust > span:nth-child(6n + 4) {
+  --wander: 26s;
+}
+
+.intro-dust > span:nth-child(6n + 5) {
+  --wander: 20s;
+}
+
+.intro-dust > span:nth-child(7n + 1) {
+  --glint: 2.6s;
+}
+
+.intro-dust > span:nth-child(7n + 2) {
+  --glint: 6.5s;
+}
+
+.intro-dust > span:nth-child(7n + 3) {
+  --glint: 3.3s;
+}
+
+.intro-dust > span:nth-child(7n + 4) {
+  --glint: 7.4s;
+}
+
+.intro-dust > span:nth-child(7n + 5) {
+  --glint: 5.2s;
+}
+
+/* Out of focus: nearer the eye than the rest, so bigger, softer and fainter (`--p`, tube-intro.tsx). */
+.intro-dust > span:nth-child(8n) {
+  --size: 3px;
+  filter: blur(1.2px);
+}
+
+@media (max-width: 767px) {
+  .tube-intro {
+    /* How far below the top edge the lamp's wire length puts it (see .bulb-wire). */
+    --fixture-top: max(env(safe-area-inset-top), 0.75rem);
+    /* The light starts halfway down the bulb's glass (the wire, then 38px + 32px down .bulb-grab), as
+       wide as the glass. */
+    --light-top: calc(var(--fixture-top) + 98px);
+    --light-half: 26px;
+  }
+
+  .tube-fixture {
+    display: none;
+  }
+
+  .bulb-fixture {
+    display: block;
+  }
+
+  /* The bulb is lit from the first frame, not lowered in, so its light is too. */
+  .intro-beam {
+    animation: none;
+  }
+
+  /* The desktop-sized switch dominates a phone screen; the same switch, about half the size. */
+  .tube-plate {
+    width: 52px;
+    height: 84px;
+    border-radius: 11px;
+  }
+
+  .tube-rocker {
+    width: 28px;
+    height: 46px;
+    border-radius: 6px;
+  }
+
+  .tube-mark {
+    padding: 0 4px;
+    font-size: 0.5rem;
+  }
+
+  .tube-mark-on {
+    top: 4px;
+  }
+
+  .tube-mark-off {
+    bottom: 4px;
+  }
+
+  .tube-switch {
+    border-radius: 11px;
+  }
+
+  /* Sized down and moved further from the light's source than the desktop needs: a phone screen has
+     nowhere near the same room to spare. */
+  .tube-title {
+    margin: 2.75rem auto 0;
+    font-size: clamp(1.05rem, 5.2vw, 1.35rem);
   }
 }
