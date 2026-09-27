@@ -235,7 +235,7 @@ export function DijkastraPhone({
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <p className="dj-outcome">{data.about.outcome}</p>
+            {data.about.outcome ? <p className="dj-outcome">{data.about.outcome}</p> : null}
           </section>
         </div>
       </BottomSheet>

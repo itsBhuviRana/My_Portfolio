@@ -87,17 +87,12 @@ const INFLATED_CLAIM =
 
 function projectProblems(project: NonNullable<Experience["project"]>): string[] {
   const problems: string[] = [];
-  for (const field of [
-    "name",
-    "tagline",
-    "description",
-    "context",
-    "platform",
-    "users",
-    "outcome",
-  ] as const) {
+  for (const field of ["name", "tagline", "description", "context", "platform", "users"] as const) {
     if (isBlank(project[field])) problems.push(`project.${field} is blank`);
   }
+  // Optional until the owner supplies one, but never present and empty.
+  if (project.outcome !== undefined && isBlank(project.outcome))
+    problems.push("project.outcome is blank");
   if (project.characteristics.length === 0) problems.push("project has no characteristics");
   if (project.characteristics.some(isBlank)) problems.push("a project characteristic is blank");
   if (project.architecture.levels.length === 0) problems.push("architecture has no levels");
@@ -399,7 +394,7 @@ describe("Dijkastra profile", () => {
   it("states no impact until one can be sourced", () => {
     expect(current!.impact).toEqual([]);
     expect(current!.leadership).toBeUndefined();
-    expect(project!.outcome).toBe("Project details coming soon.");
+    expect(project!.outcome).toBeUndefined();
   });
 
   it("only references skill ids that exist", () => {
@@ -565,10 +560,10 @@ describe("project atlas", () => {
     expect((jsw.personalWork ?? []).join(" ")).not.toMatch(/native|kotlin|swift|module/i);
   });
 
-  it("leaves the BT-Ohana / HRMS product unspecified", () => {
+  it("describes BT-Ohana / HRMS as the owner confirmed it: an internal employee learning platform", () => {
     const ohana = byId("bt-ohana-hrms")!;
-    expect(ohana.product).toBeUndefined();
-    expect(JSON.stringify(ohana)).not.toMatch(/student|study/i);
+    expect(ohana.product).toBe("Internal employee learning and certification platform");
+    expect(ohana.domainFromName).toBeUndefined();
   });
 
   it("keeps Telus Digital as the current employer and links Dijkastra to its detailed profile", () => {
@@ -750,15 +745,16 @@ describe("atlas enrichment", () => {
     expect(byId("admedic").summary).toBe(
       "Healthcare-focused mobile application involving feature development and cross-platform mobile engineering.",
     );
-    expect(byId("bt-ohana-hrms").summary).toMatch(/^Internal HRMS \/ business application/);
+    expect(byId("bt-ohana-hrms").summary).toMatch(/^Internal employee learning platform/);
   });
 
   it("does not call BT-Ohana / HRMS a student application or invent HR modules", () => {
-    expect(byId("bt-ohana-hrms").summary).not.toMatch(/student|study|payroll|attendance|recruit/i);
+    // Employees study for certifications on it (confirmed), but it is not a student application.
+    expect(byId("bt-ohana-hrms").summary).not.toMatch(/student|payroll|attendance|recruit/i);
   });
 
   it("keeps domains cautious: confirmed only where the product is confirmed, otherwise flagged as from the name", () => {
-    const confirmed = ["dijkastra", "ifl", "coca-cola", "jsw-connection", "poito"];
+    const confirmed = ["dijkastra", "ifl", "coca-cola", "jsw-connection", "poito", "bt-ohana-hrms"];
     for (const project of atlasProjects) {
       if (project.domain === undefined) continue;
       expect(project.domainFromName === true, project.name).toBe(!confirmed.includes(project.id));
@@ -781,9 +777,9 @@ describe("atlas enrichment", () => {
       "Customer management",
       "Customer service",
       "Education",
+      "Employee learning",
     ]);
     expect(summary.domains.fromName).toEqual([
-      "HRMS / business",
       "Healthcare",
       "Automotive",
       "Music / media",
