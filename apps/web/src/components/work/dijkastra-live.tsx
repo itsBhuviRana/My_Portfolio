@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import type { Detent } from "../site/bottom-sheet";
+import { DijkastraPhone, defaultDetent } from "./dijkastra-phone";
 import type {
   BufferGeometry,
   Color,
@@ -34,6 +36,13 @@ export interface LiveData {
   architecture: { name: string; summary: string; levels: string[] };
   responsibilities: { title: string; detail: string }[];
   stack: { label: string; technologies: string[] }[];
+  /** The header facts and product notes, shown in the phone sheet's "About" section. */
+  about: {
+    description: string;
+    facts: [label: string, value: string][];
+    characteristics: string[];
+    outcome: string;
+  };
 }
 
 type Chapter = "sync" | "architecture" | "role" | "stack";
@@ -50,9 +59,12 @@ type Api = {
   addRecord: () => void;
   setPick: (index: number | null) => void;
   setLevel: (index: number | null) => void;
+  /** Pixels at the bottom of the scene covered by the phone bottom sheet. */
+  setInset: (px: number) => void;
 };
 
 const FOV = 32;
+const PHONE_QUERY = "(max-width: 767px)";
 const MAX_QUEUE = 24;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -230,6 +242,9 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
   const [counts, setCounts] = useState({ device: 0, synced: 0 });
   const [pick, setPick] = useState<number | null>(null);
   const [level, setLevel] = useState<number | null>(null);
+  const [detent, setDetent] = useState<Detent>(defaultDetent("sync"));
+  const insetRef = useRef(0);
+  const swipe = useRef<{ x: number; y: number } | null>(null);
 
   const cards = chapter === "role" ? data.responsibilities : chapter === "stack" ? data.stack : [];
 
@@ -241,6 +256,35 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
     setChapter(next);
     setPick(null);
     setLevel(null);
+    setDetent(defaultDetent(next));
+  };
+  const onSheetVisible = useCallback((px: number) => {
+    insetRef.current = px;
+    apiRef.current?.setInset(px);
+  }, []);
+  useEffect(() => {
+    apiRef.current?.setInset(insetRef.current);
+  }, [ready]);
+
+  // Phones: swipe the scene left/right for the next/previous chapter (the stories pattern).
+  const onSwipeStart = (event: React.PointerEvent<HTMLDivElement>) => {
+    swipe.current = { x: event.clientX, y: event.clientY };
+  };
+  const onSwipeEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = swipe.current;
+    swipe.current = null;
+    if (!start || !window.matchMedia(PHONE_QUERY).matches) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const host = hostRef.current;
+    if (host) {
+      host.dataset.swiped = "true";
+      window.setTimeout(() => delete host.dataset.swiped, 350);
+    }
+    const index = CHAPTERS.findIndex((c) => c.id === chapter);
+    const target = CHAPTERS[index + (dx < 0 ? 1 : -1)];
+    if (target) chooseChapter(target.id);
   };
   useEffect(() => {
     apiRef.current?.setOnline(online);
@@ -472,6 +516,10 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
       let width = 1;
       let height = 1;
       let narrow = false;
+      // Phone-only view tuning (the desktop path keeps `isPhoneView` false and the shift at 0, so it is unchanged).
+      let isPhoneView = false;
+      let inset = 0;
+      let curShift = 0;
       let visible = false;
       let entered = false;
       let enteredAt = 0;
@@ -533,7 +581,7 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
           archSlot.pos.set(0, 0, 0);
           archSlot.scale = narrow ? 0.85 : 1;
           target.halfW = narrow ? 2.4 : 3.2;
-          target.halfH = 3.2;
+          target.halfH = isPhoneView ? 2.5 : 3.2;
           target.present.add(archSlot);
         } else if (ch === "role") {
           phoneSlot.pos.set(0, 0, 0);
@@ -570,6 +618,14 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
       const fit = () => {
         const tan = Math.tan((FOV * Math.PI) / 360);
         const aspect = width / height;
+        if (isPhoneView) {
+          // Fit the subject into the part of the scene the bottom sheet leaves visible.
+          const visibleFraction = Math.max(0.4, 1 - inset / height);
+          goalDist =
+            Math.max(target.halfW / (tan * aspect), target.halfH / (tan * visibleFraction)) * 1.06 +
+            0.8;
+          return;
+        }
         goalDist = Math.max(target.halfW / (tan * aspect), target.halfH / tan) * 1.12 + 1;
       };
 
@@ -601,12 +657,17 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
         setLevel: (index) => {
           levelPin = index;
         },
+        setInset: (px) => {
+          inset = px;
+          fit();
+        },
       };
 
       const resize = () => {
         width = Math.max(1, host.clientWidth);
         height = Math.max(1, host.clientHeight);
         narrow = width < 720;
+        isPhoneView = window.matchMedia(PHONE_QUERY).matches;
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -655,6 +716,7 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
         }
       };
       const onClick = (event: PointerEvent) => {
+        if (host.dataset.swiped) return; // that pointer-up ended a chapter swipe, not a tap
         const index = pickCard(event);
         if (index !== null) setPick(index);
       };
@@ -711,12 +773,17 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
         curDist += (goalDist * (1 + 0.5 * (1 - enter)) - curDist) * k;
         yaw += (px * 0.35 - yaw) * k;
         pitchOffset += (-py * 0.12 - pitchOffset) * k;
+        // Phones: look a little below the subject so it sits in the space above the bottom sheet.
+        const shiftGoal = isPhoneView
+          ? Math.tan((FOV * Math.PI) / 360) * curDist * (inset / height)
+          : 0;
+        curShift += (shiftGoal - curShift) * k;
         camera.position.set(
           Math.sin(yaw) * curDist,
-          0.5 + pitchOffset * curDist * 0.4,
+          0.5 + pitchOffset * curDist * 0.4 - curShift,
           Math.cos(yaw) * curDist,
         );
-        camera.lookAt(0, 0, 0);
+        camera.lookAt(0, -curShift, 0);
 
         // presence / placement of each group
         for (const s of slots) {
@@ -946,13 +1013,16 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
   return (
     <div>
       <div
-        className={`glass grid-iso relative mt-8 w-full overflow-hidden ${
+        className={`dj-stage glass grid-iso relative mt-8 w-full overflow-hidden ${
           ready ? "flex flex-col sm:block sm:h-[78dvh] sm:max-h-[820px] sm:min-h-[560px]" : "hidden"
         }`}
       >
         <div
           ref={hostRef}
-          className="relative h-[54dvh] min-h-[360px] sm:absolute sm:inset-0 sm:h-auto sm:min-h-0"
+          onPointerDown={onSwipeStart}
+          onPointerUp={onSwipeEnd}
+          data-covered={detent === 2}
+          className="dj-host relative h-[54dvh] min-h-[360px] sm:absolute sm:inset-0 sm:h-auto sm:min-h-0"
         >
           <canvas
             ref={canvasRef}
@@ -1008,7 +1078,7 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
           </div>
 
           <div
-            className="absolute inset-x-3 top-3 z-10 flex flex-wrap items-center gap-2 sm:inset-x-4 sm:top-4"
+            className="absolute inset-x-3 top-3 z-10 flex flex-wrap items-center gap-2 max-md:hidden sm:inset-x-4 sm:top-4"
             role="tablist"
             aria-label="Chapters"
           >
@@ -1029,7 +1099,7 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
           </div>
         </div>
 
-        <div className="relative z-10 flex flex-col gap-2 p-3 sm:absolute sm:inset-x-4 sm:bottom-4 sm:p-0">
+        <div className="relative z-10 flex flex-col gap-2 p-3 max-md:hidden sm:absolute sm:inset-x-4 sm:bottom-4 sm:p-0">
           {chapter === "sync" ? (
             <div className="glass flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:gap-4 sm:p-4">
               <p className="type-body m-0 flex-1">{data.syncNote}</p>
@@ -1117,17 +1187,35 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
             </div>
           ) : null}
         </div>
+
+        <DijkastraPhone
+          data={data}
+          chapter={chapter}
+          onChapter={chooseChapter}
+          online={online}
+          onOnline={setOnline}
+          counts={counts}
+          maxQueue={MAX_QUEUE}
+          onAddRecord={() => apiRef.current?.addRecord()}
+          pick={pick}
+          onPick={setPick}
+          level={level}
+          onLevel={setLevel}
+          detent={detent}
+          onDetent={setDetent}
+          onVisible={onSheetVisible}
+        />
       </div>
 
       {ready ? (
-        <details className="mt-8">
+        <details className="mt-8 max-md:hidden">
           <summary className="glass-chip type-label inline-flex min-h-11 cursor-pointer items-center px-4 text-ink">
             Full engineering breakdown
           </summary>
           <div className="mt-6">{children}</div>
         </details>
       ) : (
-        children
+        <div className="max-md:hidden">{children}</div>
       )}
     </div>
   );

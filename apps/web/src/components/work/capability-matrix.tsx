@@ -2,6 +2,8 @@ import { capabilityGroups } from "@assembly/content";
 import { CapabilityPipeline } from "./capability-pipeline";
 import { TechChips } from "./atlas-parts";
 
+const NOTE = "Experience across the projects above. Not every item was used on every project.";
+
 /** One capability group as a small specification card, so the whole matrix is scanned, not read line by line. */
 function CapabilityCard({
   label,
@@ -41,10 +43,9 @@ export function CapabilityMatrix() {
       <h2 id="capabilities-title" className="type-h1 m-0 mt-10">
         Engineering capabilities
       </h2>
-      <p className="tech-label m-0 mt-2">
-        Experience across the projects above. Not every item was used on every project.
-      </p>
+      <p className="tech-label m-0 mt-2 max-md:hidden">{NOTE}</p>
       <CapabilityPipeline
+        note={NOTE}
         groups={capabilityGroups.map((group) => ({
           id: group.id,
           label: group.label,

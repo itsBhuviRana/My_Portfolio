@@ -75,7 +75,7 @@ export function HeroDesk({ className = "" }: { className?: string }) {
   ];
 
   return (
-    <TiltStage className={`hero-desk ${className}`}>
+    <TiltStage gyro className={`hero-desk ${className}`}>
       <div className="tilt-plane hero-desk-plane">
         <div className="tilt-layer hero-desk-plate" style={{ "--depth": 5 } as CSSProperties}>
           <Image

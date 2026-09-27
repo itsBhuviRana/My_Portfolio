@@ -208,8 +208,21 @@ html[data-contact-lit="true"] .cursor-glow {
   scale: 1.1;
 }
 
-@media (hover: none), (prefers-reduced-motion: reduce) {
+/* Touch tablets and reduced-motion users get no glow. Phones do: see the [data-touch] rules below. */
+@media (hover: none) and (min-width: 768px), (prefers-reduced-motion: reduce) {
   .cursor-glow {
     display: none;
   }
+}
+
+/* Phone variant: a smaller orb and halo, and a bit dimmer, on a screen that is mostly text. */
+.cursor-glow[data-touch] {
+  --orb-size: 150px;
+  --torch-head: 34px;
+  --torch-pad: 22px;
+  opacity: 0.8;
+}
+
+.cursor-glow[data-touch] .cursor-glow-halo {
+  --halo-size: 420px;
 }

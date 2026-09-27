@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { site } from "@assembly/content";
 import { color } from "@assembly/tokens";
 import { CursorGlow } from "../components/site/cursor-glow";
+import { MobileDock } from "../components/site/mobile-dock";
 import { SiteFooter } from "../components/site/site-footer";
 import { SmoothScroll } from "../components/site/smooth-scroll";
 import { TubeIntro } from "../components/site/tube-intro";
@@ -36,6 +37,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: color.vellum,
+  // Lets the page extend under the iPhone home indicator; the dock and body padding use the safe-area insets.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -66,6 +69,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </a>
           <div className="flex-1">{children}</div>
           <SiteFooter />
+          <MobileDock />
         </div>
       </body>
     </html>
