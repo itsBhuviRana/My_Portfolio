@@ -64,12 +64,12 @@ export function AtlasOverview() {
       <div className="rule-ink" />
       <div className="mt-8 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
         <div className="lg:col-span-7">
-          <p className="tech-label m-0">All projects · approximate periods</p>
+          <p className="tech-label m-0 max-md:hidden">All projects · approximate periods</p>
           <h2 id="work-title" className="type-h1 m-0 mt-3">
             Project atlas
           </h2>
         </div>
-        <p className="type-body-lg m-0 lg:col-span-5">
+        <p className="type-body-lg m-0 max-md:hidden lg:col-span-5">
           Projects worked on across companies, platforms and stacks. Details appear only where they
           are confirmed.
         </p>
