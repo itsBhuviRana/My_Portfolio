@@ -1,8 +1,12 @@
 export const TUBE_INTRO_SEEN_KEY = "assembly:tube-intro";
 
-/** Ms from the switch flip until the page's own animations are released, and until the overlay is done. */
-export const TUBE_INTRO_RELEASE_MS = 2400;
-export const TUBE_INTRO_REMOVE_MS = 5800;
+/**
+ * Ms from the switch flip until the page's own animations are released, and until the overlay is done. Short:
+ * the light flickers out, the fixture is pulled up out of sight and the site shows almost at once. Must match
+ * `.tube-intro`'s opacity transition in tube-intro.css (400ms after a 700ms delay).
+ */
+export const TUBE_INTRO_RELEASE_MS = 700;
+export const TUBE_INTRO_REMOVE_MS = 1150;
 
 /**
  * The whole tube intro's behaviour, as one inline `<head>` script rendered by the root layout. It runs before
@@ -72,8 +76,6 @@ if(o)o.classList.add("tube-intro--off");
 window.__tubeFx("off");
 var s=document.querySelector(".tube-switch");
 if(s)s.setAttribute("aria-checked","false");
-var v=document.querySelector(".tube-status-value");
-if(v)v.textContent="OFF";
 setTimeout(function(){d.setAttribute("data-intro","leaving")},${TUBE_INTRO_RELEASE_MS});
 setTimeout(function(){d.removeAttribute("data-intro");setInert(false)},${TUBE_INTRO_REMOVE_MS});
 }
