@@ -20,8 +20,9 @@ export const FREELANCE = "Freelance";
  * sizes, outcomes, the full stack of any project beyond the lists below, and which native modules were
  * personally written on JSW Connection.
  *
- * BT-Ohana / HRMS: the supplied product description ("Study for Student") contradicts the project name, so
- * it is not used. "Internal HRMS / business application" is only a cautious contextual description.
+ * BT-Ohana / HRMS: confirmed by the owner as a company's internal platform for its own employees, through
+ * which they study for and complete certifications. It is not a student application and has no confirmed HR
+ * modules (payroll, attendance, recruitment), so none are named.
  */
 export const atlasProjects: readonly AtlasProject[] = [
   // ── Featured ──────────────────────────────────────────────────────────────
@@ -95,7 +96,7 @@ export const atlasProjects: readonly AtlasProject[] = [
     tier: "featured",
     summary:
       "Home broker mobile application built with React Native CLI. Work included feature development, payment gateway integration and API integration, with GraphQL and SQLite in the stack.",
-    years: { from: 2022, to: 2025 },
+    years: { from: 2021, to: 2024 },
     framework: "React Native CLI",
     product: "Home broker application",
     personalWork: ["Feature development"],
@@ -142,11 +143,11 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "web",
     tier: "index",
     summary:
-      "Internal HRMS / business application built with React.js and React Native. Work involved feature development, reusable components and API-driven application behavior.",
-    domain: "HRMS / business",
-    domainFromName: true,
+      "Internal employee learning platform built with React.js and React Native, through which a company's employees study for and complete certifications. Work involved feature development, reusable components and API-driven application behavior.",
+    domain: "Employee learning",
     years: { from: 2022, to: 2024 },
     framework: "React.js + React Native",
+    product: "Internal employee learning and certification platform",
     personalWork: ["Feature development"],
   },
   {

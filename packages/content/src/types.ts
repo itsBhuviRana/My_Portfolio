@@ -201,8 +201,8 @@ export interface ExperienceProject {
   readonly architecture: ProjectArchitecture;
   readonly syncFlow: SyncFlow;
   readonly technologyGroups: readonly TechnologyGroup[];
-  /** Impact is not supplied yet, so this holds an editorial placeholder rather than a claim. */
-  readonly outcome: string;
+  /** The project's outcome or impact, once the owner supplies one. Absent until then: the page shows nothing. */
+  readonly outcome?: string;
 }
 
 export interface Experience {

@@ -41,7 +41,7 @@ export interface LiveData {
     description: string;
     facts: [label: string, value: string][];
     characteristics: string[];
-    outcome: string;
+    outcome?: string;
   };
 }
 

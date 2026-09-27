@@ -139,7 +139,7 @@ export function CurrentProject() {
         </div>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-8">
+          <div className={project.outcome ? "lg:col-span-8" : "lg:col-span-12"}>
             <Block mark="D" title="Responsibilities" note={`In the ${current.role} role`}>
               <div>
                 <div
@@ -166,13 +166,16 @@ export function CurrentProject() {
               </div>
             </Block>
           </div>
-          <div className="lg:col-span-4">
-            <Block mark="E" title="Outcome and impact">
-              <p className="type-body m-0 border-[1.5px] border-dashed border-line bg-paper p-4">
-                {project.outcome}
-              </p>
-            </Block>
-          </div>
+          {/* Only once there is a real outcome to state: an empty or placeholder block reads as unfinished. */}
+          {project.outcome ? (
+            <div className="lg:col-span-4">
+              <Block mark="E" title="Outcome and impact">
+                <p className="type-body m-0 border-[1.5px] border-dashed border-line bg-paper p-4">
+                  {project.outcome}
+                </p>
+              </Block>
+            </div>
+          ) : null}
         </div>
       </DijkastraLive>
     </section>

@@ -127,7 +127,6 @@ export const experience: readonly Experience[] = [
           technologies: ["Jest", "Sentry", "Airbrake", "CodeQL", "GitHub Actions", "CI/CD"],
         },
       ],
-      outcome: "Project details coming soon.",
     },
     // Core stack only. These ids match the portfolio skills, so the integrity tests can check them.
     stack: ["react-native", "react", "typescript"],
