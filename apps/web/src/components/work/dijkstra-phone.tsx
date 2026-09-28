@@ -1,7 +1,7 @@
 "use client";
 
 import { BottomSheet, type Detent } from "../site/bottom-sheet";
-import type { LiveData } from "./dijkastra-live";
+import type { LiveData } from "./dijkstra-live";
 
 export type Chapter = "sync" | "architecture" | "role" | "stack";
 
@@ -21,11 +21,11 @@ export function defaultDetent(chapter: Chapter): Detent {
 }
 
 /**
- * The phone version of Dijkastra Live's chrome: a story-style progress bar over the scene (tap a segment, or swipe
+ * The phone version of Dijkstra Live's chrome: a story-style progress bar over the scene (tap a segment, or swipe
  * the scene, to change chapter) and a bottom sheet that carries everything the desktop overlay cards carry. The
  * same 3D scene sits behind both; this file only draws the controls and text. Everything shown comes from `data`.
  */
-export function DijkastraPhone({
+export function DijkstraPhone({
   data,
   chapter,
   onChapter,

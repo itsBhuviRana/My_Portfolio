@@ -18,7 +18,7 @@ const PEEK: Record<AtlasView, number> = { browse: 152, project: 96, tour: 190 };
 const platformLabel = (p: AtlasCityProject) => (p.platform === "mobile" ? "Mobile" : "Web");
 
 /**
- * The phone version of the Project Atlas chrome (the same story-bar + bottom-sheet pattern as Dijkastra Live and the
+ * The phone version of the Project Atlas chrome (the same story-bar + bottom-sheet pattern as Dijkstra Live and the
  * capability pipeline). Three views share one sheet:
  *   - browse: "arrange by" switch, the tour button, and, pulled open, every project grouped by the current
  *     arrangement (a tap on a row is a tap on that building, for the ones too small to hit in the scene);
@@ -217,6 +217,7 @@ export function AtlasPhone({
                     ["Period", selected.years],
                     ["Client", selected.client],
                     ["Enterprise", selected.enterpriseClient],
+                    ["Via", selected.via],
                     ["Framework", selected.framework],
                     ["Technologies", selected.technologies?.join(" · ")],
                   ] as const
@@ -250,8 +251,8 @@ export function AtlasPhone({
                 </>
               ) : null}
               {selected.hasDetail ? (
-                <a className="atl-link" href="#dijkastra">
-                  Open the current project ↓
+                <a className="atl-link" href="#dijkstra">
+                  Open the featured project ↓
                 </a>
               ) : null}
             </>

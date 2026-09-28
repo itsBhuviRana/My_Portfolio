@@ -16,8 +16,9 @@
   /* Anchors land with a little air above the section instead of flush with the top. */
   #home,
   #work,
-  #dijkastra,
+  #dijkstra,
   #capabilities,
+  #career,
   #contact {
     scroll-margin-top: 0.75rem;
   }
@@ -42,11 +43,16 @@
     display: none;
   }
 
-  /* Quiet the top of the page: no eyebrow label, no divider, no tagline. The name and role carry it. */
+  /* Quiet the top of the page: no eyebrow label and no divider. The name, role and bio carry it. */
   .hero-eyebrow,
-  .hero-rule,
-  .hero-concept {
+  .hero-rule {
     display: none;
+  }
+
+  /* The bio sits right under the name and role, ahead of the portrait (the grid's default order would put
+     it below the portrait, far down the first screen). */
+  .hero-desk {
+    order: 1;
   }
 
   /* The dock replaces the scroll arrow as the way down. */

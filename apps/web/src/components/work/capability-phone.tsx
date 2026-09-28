@@ -5,7 +5,7 @@ import type { PipelineGroup } from "./capability-pipeline";
 
 /**
  * The phone version of the capability pipeline's chrome (the same story-bar + bottom-sheet pattern as
- * Dijkastra Live): one progress segment per station over the scene (tap one, or swipe the scene, to move along
+ * Dijkstra Live): one progress segment per station over the scene (tap one, or swipe the scene, to move along
  * the pipe), and a sheet with the station's capabilities, the Play / Next controls, and — pulled fully open —
  * every capability from every station (the "Hiring view" of the desktop page). Everything comes from `groups`.
  */

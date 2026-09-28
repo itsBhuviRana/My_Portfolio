@@ -10,7 +10,7 @@ import type { AtlasCityProject } from "./atlas-layout";
 import { DomainTag, StackBadge } from "./atlas-parts";
 
 const SECTION_LINKS = [
-  ["dijkastra", "Current project"],
+  ["dijkstra", "Featured project"],
   ["capabilities", "Capabilities"],
 ] as const;
 
@@ -39,6 +39,7 @@ export function AtlasOverview() {
     id: project.id,
     name: project.name,
     company: project.company,
+    via: project.via,
     platform: project.platform,
     tier: project.tier,
     summary: project.summary,

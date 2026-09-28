@@ -13,13 +13,6 @@ import { HeroScrollCue } from "./hero-scroll-cue";
  */
 const SHOW_ARCHITECTURE = false;
 
-/** The approved concept line (README and brand guide). It is the tagline, not a claim about the work. */
-const CONCEPT =
-  "A developer's world taken apart layer by layer, so you can see how it's built and who builds it.";
-
-/** The headline reads "<craft> · <title>". Both halves come from the content data. */
-const [craft = site.headline] = site.headline.split(" · ");
-
 /**
  * The identity block resolves as three separate beats, not one group: the eyebrow, then the name, then
  * the role, each "printing" in character by character (see `PrintChars` below and `.hero-print-char` in
@@ -29,7 +22,6 @@ const [craft = site.headline] = site.headline.split(" · ");
 const EYEBROW_DELAY = 900;
 const NAME_DELAY = EYEBROW_DELAY + 180;
 const ROLE_DELAY = NAME_DELAY + 180;
-const ROLE_LINE_2_DELAY = ROLE_DELAY + 120;
 const CTA_DELAY = ROLE_DELAY + 400;
 
 /** How long, in ms, one word's characters take to fully print before the next beat can start reading. */
@@ -157,12 +149,8 @@ export function Hero() {
           </h1>
           <div className="mt-5">
             <p className="type-h3 m-0">
-              <span className="sr-only">{craft}</span>
-              <PrintChars text={craft} baseDelay={ROLE_DELAY} />
-            </p>
-            <p className="type-h3 m-0 mt-1 text-ink-soft">
               <span className="sr-only">{site.role}</span>
-              <PrintChars text={site.role} baseDelay={ROLE_LINE_2_DELAY} />
+              <PrintChars text={site.role} baseDelay={ROLE_DELAY} />
             </p>
           </div>
         </div>
@@ -173,7 +161,7 @@ export function Hero() {
             className="hero-text-group flex flex-col gap-6"
           >
             <div className="rule-info hero-rule" />
-            <p className="type-body-lg hero-concept m-0 max-w-[44ch]">{CONCEPT}</p>
+            <p className="type-body-lg hero-concept m-0 max-w-[44ch]">{site.summary.short}</p>
             <div className="flex flex-wrap items-center gap-3">
               {SHOW_ARCHITECTURE ? (
                 <a

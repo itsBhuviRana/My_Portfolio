@@ -5,9 +5,9 @@ import type { NavItem } from "../../lib/nav";
 
 /**
  * Primary navigation. On smaller screens the list is a disclosure opened by a button (Escape closes it and
- * returns focus to the button). From `xl` up the list is always visible, because six items do not fit
- * beside the wordmark on a tablet. Sections that are not built yet
- * are shown as placeholders, not links.
+ * returns focus to the button). From `xl` up the list is always visible, because the full list does not fit
+ * beside the wordmark on a tablet. Only built sections are
+ * listed (see `navItems`).
  */
 export function NavMenu({ items }: { items: readonly NavItem[] }) {
   const [open, setOpen] = useState(false);
@@ -40,22 +40,14 @@ export function NavMenu({ items }: { items: readonly NavItem[] }) {
       >
         {items.map((item, index) => (
           <li key={item.id} className="border-t border-rule xl:border-0">
-            {item.available ? (
-              <a
-                href={`#${item.id}`}
-                onClick={() => setOpen(false)}
-                className="tech-label flex min-h-11 items-center gap-2 px-4 text-ink md:px-8 xl:px-0"
-              >
-                <span aria-hidden="true">{String(index + 2).padStart(2, "0")}</span>
-                {item.label}
-              </a>
-            ) : (
-              <span className="tech-label flex min-h-11 items-center gap-2 px-4 md:px-8 xl:px-0">
-                <span aria-hidden="true">{String(index + 2).padStart(2, "0")}</span>
-                {item.label}
-                <span className="sr-only"> (coming soon)</span>
-              </span>
-            )}
+            <a
+              href={`#${item.id}`}
+              onClick={() => setOpen(false)}
+              className="tech-label flex min-h-11 items-center gap-2 px-4 text-ink md:px-8 xl:px-0"
+            >
+              <span aria-hidden="true">{String(index + 2).padStart(2, "0")}</span>
+              {item.label}
+            </a>
           </li>
         ))}
       </ul>

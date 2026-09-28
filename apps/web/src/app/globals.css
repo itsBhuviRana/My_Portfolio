@@ -7,7 +7,8 @@
 @import "../components/hero/hero-desk.css";
 @import "../components/site/cursor-glow.css";
 @import "../components/work/capability-pipeline.css";
+@import "../components/work/career-history.css";
 @import "../components/site/contact-light.css";
 @import "../components/site/mobile-dock.css";
 @import "../components/site/mobile.css";
-@import "../components/work/dijkastra-phone.css";
+@import "../components/work/dijkstra-phone.css";

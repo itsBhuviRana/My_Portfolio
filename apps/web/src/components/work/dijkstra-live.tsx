@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Detent } from "../site/bottom-sheet";
-import { DijkastraPhone, defaultDetent } from "./dijkastra-phone";
+import { DijkstraPhone, defaultDetent } from "./dijkstra-phone";
 import type {
   BufferGeometry,
   Color,
@@ -15,7 +15,7 @@ import type {
 } from "three";
 
 /**
- * "Dijkastra Live": the current project as one object to walk around instead of a page to read. A 3D phone
+ * "Dijkstra Live": the current project as one object to walk around instead of a page to read. A 3D phone
  * (its screen is drawn here, a generic field-management UI, never a real screenshot) and four chapters the
  * visitor switches between:
  *   - Sync: an Offline/Online switch and an "Add field record" button. Records land in the on-device database
@@ -198,6 +198,12 @@ function drawScreen(
   return canvas;
 }
 
+/** The phone's card grid (role and stack chapters): two columns, this far apart vertically. */
+const GRID_COLS_NARROW = 2;
+const GRID_DY_NARROW = 1.3;
+/** How far the phone's grid sits below centre, clear of the story bar and chapter label over the scene. */
+const GRID_DROP_NARROW = -0.45;
+
 function drawCard(
   index: number,
   title: string,
@@ -230,7 +236,7 @@ function drawCard(
   return canvas;
 }
 
-export function DijkastraLive({ data, children }: { data: LiveData; children: ReactNode }) {
+export function DijkstraLive({ data, children }: { data: LiveData; children: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [labelEls] = useState(() => new Map<string, HTMLElement>());
@@ -586,18 +592,18 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
         } else if (ch === "role") {
           phoneSlot.pos.set(0, 0, 0);
           phoneSlot.scale = 1;
-          cardSlot.pos.set(0, 0, 0);
+          cardSlot.pos.set(0, narrow ? GRID_DROP_NARROW : 0, 0);
           cardSlot.scale = 1;
           // On a phone the orbit's cards shrink to unreadable, so they become a grid of large cards instead.
           target.halfW = narrow ? 1.95 : 4.6;
-          target.halfH = narrow ? 2.35 : 2.5;
+          target.halfH = narrow ? gridHalfH(data.responsibilities.length) : 2.5;
           if (!narrow) target.present.add(phoneSlot);
           target.present.add(cardSlot);
         } else {
           if (narrow) {
-            cardSlot.pos.set(0, 0, 0);
+            cardSlot.pos.set(0, GRID_DROP_NARROW, 0);
             target.halfW = 1.95;
-            target.halfH = 2.35;
+            target.halfH = gridHalfH(data.stack.length);
           } else {
             phoneSlot.pos.set(-4.4, 0, 0);
             phoneSlot.scale = 0.72;
@@ -614,6 +620,17 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
         bePos.copy(beSlot.pos);
         fit();
       };
+
+      /**
+       * Half the height the phone's two-column card grid needs, so the camera frames every row above the
+       * bottom sheet. A fixed height fitted three rows (six cards); a seventh card fell under the sheet's
+       * glass and read as a blurred box.
+       */
+      function gridHalfH(count: number) {
+        const rows = Math.ceil(count / GRID_COLS_NARROW);
+        // Half a card (0.53) plus room for the story bar and chapter label drawn over the top of the scene.
+        return Math.max(2.35, ((rows - 1) * GRID_DY_NARROW) / 2 + 1.15);
+      }
 
       const fit = () => {
         const tan = Math.tan((FOV * Math.PI) / 360);
@@ -908,17 +925,19 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
               });
             });
           } else {
-            const cols = narrow ? 2 : 3;
+            const cols = narrow ? GRID_COLS_NARROW : 3;
             const rows = Math.ceil(cardCount / cols);
             const dx = narrow ? 1.9 : 2.05;
-            const dy = narrow ? 1.3 : 1.35;
+            const dy = narrow ? GRID_DY_NARROW : 1.35;
             cardObjs.forEach((card, i) => {
               if (!card.mesh.visible) return;
               const c = i % cols;
               const r = Math.floor(i / cols);
+              // A short last row (an odd card out) is centred, not left hanging at the first column.
+              const inRow = r === rows - 1 ? cardCount - r * cols : cols;
               const wobble = Math.sin(t * 1.1 + i) * 0.04;
               card.mesh.position.set(
-                (c - (cols - 1) / 2) * dx,
+                (c - (inRow - 1) / 2) * dx,
                 ((rows - 1) / 2 - r) * dy + wobble,
                 0,
               );
@@ -1188,7 +1207,7 @@ export function DijkastraLive({ data, children }: { data: LiveData; children: Re
           ) : null}
         </div>
 
-        <DijkastraPhone
+        <DijkstraPhone
           data={data}
           chapter={chapter}
           onChapter={chooseChapter}

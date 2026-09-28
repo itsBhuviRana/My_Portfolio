@@ -30,7 +30,6 @@ export interface Availability {
 export interface Site {
   readonly name: string;
   readonly role: string;
-  readonly headline: string;
   readonly summary: {
     readonly short: string;
     readonly long: string;
@@ -205,6 +204,16 @@ export interface ExperienceProject {
   readonly outcome?: string;
 }
 
+export type WorkMode = "On-site" | "Remote" | "Hybrid";
+
+/** One qualification. No years: the owner did not supply them. */
+export interface Education {
+  readonly id: string;
+  readonly qualification: string;
+  readonly field: string;
+  readonly institution: string;
+}
+
 export interface Experience {
   readonly id: string;
   readonly company: string;
@@ -212,6 +221,11 @@ export interface Experience {
   /** Required for published entries. An entry with no `period.end` is the current role. */
   readonly period?: Period;
   readonly location?: string;
+  readonly workMode?: WorkMode;
+  /** The title the owner joined with, when they were promoted to `role` in the same company. */
+  readonly promotedFrom?: string;
+  /** Companies this employer deployed the owner to, named on the page (BugendaiTech: PwC). */
+  readonly deployedTo?: readonly string[];
   readonly summary: string;
   readonly impact: readonly string[];
   readonly leadership?: Leadership;
@@ -251,6 +265,8 @@ export interface AtlasProject {
   readonly name: string;
   /** The company or context as supplied. It is not a statement about employment unless it is Telus Digital. */
   readonly company: string;
+  /** The employer the work was done through, when that differs from `company` (PwC work, via BugendaiTech). */
+  readonly via?: string;
   readonly platform: ProjectPlatform;
   readonly tier: AtlasTier;
   /**

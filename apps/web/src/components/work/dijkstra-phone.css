@@ -1,5 +1,5 @@
 /*
- * Phone chrome for Dijkastra Live (dijkastra-phone.tsx) and the reusable bottom sheet (site/bottom-sheet.tsx).
+ * Phone chrome for Dijkstra Live (dijkstra-phone.tsx) and the reusable bottom sheet (site/bottom-sheet.tsx).
  * Everything is inside a max-width: 767px query, and the phone markup is `md:hidden` as well, so the desktop
  * scene and its overlay cards are untouched. The `!important`s below only exist to override the desktop
  * utilities (`sm:block sm:h-[78dvh]` ...) that also match between 640px and 767px.
