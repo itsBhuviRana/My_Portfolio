@@ -597,7 +597,12 @@ export function CapabilityPipeline({
         </div>
 
         <div className="relative z-10 flex flex-col gap-2 p-3 max-md:hidden sm:absolute sm:bottom-4 sm:right-4 sm:top-4 sm:w-[22rem] sm:p-0">
-          <div className="glass flex flex-col gap-3 p-3 sm:max-h-full sm:overflow-y-auto sm:p-4">
+          {/* data-lenis-prevent: the page's smooth scroll would otherwise take the wheel and this panel could
+              never scroll (smooth-scroll.tsx). */}
+          <div
+            data-lenis-prevent
+            className="glass flex flex-col gap-3 p-3 sm:max-h-full sm:overflow-y-auto sm:overscroll-contain sm:p-4"
+          >
             <div>
               <p className="tech-label m-0">
                 Station {String(active + 1).padStart(2, "0")} / {String(count).padStart(2, "0")} ·{" "}

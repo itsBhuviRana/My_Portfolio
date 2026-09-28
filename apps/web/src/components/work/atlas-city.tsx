@@ -782,7 +782,10 @@ export function AtlasCity({
         {selected ? (
           <aside
             aria-label={`${selected.name} details`}
-            className="glass absolute inset-x-3 bottom-3 z-20 max-h-[52%] overflow-y-auto p-4 max-md:hidden sm:inset-x-auto sm:bottom-auto sm:right-4 sm:top-16 sm:max-h-[calc(100%-6rem)] sm:w-[22rem]"
+            // Lenis (smooth-scroll.tsx) takes every wheel event for the page; this lets a long project's
+            // details scroll inside the panel instead.
+            data-lenis-prevent
+            className="glass absolute inset-x-3 bottom-3 z-20 max-h-[52%] overflow-y-auto overscroll-contain p-4 max-md:hidden sm:inset-x-auto sm:bottom-auto sm:right-4 sm:top-16 sm:max-h-[calc(100%-6rem)] sm:w-[22rem]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>

@@ -444,8 +444,8 @@ describe("project atlas", () => {
     expect(findDuplicates(atlasProjects.map((project) => project.name))).toEqual([]);
   });
 
-  it("represents all 28 supplied projects", () => {
-    expect(summary.total).toBe(28);
+  it("represents the 27 projects the owner keeps (CPC-Sisgain dropped on request)", () => {
+    expect(summary.total).toBe(27);
     expect(atlasProjects.map((project) => project.name).sort()).toEqual(
       [
         "Dijkstra",
@@ -463,7 +463,6 @@ describe("project atlas", () => {
         "Magwitch",
         "Notaroo",
         "AdMedic",
-        "CPC-Sisgain",
         "Dr LaBike",
         "Virtu MD",
         "Desh Clinic",
@@ -480,7 +479,7 @@ describe("project atlas", () => {
     );
   });
 
-  it("gives the five featured projects a sheet, nine standard projects a domain and summary, and fourteen a general summary", () => {
+  it("gives the five featured projects a sheet, eighteen standard projects a domain and summary, and four a general summary", () => {
     const names = (tier: string) =>
       atlasProjects.filter((project) => project.tier === tier).map((project) => project.name);
     expect(names("featured")).toEqual([
@@ -500,17 +499,26 @@ describe("project atlas", () => {
       "Music Pie",
       "AgroPure",
       "Hindware",
+      "BT-Evolve",
+      "BT-Reward",
+      "BT-Review",
+      "Flaia",
+      "Fish / Ferry",
+      "Magwitch",
+      "Notaroo",
+      "Living Box",
+      "Dr LaBike",
     ]);
-    expect(summary.tiers).toEqual({ featured: 5, index: 9, register: 14 });
+    expect(summary.tiers).toEqual({ featured: 5, index: 18, register: 4 });
   });
 
   it("counts platforms and companies from the supplied data", () => {
-    expect(summary.platforms).toEqual({ mobile: 19, web: 9 });
+    expect(summary.platforms).toEqual({ mobile: 18, web: 9 });
     expect(Object.fromEntries(summary.companies.map((c) => [c.name, c.total]))).toEqual({
       "Telus Digital": 1,
       PwC: 2,
       BugendaiTech: 12,
-      Sisgain: 5,
+      Sisgain: 4,
       Freelance: 6,
       "Candour Software": 2,
     });
@@ -528,16 +536,14 @@ describe("project atlas", () => {
     ]);
   });
 
-  it("gives register-tier projects nothing beyond name, company, platform and a general summary", () => {
+  it("gives register-tier projects nothing beyond name, company, platform, a general summary and years", () => {
+    // Years are allowed once the owner confirms them (the freelance ones, 2026-09-28); nothing else is.
     for (const project of atlasProjects.filter((p) => p.tier === "register")) {
-      expect(Object.keys(project).sort()).toEqual([
-        "company",
-        "id",
-        "name",
-        "platform",
-        "summary",
-        "tier",
-      ]);
+      expect(
+        Object.keys(project)
+          .filter((key) => key !== "years")
+          .sort(),
+      ).toEqual(["company", "id", "name", "platform", "summary", "tier"]);
     }
   });
 
@@ -743,9 +749,11 @@ describe("atlas enrichment", () => {
     "Firebase",
   ];
   /** Words that would invent a product domain or feature that was not supplied. */
-  // "inventory" left the list on 2026-09-28: AgroPure is confirmed as an inventory application.
+  // "inventory" and "reward" left the list on 2026-09-28: AgroPure is confirmed as an inventory application,
+  // and BT-Reward as an employee performance and rewards tracker. "patients" left too: Dr LaBike is confirmed
+  // as a doctor-to-patient calling app.
   const INVENTED =
-    /payroll|attendance|recruit|leave management|loyalty|reward|patients?|appointments?|prescription|telemedicine|clinical|diagnos|streaming|licens|artist|subscription|airline|flight|dealership|catalogue|e-?commerce|checkout|fishing|logistics|transport|users?\b|customers?\b.*\d|revenue|scale|million/i;
+    /payroll|attendance|recruit|leave management|loyalty|appointments?|prescription|telemedicine|clinical|diagnos|streaming|licens|artist|subscription|airline|flight|dealership|catalogue|e-?commerce|checkout|fishing|logistics|transport|users?\b|customers?\b.*\d|revenue|scale|million/i;
 
   it("gives every project a short summary of one or two sentences", () => {
     for (const project of atlasProjects) {
@@ -788,9 +796,11 @@ describe("atlas enrichment", () => {
   });
 
   it("uses the owner's supplied wording where it was supplied", () => {
-    expect(byId("bt-evolve").summary).toBe(
-      "Web application involving React-based feature development, reusable interface patterns and API-driven workflows.",
+    // BT-Evolve: the owner's "React-based", plus what the platform is for (2026-09-28).
+    expect(byId("bt-evolve").summary).toMatch(
+      /^Internal employee platform where employees publish/,
     );
+    expect(byId("bt-evolve").summary).toContain("React-based feature development");
     // The owner built AdMedic alone, end to end (2026-09-28).
     expect(byId("admedic").summary).toMatch(
       /^Healthcare mobile application developed end to end as the sole developer/,
@@ -811,14 +821,7 @@ describe("atlas enrichment", () => {
       expect(project.domainFromName === true, project.name).toBe(!confirmed.includes(project.id));
     }
     // A name alone does not support a domain for these, so they stay general.
-    for (const id of [
-      "curetus-app",
-      "dr-labike",
-      "wosh-app",
-      "juntoplus",
-      "vistara",
-      "cpc-sisgain",
-    ]) {
+    for (const id of ["curetus-app", "wosh-app", "juntoplus", "vistara"]) {
       expect(byId(id).domain, id).toBeUndefined();
     }
     expect(summary.domains.confirmed).toEqual([
@@ -833,6 +836,12 @@ describe("atlas enrichment", () => {
       "Car-wash services",
       "Music",
       "Inventory management",
+      "Internal communications",
+      "Performance and rewards",
+      "People management",
+      "Ferry services",
+      "Online forum",
+      "Home interiors",
     ]);
     expect(summary.domains.fromName).toEqual([]);
   });
