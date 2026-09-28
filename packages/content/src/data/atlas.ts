@@ -18,6 +18,8 @@ export const FREELANCE = "Freelance";
  *     project. BT-Evolve's "React-based" is wording the owner supplied.
  *   - `domain` is cautious. `domainFromName` marks a domain that the project name alone indicates.
  *
+ * CPC-Sisgain was dropped from the atlas at the owner's request (2026-09-28).
+ *
  * Deliberately NOT recorded (not supplied): client names other than the ones stated, user counts, team
  * sizes, outcomes, the full stack of any project beyond the lists below, and which native modules were
  * personally written on JSW Connection.
@@ -280,102 +282,125 @@ export const atlasProjects: readonly AtlasProject[] = [
     product: "Customer service application",
   },
 
-  // ── Register: name, company and platform only, with a general engineering summary ──
   {
     id: "bt-evolve",
     name: "BT-Evolve",
     company: "BugendaiTech",
     platform: "web",
-    tier: "register",
-    // "React-based" is the owner's own wording for this project.
+    tier: "index",
     summary:
-      "Web application involving React-based feature development, reusable interface patterns and API-driven workflows.",
+      "Internal employee platform where employees publish their thoughts and blogs, involving React-based feature development, reusable interface patterns and API-driven workflows.",
+    domain: "Internal communications",
+    years: { from: 2022, to: 2023 },
+    product: "Employee thoughts and blogging platform",
   },
   {
     id: "bt-reward",
     name: "BT-Reward",
     company: "BugendaiTech",
     platform: "web",
-    tier: "register",
+    tier: "index",
     summary:
-      "Web application involving feature development, reusable interface patterns and API-driven workflows.",
+      "Internal employee platform for tracking individual performance and rewards. Work involved feature development, reusable interface patterns and API-driven workflows.",
+    domain: "Performance and rewards",
+    years: { from: 2022, to: 2024 },
+    product: "Employee performance and rewards tracker",
   },
   {
     id: "bt-review",
     name: "BT-Review",
     company: "BugendaiTech",
     platform: "web",
-    tier: "register",
+    tier: "index",
     summary:
-      "Web application development covering feature implementation and API-driven functionality.",
+      "Manager-facing web application for keeping team members' information and tracking their work and performance. Work involved feature development and API-driven functionality.",
+    domain: "People management",
+    years: { from: 2022, to: 2024 },
+    product: "Team information and performance tool for managers",
   },
   {
     id: "flaia",
     name: "Flaia",
     company: "BugendaiTech",
     platform: "web",
-    tier: "register",
+    tier: "index",
     summary:
-      "Web application involving feature development, reusable interface patterns and API-driven workflows.",
+      "Multi-tenant real-estate web application: one platform serving multiple tenants. Work involved feature development, reusable interface patterns and API-driven workflows.",
+    domain: "Real estate",
+    years: { from: 2023, to: 2023 },
+    product: "Multi-tenant real-estate application",
   },
   {
     id: "fish-ferry",
     name: "Fish / Ferry",
     company: "BugendaiTech",
     platform: "mobile",
-    tier: "register",
+    tier: "index",
     summary:
-      "Mobile application involving feature development, API integration and reusable application components.",
+      "Ferry mobile application that shows customers ferry availability and routes, with controls for running the ferry service. Work involved feature development and API integration.",
+    domain: "Ferry services",
+    years: { from: 2023, to: 2023 },
+    product: "Ferry availability and route application",
   },
   {
     id: "magwitch",
     name: "Magwitch",
     company: "BugendaiTech",
     platform: "web",
-    tier: "register",
-    summary:
-      "Web application development covering feature implementation and API-driven functionality.",
+    tier: "index",
+    summary: "Forum web application; the work covered building its UI.",
+    domain: "Online forum",
+    years: { from: 2024, to: 2024 },
+    product: "Forum web application",
+    personalWork: ["UI development"],
   },
   {
     id: "notaroo",
     name: "Notaroo",
     company: "BugendaiTech",
     platform: "mobile",
-    tier: "register",
-    summary: "Mobile application work centered on feature development and API-driven screens.",
+    tier: "index",
+    summary:
+      "Customer management mobile application. Work centred on feature development and API-driven screens.",
+    domain: "Customer management",
+    years: { from: 2024, to: 2025 },
+    product: "Customer management application",
   },
+
   {
     id: "living-box",
     name: "Living Box",
     company: "BugendaiTech",
     platform: "web",
-    tier: "register",
+    tier: "index",
     summary:
-      "Web application involving feature development, reusable interface patterns and API-driven workflows.",
-  },
-  {
-    id: "cpc-sisgain",
-    name: "CPC-Sisgain",
-    company: "Sisgain",
-    platform: "mobile",
-    tier: "register",
-    summary: "Mobile application development covering feature implementation and API integration.",
+      "Home interiors web application: book interior and decoration services for a home, and buy furniture and furnishings such as sofas. Work involved feature development, reusable interface patterns and API-driven workflows.",
+    domain: "Home interiors",
+    years: { from: 2023, to: 2025 },
+    product: "Home interior services and furniture application",
   },
   {
     id: "dr-labike",
     name: "Dr LaBike",
     company: "Sisgain",
     platform: "mobile",
-    tier: "register",
+    tier: "index",
     summary:
-      "Mobile application involving feature development, API integration and reusable application components.",
+      "Healthcare mobile application where doctors talk to patients over audio and video calls. Work involved feature development and API integration.",
+    domain: "Healthcare",
+    years: { from: 2021, to: 2021 },
+    product: "Doctor–patient calling application",
+    notableWork: ["Audio calling", "Video calling"],
   },
+
+  // ── Register: name, company, platform and years only, with a general engineering summary ──
   {
     id: "wosh-app",
     name: "Wosh App",
     company: FREELANCE,
     platform: "mobile",
     tier: "register",
+    years: { from: 2022, to: 2023 },
     summary: "Mobile application work centered on feature development and API-driven screens.",
   },
   {
@@ -384,6 +409,7 @@ export const atlasProjects: readonly AtlasProject[] = [
     company: FREELANCE,
     platform: "mobile",
     tier: "register",
+    years: { from: 2023, to: 2023 },
     summary: "Mobile application development covering feature implementation and API integration.",
   },
   {
@@ -392,6 +418,7 @@ export const atlasProjects: readonly AtlasProject[] = [
     company: FREELANCE,
     platform: "mobile",
     tier: "register",
+    years: { from: 2020, to: 2021 },
     summary:
       "Mobile application involving feature development, API integration and reusable application components.",
   },
@@ -401,6 +428,7 @@ export const atlasProjects: readonly AtlasProject[] = [
     company: FREELANCE,
     platform: "mobile",
     tier: "register",
+    years: { from: 2022, to: 2023 },
     summary: "Mobile application work centered on feature development and API-driven screens.",
   },
 ];

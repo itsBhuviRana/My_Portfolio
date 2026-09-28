@@ -251,8 +251,9 @@ export const experience: readonly Experience[] = [
         detail: "Integrating backend APIs into the apps.",
       },
       {
-        title: "Mobile fundamentals",
-        detail: "Learning the languages, tooling and platform basics behind mobile apps.",
+        title: "JavaScript",
+        detail:
+          "Learning JavaScript for React Native development, along with mobile tooling and platform basics.",
       },
       {
         title: "Team workflow",
