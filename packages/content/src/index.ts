@@ -13,8 +13,10 @@ export type {
   CaseStudy,
   CapabilityGroup,
   CaseStudyBlock,
+  Education,
   Experience,
   Leadership,
+  WorkMode,
   Media,
   Metric,
   Period,
@@ -42,6 +44,7 @@ export type {
 export { site } from "./data/site";
 export { socials } from "./data/socials";
 export { experience } from "./data/experience";
+export { education } from "./data/education";
 export { atlasProjects, careerRange } from "./data/atlas";
 export { capabilityGroups } from "./data/capabilities";
 export { skillGroups } from "./data/skills";

@@ -30,9 +30,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: site.name,
-  description: site.summary.short,
-  // Foundation build only: keep it out of search indexes until the real site launches.
-  robots: { index: false, follow: false },
+  // What search results and link previews show: who, then the bio.
+  description: `${site.name} · ${site.role}. ${site.summary.short}`,
 };
 
 export const viewport: Viewport = {

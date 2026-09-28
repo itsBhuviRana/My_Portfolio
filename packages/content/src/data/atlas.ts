@@ -5,15 +5,17 @@ export const FREELANCE = "Freelance";
 
 /**
  * The career project atlas. Every optional field is present only when it was confirmed, and periods are
- * approximate years.
+ * approximate years that sit inside the owner's career dates (see experience.ts): Candour Software
+ * Aug 2020–Mar 2021, Sisgain Apr–Nov 2021, BugendaiTech Dec 2021–Nov 2025 (deployed to PwC for IFL and
+ * Coca-Cola, 2024–2025, hence `via`), Telus Digital from Nov 2025. Freelance work ran alongside, 2021–2022.
  *
  * How the text is written (the tests enforce most of it):
  *   - `personalWork`, `notableWork`, `technologies`, `product` and `framework` are CONFIRMED facts only.
- *   - `summary` is an editorial description. Where product details are unknown it is a general engineering
- *     description from the confirmed work patterns (feature development, API integration, reusable
- *     components). It never names a client, a user count, a metric, a product feature or a technology that
- *     was not confirmed for that project. The one exception is BT-Evolve's "React-based", which is wording
- *     the owner supplied.
+ *   - `summary` is an editorial description built from the owner's own account of the work, in technical
+ *     terms. Where product details are unknown it is a general engineering description from the confirmed
+ *     work patterns (feature development, API integration, reusable components), and it never names a
+ *     client, a user count, a metric, a product feature or a technology that was not confirmed for that
+ *     project. BT-Evolve's "React-based" is wording the owner supplied.
  *   - `domain` is cautious. `domainFromName` marks a domain that the project name alone indicates.
  *
  * Deliberately NOT recorded (not supplied): client names other than the ones stated, user counts, team
@@ -27,8 +29,8 @@ export const FREELANCE = "Freelance";
 export const atlasProjects: readonly AtlasProject[] = [
   // ── Featured ──────────────────────────────────────────────────────────────
   {
-    id: "dijkastra",
-    name: "Dijkastra",
+    id: "dijkstra",
+    name: "Dijkstra",
     company: "Telus Digital",
     client: "Talis Agriculture",
     platform: "mobile",
@@ -39,13 +41,8 @@ export const atlasProjects: readonly AtlasProject[] = [
     years: { from: 2025, to: "present" },
     framework: "React Native + Expo",
     product: "Mobile agriculture field-management application",
-    // Titles match the current role's responsibilities. The full breakdown is the Dijkastra section.
-    personalWork: [
-      "Feature development",
-      "Refactoring and improvements",
-      "Pull-request reviews",
-      "Team guidance",
-    ],
+    // Titles match the current role's responsibilities. The full breakdown is the Dijkstra section.
+    personalWork: ["Feature development", "Refactoring", "Pull-request reviews", "Team management"],
     notableWork: [
       "Offline-first, with local SQLite persistence",
       "Synchronization with the backend when online",
@@ -57,17 +54,25 @@ export const atlasProjects: readonly AtlasProject[] = [
     id: "ifl",
     name: "IFL",
     company: "PwC",
+    via: "BugendaiTech",
     enterpriseClient: "PwC",
     platform: "mobile",
     tier: "featured",
     summary:
-      "Mobile banking application built with React Native CLI, covering financial workflows. Feature work included KYC features and financial calculators, with GraphQL and SQLite in the stack.",
+      "Mobile banking application built with React Native CLI for financial workflows. Developed KYC functionality and financial calculators, integrated an AI chatbot and backend services, and added test cases alongside bug fixes.",
     domain: "Banking",
     years: { from: 2024, to: 2025 },
     framework: "React Native CLI",
     product: "Banking application",
-    personalWork: ["Feature development"],
-    notableWork: ["KYC features", "Financial calculators"],
+    personalWork: [
+      "Feature development",
+      "KYC functionality",
+      "AI chatbot integration",
+      "Service integrations",
+      "Test cases",
+      "Bug fixing",
+    ],
+    notableWork: ["KYC features", "Financial calculators", "AI chatbot integration"],
     // Only these four were supplied. Other technologies were used but are not individually confirmed.
     technologies: ["React Native", "GraphQL", "SQLite", "TypeScript"],
   },
@@ -75,17 +80,29 @@ export const atlasProjects: readonly AtlasProject[] = [
     id: "coca-cola",
     name: "Coca-Cola",
     company: "PwC",
+    via: "BugendaiTech",
     enterpriseClient: "Coca-Cola",
     platform: "mobile",
     tier: "featured",
     summary:
-      "Customer management application built with React Native CLI and TypeScript, connected to Salesforce. Work included native iOS and Android integration alongside cross-platform feature development.",
+      "Customer management application built with React Native CLI and TypeScript, connected to Salesforce. Developed features, integrated an AI chatbot and backend services, and added test cases and bug fixes, alongside native iOS and Android integration.",
     domain: "Customer management",
     years: { from: 2024, to: 2025 },
     framework: "React Native CLI",
     product: "Customer management application",
-    personalWork: ["Feature development"],
-    notableWork: ["Salesforce integration", "Native iOS integration", "Native Android integration"],
+    personalWork: [
+      "Feature development",
+      "AI chatbot integration",
+      "Service integrations",
+      "Test cases",
+      "Bug fixing",
+    ],
+    notableWork: [
+      "Salesforce integration",
+      "Native iOS integration",
+      "Native Android integration",
+      "AI chatbot integration",
+    ],
     technologies: ["React Native CLI", "Salesforce", "TypeScript"],
   },
   {
@@ -95,11 +112,17 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "featured",
     summary:
-      "Home broker mobile application built with React Native CLI. Work included feature development, payment gateway integration and API integration, with GraphQL and SQLite in the stack.",
+      "Real-estate application for selling homes, built with React Native CLI. Designed the application architecture, project structure and backend, and developed features including payment gateway and API integration.",
+    domain: "Real estate",
     years: { from: 2021, to: 2024 },
     framework: "React Native CLI",
-    product: "Home broker application",
-    personalWork: ["Feature development"],
+    product: "Real-estate sales application",
+    personalWork: [
+      "Architecture design",
+      "Project structure",
+      "Backend design",
+      "Feature development",
+    ],
     notableWork: ["Payment gateway integration", "API integration"],
     technologies: ["React Native CLI", "GraphQL", "SQLite", "TypeScript"],
   },
@@ -111,11 +134,15 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "featured",
     summary:
-      "Customer service mobile application in the native Android (Kotlin) and iOS (Swift) ecosystem, integrated with Salesforce. Feature development across multiple application features.",
+      "Customer service mobile application in the native Android (Kotlin) and iOS (Swift) ecosystem, integrated with Salesforce. Designed the application architecture and set up and maintained the project structure, alongside feature development.",
     domain: "Customer service",
     years: { from: 2023, to: 2024 },
     product: "Customer service application",
-    personalWork: ["Feature development across multiple application features"],
+    personalWork: [
+      "Architecture design",
+      "Project structure management",
+      "Feature development across multiple application features",
+    ],
     // Native technologies of the project. It is not claimed that every native module was personally written.
     technologies: ["Android / Kotlin", "iOS / Swift", "Salesforce"],
   },
@@ -157,9 +184,11 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "index",
     summary:
-      "Healthcare-focused mobile application involving feature development and cross-platform mobile engineering.",
+      "Healthcare mobile application developed end to end as the sole developer, covering the full build: UI, application features and API integration.",
     domain: "Healthcare",
-    domainFromName: true,
+    years: { from: 2021, to: 2021 },
+    product: "Healthcare application",
+    personalWork: ["Sole developer, end to end"],
   },
   {
     id: "virtu-md",
@@ -168,9 +197,18 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "index",
     summary:
-      "Healthcare-oriented mobile application involving feature development and mobile engineering.",
+      "Healthcare mobile application developed end to end as the sole developer, with audio and video calling, text chat, payment gateway integration and background API processing.",
     domain: "Healthcare",
-    domainFromName: true,
+    years: { from: 2021, to: 2021 },
+    product: "Healthcare application",
+    personalWork: ["Sole developer, end to end"],
+    notableWork: [
+      "Audio calling",
+      "Video calling",
+      "Text chat",
+      "Payment gateway integration",
+      "Background API processing",
+    ],
   },
   {
     id: "desh-clinic",
@@ -179,9 +217,18 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "index",
     summary:
-      "Healthcare and clinic-oriented mobile application involving feature development and mobile engineering.",
+      "Clinic-focused healthcare mobile application developed end to end as the sole developer, with audio and video calling, text chat, payment gateway integration and background API processing.",
     domain: "Healthcare",
-    domainFromName: true,
+    years: { from: 2021, to: 2021 },
+    product: "Healthcare application",
+    personalWork: ["Sole developer, end to end"],
+    notableWork: [
+      "Audio calling",
+      "Video calling",
+      "Text chat",
+      "Payment gateway integration",
+      "Background API processing",
+    ],
   },
   {
     id: "gomotorcar",
@@ -190,9 +237,11 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "web",
     tier: "index",
     summary:
-      "Automotive-oriented web application involving feature implementation, responsive interfaces and API-driven functionality.",
-    domain: "Automotive",
-    domainFromName: true,
+      "Service-provider application for car-wash services, built as a complete application end to end.",
+    domain: "Car-wash services",
+    years: { from: 2021, to: 2022 },
+    product: "Car-wash service-provider application",
+    personalWork: ["Complete application build"],
   },
   {
     id: "music-pie",
@@ -200,10 +249,11 @@ export const atlasProjects: readonly AtlasProject[] = [
     company: FREELANCE,
     platform: "mobile",
     tier: "index",
-    summary:
-      "Music and media-oriented mobile application involving feature development and mobile engineering.",
-    domain: "Music / media",
-    domainFromName: true,
+    summary: "Song and music mobile application, built as a complete application end to end.",
+    domain: "Music",
+    years: { from: 2021, to: 2022 },
+    product: "Song / music application",
+    personalWork: ["Complete application build"],
   },
   {
     id: "agropure",
@@ -212,9 +262,10 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "index",
     summary:
-      "Agriculture-oriented mobile application involving feature development and mobile engineering.",
-    domain: "Agriculture",
-    domainFromName: true,
+      "Inventory mobile application through which the company tracks its stock: what is still available and what is running low.",
+    domain: "Inventory management",
+    years: { from: 2020, to: 2021 },
+    product: "Inventory / stock-tracking application",
   },
   {
     id: "hindware",
@@ -223,9 +274,10 @@ export const atlasProjects: readonly AtlasProject[] = [
     platform: "mobile",
     tier: "index",
     summary:
-      "Home and building products-oriented mobile application involving feature development and mobile engineering.",
-    domain: "Home / building products",
-    domainFromName: true,
+      "Customer service mobile application for Hindware, involving feature development and mobile engineering.",
+    domain: "Customer service",
+    years: { from: 2020, to: 2021 },
+    product: "Customer service application",
   },
 
   // ── Register: name, company and platform only, with a general engineering summary ──

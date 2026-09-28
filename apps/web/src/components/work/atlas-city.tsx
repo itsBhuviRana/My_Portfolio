@@ -817,6 +817,7 @@ export function AtlasCity({
                   ["Period", selected.years],
                   ["Client", selected.client],
                   ["Enterprise", selected.enterpriseClient],
+                  ["Via", selected.via],
                   ["Framework", selected.framework],
                   ["Technologies", selected.technologies?.join(" · ")],
                 ] as const
@@ -861,7 +862,7 @@ export function AtlasCity({
             ) : null}
             {selected.hasDetail ? (
               <a
-                href="#dijkastra"
+                href="#dijkstra"
                 className="type-small mt-4 inline-flex min-h-11 items-center gap-2 text-accent underline underline-offset-4"
               >
                 Open the full engineering breakdown ↓

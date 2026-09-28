@@ -3,7 +3,7 @@ import { getCurrentExperience } from "@assembly/content";
 import { layer } from "@assembly/tokens";
 import { ArchitectureSteps, SyncFlowDiagram } from "./diagrams";
 import { EngineeringLayers } from "./engineering-layers";
-import { DijkastraLive } from "./dijkastra-live";
+import { DijkstraLive } from "./dijkstra-live";
 
 /** A titled block of the section, marked with a letter like a callout on a drawing sheet. */
 function Block({
@@ -51,18 +51,18 @@ export function CurrentProject() {
 
   return (
     <section
-      id="dijkastra"
-      aria-labelledby="dijkastra-title"
+      id="dijkstra"
+      aria-labelledby="dijkstra-title"
       className="page-shell mt-12 pb-10 md:mt-16 md:pb-12"
     >
       <div className="rule-ink" />
-      <p className="tech-label m-0 mt-10 max-md:hidden">
-        The one project shown in full engineering detail
+      <p className="tech-label m-0 mt-10">
+        A closer look at how I build production-grade mobile systems
       </p>
       <div className="mt-3 grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-10">
         <div className="lg:col-span-7">
-          <h2 id="dijkastra-title" className="type-h1 m-0 mt-3">
-            Current project
+          <h2 id="dijkstra-title" className="type-h1 m-0 mt-3">
+            Featured project
           </h2>
         </div>
         <p className="type-body-lg m-0 max-md:hidden lg:col-span-5">{project.description}</p>
@@ -77,7 +77,7 @@ export function CurrentProject() {
         ))}
       </dl>
 
-      <DijkastraLive
+      <DijkstraLive
         data={{
           name: project.name,
           tagline: project.tagline,
@@ -177,7 +177,7 @@ export function CurrentProject() {
             </div>
           ) : null}
         </div>
-      </DijkastraLive>
+      </DijkstraLive>
     </section>
   );
 }

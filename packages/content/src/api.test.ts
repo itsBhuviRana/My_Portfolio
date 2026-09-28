@@ -9,6 +9,7 @@ describe("@assembly/content public API", () => {
       "atlasProjects",
       "capabilityGroups",
       "careerRange",
+      "education",
       "experience",
       "getAtlasSummary",
       "getCurrentExperience",

@@ -4,6 +4,7 @@ import {
   atlasProjects,
   capabilityGroups,
   careerRange,
+  education,
   experience,
   getAtlasSummary,
   getCurrentExperience,
@@ -231,9 +232,20 @@ describe("integrity rules (synthetic cases)", () => {
 
 // ── The real content ─────────────────────────────────────────────────────────
 
+describe("education", () => {
+  it("lists only complete, marker-free qualifications", () => {
+    expect(education.length).toBeGreaterThan(0);
+    for (const item of education) {
+      for (const value of [item.id, item.qualification, item.field, item.institution])
+        expect(isBlank(value)).toBe(false);
+    }
+    expect(containsDraftMarker(education)).toBe(false);
+  });
+});
+
 describe("site", () => {
   it("has real, non-blank identity fields and no draft marker", () => {
-    for (const value of [site.name, site.role, site.headline, site.summary.short]) {
+    for (const value of [site.name, site.role, site.summary.short]) {
       expect(isBlank(value)).toBe(false);
     }
     expect(containsDraftMarker(site)).toBe(false);
@@ -323,7 +335,7 @@ describe("current experience", () => {
     const current = getPublishedExperience().filter((entry) => entry.period?.end === undefined);
     expect(current).toHaveLength(1);
     expect(getCurrentExperience()?.company).toBe("Telus Digital");
-    expect(getCurrentExperience()?.role).toBe("Application Module Development Lead");
+    expect(getCurrentExperience()?.role).toBe("Application Development Lead");
     expect(getCurrentExperience()?.period).toEqual({ start: "2025-11" });
   });
 
@@ -341,7 +353,7 @@ describe("current experience", () => {
   });
 });
 
-describe("Dijkastra profile", () => {
+describe("Dijkstra profile", () => {
   const current = getCurrentExperience();
   const project = current?.project;
 
@@ -373,11 +385,12 @@ describe("Dijkastra profile", () => {
   });
 
   it("keeps the supplied facts and adds no numbers or dates it was not given", () => {
-    expect(project!.name).toBe("Dijkastra");
+    expect(project!.name).toBe("Dijkstra");
     expect(project!.context).toBe("Talis Agriculture");
     expect(project!.platform).toBe("React Native + Expo · iOS · Android");
+    // The only numbers allowed are the ones the owner supplied: the 30–40 person project team (2026-09-28).
     const facts = JSON.stringify([project!.description, project!.tagline, current!.summary]);
-    expect(facts).not.toMatch(/\d/);
+    expect(facts.replace("30–40", "")).not.toMatch(/\d/);
   });
 
   it("does not use wording that claims more than was supplied", () => {
@@ -391,10 +404,16 @@ describe("Dijkastra profile", () => {
     expect(prose.filter((text) => INFLATED_CLAIM.test(text))).toEqual([]);
   });
 
-  it("states no impact until one can be sourced", () => {
+  it("states only the team and outcome the owner described, and no impact claims", () => {
     expect(current!.impact).toEqual([]);
-    expect(current!.leadership).toBeUndefined();
-    expect(project!.outcome).toBeUndefined();
+    expect(current!.leadership).toEqual({
+      teamSize: 5,
+      scope: "Leads a five-developer team within a 30–40 person project team.",
+    });
+    expect(project!.outcome).toBeDefined();
+    expect(
+      [...current!.impact, project!.outcome ?? ""].filter((text) => INFLATED_CLAIM.test(text)),
+    ).toEqual([]);
   });
 
   it("only references skill ids that exist", () => {
@@ -429,7 +448,7 @@ describe("project atlas", () => {
     expect(summary.total).toBe(28);
     expect(atlasProjects.map((project) => project.name).sort()).toEqual(
       [
-        "Dijkastra",
+        "Dijkstra",
         "IFL",
         "Coca-Cola",
         "Pinpoinx",
@@ -465,7 +484,7 @@ describe("project atlas", () => {
     const names = (tier: string) =>
       atlasProjects.filter((project) => project.tier === tier).map((project) => project.name);
     expect(names("featured")).toEqual([
-      "Dijkastra",
+      "Dijkstra",
       "IFL",
       "Coca-Cola",
       "Pinpoinx",
@@ -525,23 +544,27 @@ describe("project atlas", () => {
   it("records only the supplied facts for the featured projects", () => {
     expect(byId("ifl")).toMatchObject({
       company: "PwC",
+      via: "BugendaiTech",
       product: "Banking application",
       framework: "React Native CLI",
-      notableWork: ["KYC features", "Financial calculators"],
+      notableWork: ["KYC features", "Financial calculators", "AI chatbot integration"],
       technologies: ["React Native", "GraphQL", "SQLite", "TypeScript"],
     });
     expect(byId("coca-cola")).toMatchObject({
+      via: "BugendaiTech",
       product: "Customer management application",
       notableWork: [
         "Salesforce integration",
         "Native iOS integration",
         "Native Android integration",
+        "AI chatbot integration",
       ],
       technologies: ["React Native CLI", "Salesforce", "TypeScript"],
     });
     expect(byId("pinpoinx")).toMatchObject({
       company: "BugendaiTech",
-      product: "Home broker application",
+      domain: "Real estate",
+      product: "Real-estate sales application",
       technologies: ["React Native CLI", "GraphQL", "SQLite", "TypeScript"],
     });
     expect(byId("jsw-connection")).toMatchObject({
@@ -566,19 +589,44 @@ describe("project atlas", () => {
     expect(ohana.domainFromName).toBeUndefined();
   });
 
-  it("keeps Telus Digital as the current employer and links Dijkastra to its detailed profile", () => {
-    const dijkastra = byId("dijkastra")!;
+  it("keeps Telus Digital as the current employer and links Dijkstra to its detailed profile", () => {
+    const dijkstra = byId("dijkstra")!;
     const current = getCurrentExperience()!;
     expect(current.company).toBe("Telus Digital");
-    expect(current.projectIds).toEqual(["dijkastra"]);
-    expect(dijkastra.company).toBe(current.company);
-    expect(dijkastra.client).toBe(current.project?.context);
-    expect(dijkastra.years).toEqual({ from: 2025, to: "present" });
+    expect(current.projectIds).toEqual(["dijkstra"]);
+    expect(dijkstra.company).toBe(current.company);
+    expect(dijkstra.client).toBe(current.project?.context);
+    expect(dijkstra.years).toEqual({ from: 2025, to: "present" });
     const titles = new Set((current.responsibilities ?? []).map((item) => item.title));
-    expect((dijkastra.personalWork ?? []).filter((item) => !titles.has(item))).toEqual([]);
+    expect((dijkstra.personalWork ?? []).filter((item) => !titles.has(item))).toEqual([]);
     expect(atlasProjects.filter((p) => p.years?.to === "present").map((p) => p.id)).toEqual([
-      "dijkastra",
+      "dijkstra",
     ]);
+  });
+
+  it("keeps the career free of overlaps: each role starts once the one before it has ended", () => {
+    const roles = [...experience].sort((a, b) =>
+      (a.period?.start ?? "").localeCompare(b.period?.start ?? ""),
+    );
+    for (let i = 1; i < roles.length; i++) {
+      const before = roles[i - 1]!.period?.end;
+      expect(before, roles[i - 1]!.company).toBeDefined();
+      // The same month is a handover (BugendaiTech ends and Telus Digital starts in Nov 2025), not an overlap.
+      expect(roles[i]!.period!.start >= before!, roles[i]!.company).toBe(true);
+    }
+  });
+
+  it("dates every project inside the role it was done in", () => {
+    for (const project of atlasProjects) {
+      if (project.years === undefined) continue;
+      const employer = project.via ?? project.company;
+      const role = experience.find((entry) => entry.company === employer);
+      if (role?.period === undefined) continue; // Freelance work has no role of its own.
+      const from = Number(role.period.start.slice(0, 4));
+      const to = role.period.end === undefined ? Infinity : Number(role.period.end.slice(0, 4));
+      const end = project.years.to === "present" ? Infinity : project.years.to;
+      expect(project.years.from >= from && end <= to, project.name).toBe(true);
+    }
   });
 
   it("only links experience to atlas projects that exist", () => {
@@ -695,8 +743,9 @@ describe("atlas enrichment", () => {
     "Firebase",
   ];
   /** Words that would invent a product domain or feature that was not supplied. */
+  // "inventory" left the list on 2026-09-28: AgroPure is confirmed as an inventory application.
   const INVENTED =
-    /payroll|attendance|recruit|leave management|loyalty|reward|patients?|appointments?|prescription|telemedicine|clinical|diagnos|streaming|licens|artist|subscription|airline|flight|inventory|dealership|catalogue|e-?commerce|checkout|fishing|logistics|transport|users?\b|customers?\b.*\d|revenue|scale|million/i;
+    /payroll|attendance|recruit|leave management|loyalty|reward|patients?|appointments?|prescription|telemedicine|clinical|diagnos|streaming|licens|artist|subscription|airline|flight|dealership|catalogue|e-?commerce|checkout|fishing|logistics|transport|users?\b|customers?\b.*\d|revenue|scale|million/i;
 
   it("gives every project a short summary of one or two sentences", () => {
     for (const project of atlasProjects) {
@@ -742,8 +791,9 @@ describe("atlas enrichment", () => {
     expect(byId("bt-evolve").summary).toBe(
       "Web application involving React-based feature development, reusable interface patterns and API-driven workflows.",
     );
-    expect(byId("admedic").summary).toBe(
-      "Healthcare-focused mobile application involving feature development and cross-platform mobile engineering.",
+    // The owner built AdMedic alone, end to end (2026-09-28).
+    expect(byId("admedic").summary).toMatch(
+      /^Healthcare mobile application developed end to end as the sole developer/,
     );
     expect(byId("bt-ohana-hrms").summary).toMatch(/^Internal employee learning platform/);
   });
@@ -754,14 +804,14 @@ describe("atlas enrichment", () => {
   });
 
   it("keeps domains cautious: confirmed only where the product is confirmed, otherwise flagged as from the name", () => {
-    const confirmed = ["dijkastra", "ifl", "coca-cola", "jsw-connection", "poito", "bt-ohana-hrms"];
+    // Every domain is now confirmed by the owner (2026-09-28); none rests on a project name alone.
+    const confirmed = atlasProjects.filter((p) => p.domain !== undefined).map((p) => p.id);
     for (const project of atlasProjects) {
       if (project.domain === undefined) continue;
       expect(project.domainFromName === true, project.name).toBe(!confirmed.includes(project.id));
     }
     // A name alone does not support a domain for these, so they stay general.
     for (const id of [
-      "pinpoinx",
       "curetus-app",
       "dr-labike",
       "wosh-app",
@@ -775,16 +825,16 @@ describe("atlas enrichment", () => {
       "Agriculture",
       "Banking",
       "Customer management",
+      "Real estate",
       "Customer service",
       "Education",
       "Employee learning",
-    ]);
-    expect(summary.domains.fromName).toEqual([
       "Healthcare",
-      "Automotive",
-      "Music / media",
-      "Home / building products",
+      "Car-wash services",
+      "Music",
+      "Inventory management",
     ]);
+    expect(summary.domains.fromName).toEqual([]);
   });
 
   it("keeps the confirmed facts separate from the summaries", () => {

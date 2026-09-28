@@ -1,0 +1,99 @@
+/*
+ * Career history (career-history.tsx, career-marquee.tsx): a row of liquid-glass cards in a real horizontal
+ * scroll container that the marquee script glides along on its own. The scrollbar is hidden (the row reads
+ * as a moving strip, and swipe, trackpad and arrow keys still scroll it), and both ends fade out so cards
+ * slide in and out of view softly rather than being cut by the column edge.
+ */
+.career-scroller {
+  /* How wide each soft edge is; the row starts and ends that far in, so no card sits under a fade at rest. */
+  --career-fade: 1rem;
+  margin-top: 2rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* Room for the cards' floating glass shadow and the timeline nodes, which the scroll box would clip. */
+  padding-block: 1.25rem 2.5rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--career-fade),
+    black calc(100% - var(--career-fade)),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black var(--career-fade),
+    black calc(100% - var(--career-fade)),
+    transparent
+  );
+}
+
+@media (min-width: 48rem) {
+  .career-scroller {
+    --career-fade: 2.5rem;
+  }
+}
+
+.career-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.career-scroller:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.career-track,
+.career-set {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+}
+
+.career-track {
+  padding-inline: var(--career-fade);
+}
+
+/* Each card keeps its own height: stretching them all to the longest one left big empty gaps. */
+.career-set {
+  align-items: flex-start;
+}
+
+/* The timeline: one continuous line through the row, above the cards; each card sits its node on it. */
+.career-set {
+  position: relative;
+  padding-top: 1.25rem;
+}
+
+.career-set::before {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  left: 0;
+  right: -1.5rem;
+  height: 1.5px;
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+}
+
+.career-card {
+  width: min(24rem, 82vw);
+  flex: none;
+}
+
+.career-node {
+  position: absolute;
+  top: -1.2rem;
+  left: 1.5rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-ink);
+  background: var(--color-paper);
+}
+
+.career-node-current {
+  background: var(--color-ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-ink) 18%, transparent);
+}

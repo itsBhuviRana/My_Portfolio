@@ -4,7 +4,7 @@
  * Verifies that apps/web/out is deployable to GitHub Pages:
  *   - the expected entry files exist (index.html, 404.html, _next/)
  *   - every root-relative href/src honours BASE_PATH and points at a file that exists
- *   - Phase 1 invariants hold (one <main>, an <h1>, noindex, a theme-color from tokens)
+ *   - page invariants hold (one <main>, an <h1>, indexable by search engines, a theme-color from tokens)
  *   - no draft placeholder text leaked into the output
  *
  * Usage: BASE_PATH=/my-repo node scripts/check-export.mjs [outDir]
@@ -116,8 +116,10 @@ async function main() {
     if ((index.match(/<main[\s>]/g) ?? []).length !== 1)
       fail("index.html: expected exactly one <main>");
     if (!/<h1[\s>]/.test(index)) fail("index.html: expected an <h1>");
-    if (!/<meta name="robots" content="[^"]*noindex/.test(index))
-      fail("index.html: missing robots noindex (foundation build must not be indexed)");
+    // The site is live and meant to be found (the owner's call, 2026-09-28): the foundation-era noindex must
+    // not come back.
+    if (/<meta name="robots" content="[^"]*noindex/.test(index))
+      fail("index.html: robots noindex is set, so search engines will not index the live site");
     if (!/<meta name="theme-color" content="#[0-9a-f]{6}"/.test(index))
       fail("index.html: missing theme-color meta (token consumption)");
   }

@@ -20,6 +20,8 @@ export interface AtlasCityProject {
   id: string;
   name: string;
   company: string;
+  /** The employer the work was done through, when that differs from `company` (PwC, via BugendaiTech). */
+  via?: string;
   platform: "mobile" | "web";
   tier: "featured" | "index" | "register";
   summary: string;
@@ -31,7 +33,7 @@ export interface AtlasCityProject {
   personalWork?: readonly string[];
   /** Work or characteristics of the project itself. */
   notableWork?: readonly string[];
-  /** The project has a full breakdown further down the page (today: Dijkastra). */
+  /** The project has a full breakdown further down the page (today: Dijkstra). */
   hasDetail?: boolean;
   years?: string;
   client?: string;

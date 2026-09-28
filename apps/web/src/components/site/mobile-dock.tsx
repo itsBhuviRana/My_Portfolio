@@ -13,7 +13,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties }
 const SECTIONS = [
   { id: "home", label: "Home" },
   { id: "work", label: "Projects" },
-  { id: "dijkastra", label: "Now" },
+  { id: "dijkstra", label: "Now" },
   { id: "capabilities", label: "Skills" },
   { id: "contact", label: "Contact" },
 ] as const;
@@ -45,7 +45,7 @@ function Icon({ id }: { id: (typeof SECTIONS)[number]["id"] }) {
           <path d="M3 21h18M5 21V10h5v11M10 21V4h5v17M15 21v-8h4v8" />
         </svg>
       );
-    case "dijkastra":
+    case "dijkstra":
       return (
         <svg {...common}>
           <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
