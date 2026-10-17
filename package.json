@@ -30,11 +30,11 @@
   "devDependencies": {
     "@eslint/js": "^9.39.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "16.3.6",
-    "globals": "^17.12.0",
-    "prettier": "^3.9.9",
+    "eslint-config-next": "16.4.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.70.1",
-    "vitest": "^5.0.1"
+    "typescript-eslint": "^8.71.2",
+    "vitest": "^5.0.4"
   }
 }
